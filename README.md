@@ -2,7 +2,7 @@ voronoi
 =======
 
 [![](https://travis-ci.com/lycantropos/voronoi.svg?branch=master)](https://travis-ci.com/lycantropos/voronoi "Travis CI")
-[![](https://dev.azure.com/lycantropos/voronoi/_apis/build/status/lycantropos.voronoi?branchName=master)](https://dev.azure.com/lycantropos/voronoi/_build/latest?definitionId=28&branchName=master "Azure Pipelines")
+[![](https://dev.azure.com/lycantropos/voronoi/_apis/build/status/lycantropos.voronoi?branchName=master)](https://dev.azure.com/lycantropos/voronoi/_build/latest?definitionId=29&branchName=master "Azure Pipelines")
 [![](https://codecov.io/gh/lycantropos/voronoi/branch/master/graph/badge.svg)](https://codecov.io/gh/lycantropos/voronoi "Codecov")
 [![](https://img.shields.io/github/license/lycantropos/voronoi.svg)](https://github.com/lycantropos/voronoi/blob/master/LICENSE "License")
 [![](https://badge.fury.io/py/voronoi.svg)](https://badge.fury.io/py/voronoi "PyPI")
