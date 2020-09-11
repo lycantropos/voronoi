@@ -133,9 +133,8 @@ PYBIND11_MODULE(MODULE_NAME, m) {
 
   py::class_<c_Edge>(m, EDGE_NAME)
       .def(py::init<long long, long long, bool, bool, long long, long long>(),
-           py::arg("start_index") = -1, py::arg("end_index") = -1,
-           py::arg("is_primary") = false, py::arg("is_linear") = false,
-           py::arg("cell_index") = -1, py::arg("twin_index") = -1)
+           py::arg("start_index"), py::arg("end_index"), py::arg("is_primary"),
+           py::arg("is_linear"), py::arg("cell_index"), py::arg("twin_index"))
       .def("__repr__", repr<c_Edge>)
       .def(py::self == py::self)
       .def_readonly("start_index", &c_Edge::start)
