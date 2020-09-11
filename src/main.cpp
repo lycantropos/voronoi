@@ -32,12 +32,17 @@ static std::ostream& operator<<(std::ostream& stream, const Point& point) {
                 << point.Y << ")";
 }
 
+static bool operator==(const Point& left, const Point& right) {
+  return left.X == right.X && left.Y == right.Y;
+}
+
 PYBIND11_MODULE(MODULE_NAME, m) {
   m.doc() = R"pbdoc(Python binding of pyvoronoi library.)pbdoc";
 
   py::class_<Point>(m, POINT_NAME)
       .def(py::init<coordinate_t, coordinate_t>(), py::arg("x"), py::arg("y"))
       .def("__repr__", repr<Point>)
+      .def(py::self == py::self)
       .def_readonly("x", &Point::X)
       .def_readonly("y", &Point::Y);
 
