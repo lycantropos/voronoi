@@ -123,9 +123,9 @@ class VoronoiDiagram {
   std::vector<Point> GetPoints();
   std::vector<Segment> GetSegments();
 
-  long long CountVertices();
-  long long CountEdges();
-  long long CountCells();
+  long long CountVertices() const;
+  long long CountEdges() const;
+  long long CountCells() const;
 
   // Map index to vertex
   typedef std::pair<long long, const voronoi_diagram<double>::vertex_type*>
@@ -167,9 +167,9 @@ class VoronoiDiagram {
   void MapEdgeIndexes();
   void MapCellIndexes();
 
-  c_Vertex GetVertex(long long index);
-  c_Edge GetEdge(long long index);
-  c_Cell GetCell(long long index);
+  c_Vertex GetVertex(long long index) const;
+  c_Edge GetEdge(long long index) const;
+  c_Cell GetCell(long long index) const;
 
  private:
   std::vector<Point> points;

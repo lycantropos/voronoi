@@ -18,11 +18,11 @@ std::vector<Point> VoronoiDiagram::GetPoints() { return points; }
 
 std::vector<Segment> VoronoiDiagram::GetSegments() { return segments; }
 
-long long VoronoiDiagram::CountVertices() { return vd.num_vertices(); }
+long long VoronoiDiagram::CountVertices() const { return vd.num_vertices(); }
 
-long long VoronoiDiagram::CountEdges() { return vd.num_edges(); }
+long long VoronoiDiagram::CountEdges() const { return vd.num_edges(); }
 
-long long VoronoiDiagram::CountCells() { return vd.num_cells(); }
+long long VoronoiDiagram::CountCells() const { return vd.num_cells(); }
 
 void VoronoiDiagram::MapVertexIndexes() {
   long long index = 0;
@@ -58,38 +58,39 @@ void VoronoiDiagram::MapCellIndexes() {
   }
 }
 
-c_Vertex VoronoiDiagram::GetVertex(long long index) {
+c_Vertex VoronoiDiagram::GetVertex(long long index) const {
   const voronoi_diagram<double>::vertex_type* vertex =
-      map_indexes_to_vertices[index];
+      map_indexes_to_vertices.at(index);
   double x = vertex->x();
   double y = vertex->y();
   return c_Vertex(x, y);
 }
 
-c_Edge VoronoiDiagram::GetEdge(long long index) {
-  const voronoi_diagram<double>::edge_type* edge = map_indexes_to_edges[index];
+c_Edge VoronoiDiagram::GetEdge(long long index) const {
+  const voronoi_diagram<double>::edge_type* edge =
+      map_indexes_to_edges.at(index);
 
   // Find vertex references
   long long edge_start = -1;
   long long edge_end = -1;
 
   if (edge->vertex0() != NULL) {
-    edge_start = map_vertices_to_indexes[edge->vertex0()];
+    edge_start = map_vertices_to_indexes.at(edge->vertex0());
   }
 
   if (edge->vertex1() != NULL) {
-    edge_end = map_vertices_to_indexes[edge->vertex1()];
+    edge_end = map_vertices_to_indexes.at(edge->vertex1());
   }
 
   // Find the twin reference using the segment object
   const voronoi_diagram<double>::edge_type* twin = edge->twin();
   long long twinIndex = -1;
   if (edge != NULL) {
-    twinIndex = map_edges_to_indexes[twin];
+    twinIndex = map_edges_to_indexes.at(twin);
   }
 
   // Find the cell reference using ther cell object
-  long long cellIndex = map_cells_to_indexes[edge->cell()];
+  long long cellIndex = map_cells_to_indexes.at(edge->cell());
 
   c_Edge c_edge = c_Edge(edge_start, edge_end, edge->is_primary(),
                          edge->is_linear(), cellIndex, twinIndex);
@@ -98,10 +99,11 @@ c_Edge VoronoiDiagram::GetEdge(long long index) {
   return c_edge;
 }
 
-c_Cell VoronoiDiagram::GetCell(long long index) {
+c_Cell VoronoiDiagram::GetCell(long long index) const {
   // std::map<long long, const voronoi_diagram<double>::cell_type *>::iterator
   // cellMapIterator = cellMap2.find(index);
-  const voronoi_diagram<double>::cell_type* cell = map_indexes_to_cells[index];
+  const voronoi_diagram<double>::cell_type* cell =
+      map_indexes_to_cells.at(index);
   std::vector<long long> edge_identifiers;
   std::vector<long long> vertex_identifiers;
 
@@ -135,7 +137,7 @@ c_Cell VoronoiDiagram::GetCell(long long index) {
   if (edge != NULL) {
     do {
       // Get the edge index
-      long long edge_index = map_edges_to_indexes[edge];
+      long long edge_index = map_edges_to_indexes.at(edge);
       edge_identifiers.push_back(edge_index);
 
       if (edge->vertex0() == NULL || edge->vertex1() == NULL) is_open = true;
@@ -144,11 +146,11 @@ c_Cell VoronoiDiagram::GetCell(long long index) {
       long long edge_end = -1;
 
       if (edge->vertex0() != NULL) {
-        edge_start = map_vertices_to_indexes[edge->vertex0()];
+        edge_start = map_vertices_to_indexes.at(edge->vertex0());
       }
 
       if (edge->vertex1() != NULL) {
-        edge_end = map_vertices_to_indexes[edge->vertex1()];
+        edge_end = map_vertices_to_indexes.at(edge->vertex1());
       }
 
       long vertices_count = vertex_identifiers.size();
