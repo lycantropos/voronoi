@@ -15,6 +15,7 @@ namespace py = pybind11;
 #define C_STR(a) C_STR_HELPER(a)
 #define POINT_NAME "Point"
 #define SEGMENT_NAME "Segment"
+#define VORONOI_DIAGRAM_NAME "VoronoiDiagram"
 
 using coordinate_t = int;
 
@@ -62,6 +63,42 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::self == py::self)
       .def_readonly("start", &Segment::p0)
       .def_readonly("end", &Segment::p1);
+
+  py::class_<VoronoiDiagram>(m, VORONOI_DIAGRAM_NAME)
+      .def(py::init<>())
+      .def("add_point", &VoronoiDiagram::AddPoint)
+      .def("add_segment", &VoronoiDiagram::AddSegment)
+      .def("construct",
+           [](VoronoiDiagram& self) {
+             self.Construct();
+             self.MapVertexIndexes();
+             self.MapEdgeIndexes();
+             self.MapCellIndexes();
+           })
+      .def_property_readonly("cells",
+                             [](VoronoiDiagram& self) {
+                               std::vector<c_Cell> cells;
+                               for (std::size_t index = 0;
+                                    index < self.CountCells(); ++index)
+                                 cells.push_back(self.GetCell(index));
+                               return cells;
+                             })
+      .def_property_readonly("edges",
+                             [](VoronoiDiagram& self) {
+                               std::vector<c_Edge> edges;
+                               for (std::size_t index = 0;
+                                    index < self.CountEdges(); ++index)
+                                 edges.push_back(self.GetEdge(index));
+                               return edges;
+                             })
+      .def_property_readonly("points", &VoronoiDiagram::GetPoints)
+      .def_property_readonly("segments", &VoronoiDiagram::GetSegments)
+      .def_property_readonly("vertices", [](VoronoiDiagram& self) {
+        std::vector<c_Vertex> vertices;
+        for (std::size_t index = 0; index < self.CountVertices(); ++index)
+          vertices.push_back(self.GetVertex(index));
+        return vertices;
+      });
 
 #ifdef VERSION_INFO
   m.attr("__version__") = VERSION_INFO;
