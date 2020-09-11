@@ -37,7 +37,7 @@ static bool operator==(const Point& left, const Point& right) {
 }
 
 PYBIND11_MODULE(MODULE_NAME, m) {
-  m.doc() = R"pbdoc(Python binding of pyvoronoi library.)pbdoc";
+  m.doc() = R"pbdoc(Python binding of Voxel8/pyvoronoi library.)pbdoc";
 
   py::class_<Point>(m, POINT_NAME)
       .def(py::init<coordinate_t, coordinate_t>(), py::arg("x"), py::arg("y"))
