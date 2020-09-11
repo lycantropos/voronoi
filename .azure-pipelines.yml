@@ -54,19 +54,19 @@ jobs:
         env:
           CODECOV_TOKEN: $(CODECOV_TOKEN)
       - script: python -m pip install --upgrade cibuildwheel
-        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+        condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
         displayName: 'Install build requirements'
       - bash:
           CIBW_BEFORE_BUILD='python -m pip install -r requirements.txt'
           CIBW_BUILD=$(python -c 'import sys; print("cp" + "".join(map(str, sys.version_info[:2])) + "-*")')
           cibuildwheel --output-dir dist
-        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+        condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
         displayName: 'Build wheels'
       - script: python -m pip install --upgrade twine
-        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+        condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
         displayName: 'Install deployment requirements'
       - script: twine upload --skip-existing dist/*
-        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+        condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
         displayName: 'Deploy wheels'
         env:
           TWINE_USERNAME: __token__
@@ -121,19 +121,19 @@ jobs:
         env:
           CODECOV_TOKEN: $(CODECOV_TOKEN)
       - script: python -m pip install --upgrade cibuildwheel
-        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+        condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
         displayName: 'Install build requirements'
       - bash:
           CIBW_BEFORE_BUILD='python -m pip install -r requirements.txt'
           CIBW_BUILD=$(python -c 'import sys; print("cp" + "".join(map(str, sys.version_info[:2])) + "-*")')
           cibuildwheel --output-dir dist
-        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+        condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
         displayName: 'Build wheels'
       - script: python -m pip install --upgrade twine
-        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+        condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
         displayName: 'Install deployment requirements'
       - script: twine upload --skip-existing dist/*
-        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+        condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
         displayName: 'Deploy wheels'
         env:
           TWINE_USERNAME: __token__
