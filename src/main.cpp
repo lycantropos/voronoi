@@ -14,6 +14,7 @@ namespace py = pybind11;
 #define C_STR_HELPER(a) #a
 #define C_STR(a) C_STR_HELPER(a)
 #define CELL_NAME "Cell"
+#define EDGE_NAME "Edge"
 #define POINT_NAME "Point"
 #define SEGMENT_NAME "Segment"
 #define VORONOI_DIAGRAM_NAME "VoronoiDiagram"
@@ -28,6 +29,13 @@ std::string repr(const Object& object) {
   stream.precision(std::numeric_limits<double>::digits10 + 2);
   stream << object;
   return stream.str();
+}
+
+static std::ostream& operator<<(std::ostream& stream, const c_Edge& edge) {
+  return stream << C_STR(MODULE_NAME) "." EDGE_NAME "(" << edge.start << ", "
+                << edge.end << ", " << bool_repr(edge.isPrimary) << ", "
+                << bool_repr(edge.isLinear) << ", " << edge.cell << ", "
+                << edge.twin << ")";
 }
 
 static std::ostream& operator<<(std::ostream& stream, const c_Cell& cell) {
@@ -54,6 +62,12 @@ static bool operator==(const c_Cell& left, const c_Cell& right) {
          left.contains_point == right.contains_point &&
          left.contains_segment == right.contains_segment &&
          left.source_category == right.source_category;
+}
+
+static bool operator==(const c_Edge& left, const c_Edge& right) {
+  return left.start == right.start && left.end == right.end &&
+         left.isPrimary == right.isPrimary && left.isLinear == right.isLinear &&
+         left.cell == right.cell && left.twin == right.twin;
 }
 
 static bool operator==(const Point& left, const Point& right) {
@@ -83,6 +97,20 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_readonly("is_degenerate", &c_Cell::is_degenerate)
       .def_readonly("vertices_indices", &c_Cell::vertices)
       .def_readonly("edges_indices", &c_Cell::edges);
+
+  py::class_<c_Edge>(m, EDGE_NAME)
+      .def(py::init<long long, long long, bool, bool, long long, long long>(),
+           py::arg("start_index") = -1, py::arg("end_index") = -1,
+           py::arg("is_primary") = false, py::arg("is_linear") = false,
+           py::arg("cell_index") = -1, py::arg("twin_index") = -1)
+      .def("__repr__", repr<c_Edge>)
+      .def(py::self == py::self)
+      .def_readonly("start_index", &c_Edge::start)
+      .def_readonly("end_index", &c_Edge::end)
+      .def_readonly("is_primary", &c_Edge::isPrimary)
+      .def_readonly("is_linear", &c_Edge::isLinear)
+      .def_readonly("cell_index", &c_Edge::cell)
+      .def_readonly("twin_index", &c_Edge::twin);
 
   py::class_<Point>(m, POINT_NAME)
       .def(py::init<coordinate_t, coordinate_t>(), py::arg("x"), py::arg("y"))
