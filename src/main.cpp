@@ -17,11 +17,27 @@ namespace py = pybind11;
 
 using coordinate_t = int;
 
+static std::string bool_repr(bool value) { return py::str(py::bool_(value)); }
+
+template <class Object>
+std::string repr(const Object& object) {
+  std::ostringstream stream;
+  stream.precision(std::numeric_limits<double>::digits10 + 2);
+  stream << object;
+  return stream.str();
+}
+
+static std::ostream& operator<<(std::ostream& stream, const Point& point) {
+  return stream << C_STR(MODULE_NAME) "." POINT_NAME "(" << point.X << ", "
+                << point.Y << ")";
+}
+
 PYBIND11_MODULE(MODULE_NAME, m) {
   m.doc() = R"pbdoc(Python binding of pyvoronoi library.)pbdoc";
 
   py::class_<Point>(m, POINT_NAME)
       .def(py::init<coordinate_t, coordinate_t>(), py::arg("x"), py::arg("y"))
+      .def("__repr__", repr<Point>)
       .def_readonly("x", &Point::X)
       .def_readonly("y", &Point::Y);
 
