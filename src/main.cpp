@@ -18,6 +18,7 @@ namespace py = pybind11;
 #define EDGE_NAME "Edge"
 #define POINT_NAME "Point"
 #define SEGMENT_NAME "Segment"
+#define VERTEX_NAME "Vertex"
 #define VORONOI_DIAGRAM_NAME "VoronoiDiagram"
 
 using coordinate_t = int;
@@ -73,6 +74,11 @@ static std::ostream& operator<<(std::ostream& stream, const Segment& segment) {
                 << segment.p1 << ")";
 }
 
+static std::ostream& operator<<(std::ostream& stream, const c_Vertex& vertex) {
+  return stream << C_STR(MODULE_NAME) "." VERTEX_NAME "(" << vertex.X << ", "
+                << vertex.Y << ")";
+}
+
 static bool operator==(const c_Cell& left, const c_Cell& right) {
   return left.cell_identifier == right.cell_identifier &&
          left.site == right.site &&
@@ -96,6 +102,10 @@ static bool operator==(const Point& left, const Point& right) {
 
 static bool operator==(const Segment& left, const Segment& right) {
   return left.p0 == right.p0 && left.p1 == right.p1;
+}
+
+static bool operator==(const c_Vertex& left, const c_Vertex& right) {
+  return left.X == right.X && left.Y == right.Y;
 }
 
 PYBIND11_MODULE(MODULE_NAME, m) {
@@ -157,6 +167,13 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::self == py::self)
       .def_readonly("start", &Segment::p0)
       .def_readonly("end", &Segment::p1);
+
+  py::class_<c_Vertex>(m, VERTEX_NAME)
+      .def(py::init<double, double>(), py::arg("x"), py::arg("y"))
+      .def("__repr__", repr<c_Vertex>)
+      .def(py::self == py::self)
+      .def_readonly("x", &c_Vertex::X)
+      .def_readonly("y", &c_Vertex::Y);
 
   py::class_<VoronoiDiagram>(m, VORONOI_DIAGRAM_NAME)
       .def(py::init<>())
