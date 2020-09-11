@@ -1,2 +1,2 @@
-from .base import (coordinates,
+from .base import (doubles,
                    integers_32)
