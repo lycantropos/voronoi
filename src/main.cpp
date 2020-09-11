@@ -14,6 +14,7 @@ namespace py = pybind11;
 #define C_STR_HELPER(a) #a
 #define C_STR(a) C_STR_HELPER(a)
 #define POINT_NAME "Point"
+#define SEGMENT_NAME "Segment"
 
 using coordinate_t = int;
 
@@ -32,8 +33,17 @@ static std::ostream& operator<<(std::ostream& stream, const Point& point) {
                 << point.Y << ")";
 }
 
+static std::ostream& operator<<(std::ostream& stream, const Segment& segment) {
+  return stream << C_STR(MODULE_NAME) "." SEGMENT_NAME "(" << segment.p0 << ", "
+                << segment.p1 << ")";
+}
+
 static bool operator==(const Point& left, const Point& right) {
   return left.X == right.X && left.Y == right.Y;
+}
+
+static bool operator==(const Segment& left, const Segment& right) {
+  return left.p0 == right.p0 && left.p1 == right.p1;
 }
 
 PYBIND11_MODULE(MODULE_NAME, m) {
@@ -45,6 +55,13 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::self == py::self)
       .def_readonly("x", &Point::X)
       .def_readonly("y", &Point::Y);
+
+  py::class_<Segment>(m, SEGMENT_NAME)
+      .def(py::init<Point, Point>(), py::arg("start"), py::arg("end"))
+      .def("__repr__", repr<Segment>)
+      .def(py::self == py::self)
+      .def_readonly("start", &Segment::p0)
+      .def_readonly("end", &Segment::p1);
 
 #ifdef VERSION_INFO
   m.attr("__version__") = VERSION_INFO;
