@@ -13,6 +13,7 @@ namespace py = pybind11;
 #define MODULE_NAME _voronoi
 #define C_STR_HELPER(a) #a
 #define C_STR(a) C_STR_HELPER(a)
+#define CELL_NAME "Cell"
 #define POINT_NAME "Point"
 #define SEGMENT_NAME "Segment"
 #define VORONOI_DIAGRAM_NAME "VoronoiDiagram"
@@ -29,6 +30,14 @@ std::string repr(const Object& object) {
   return stream.str();
 }
 
+static std::ostream& operator<<(std::ostream& stream, const c_Cell& cell) {
+  return stream << C_STR(MODULE_NAME) "." CELL_NAME "(" << cell.cell_identifier
+                << ", " << cell.site << ", " << bool_repr(cell.contains_point)
+                << ", " << bool_repr(cell.contains_segment) << ", "
+                << bool_repr(cell.is_open) << ", " << cell.source_category
+                << ")";
+}
+
 static std::ostream& operator<<(std::ostream& stream, const Point& point) {
   return stream << C_STR(MODULE_NAME) "." POINT_NAME "(" << point.X << ", "
                 << point.Y << ")";
@@ -37,6 +46,14 @@ static std::ostream& operator<<(std::ostream& stream, const Point& point) {
 static std::ostream& operator<<(std::ostream& stream, const Segment& segment) {
   return stream << C_STR(MODULE_NAME) "." SEGMENT_NAME "(" << segment.p0 << ", "
                 << segment.p1 << ")";
+}
+
+static bool operator==(const c_Cell& left, const c_Cell& right) {
+  return left.cell_identifier == right.cell_identifier &&
+         left.site == right.site &&
+         left.contains_point == right.contains_point &&
+         left.contains_segment == right.contains_segment &&
+         left.source_category == right.source_category;
 }
 
 static bool operator==(const Point& left, const Point& right) {
@@ -49,6 +66,23 @@ static bool operator==(const Segment& left, const Segment& right) {
 
 PYBIND11_MODULE(MODULE_NAME, m) {
   m.doc() = R"pbdoc(Python binding of Voxel8/pyvoronoi library.)pbdoc";
+
+  py::class_<c_Cell>(m, CELL_NAME)
+      .def(py::init<std::size_t, std::size_t, bool, bool, bool, int>(),
+           py::arg("index") = -1, py::arg("site") = -1,
+           py::arg("contains_point") = false,
+           py::arg("contains_segment") = false, py::arg("is_open") = false,
+           py::arg("source_category") = -1)
+      .def("__repr__", repr<c_Cell>)
+      .def(py::self == py::self)
+      .def_readonly("index", &c_Cell::cell_identifier)
+      .def_readonly("site", &c_Cell::site)
+      .def_readonly("contains_point", &c_Cell::contains_point)
+      .def_readonly("contains_segment", &c_Cell::contains_segment)
+      .def_readonly("is_open", &c_Cell::is_open)
+      .def_readonly("is_degenerate", &c_Cell::is_degenerate)
+      .def_readonly("vertices_indices", &c_Cell::vertices)
+      .def_readonly("edges_indices", &c_Cell::edges);
 
   py::class_<Point>(m, POINT_NAME)
       .def(py::init<coordinate_t, coordinate_t>(), py::arg("x"), py::arg("y"))
