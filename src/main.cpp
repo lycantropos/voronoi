@@ -20,8 +20,10 @@ namespace py = pybind11;
 #define SEGMENT_NAME "Segment"
 #define VERTEX_NAME "Vertex"
 #define VORONOI_DIAGRAM_NAME "VoronoiDiagram"
+#define VORONOI_VERTEX_NAME "VoronoiVertex"
 
 using coordinate_t = int;
+using VoronoiVertex = voronoi_vertex<double>;
 
 static std::string bool_repr(bool value) { return py::str(py::bool_(value)); }
 
@@ -107,6 +109,19 @@ static bool operator==(const Segment& left, const Segment& right) {
 static bool operator==(const c_Vertex& left, const c_Vertex& right) {
   return left.X == right.X && left.Y == right.Y;
 }
+
+namespace boost {
+namespace polygon {
+static std::ostream& operator<<(std::ostream& stream, const VoronoiVertex& vertex) {
+  return stream << C_STR(MODULE_NAME) "." VORONOI_VERTEX_NAME "(" << vertex.x() << ", "
+                << vertex.y() << ")";
+}
+
+static bool operator==(const VoronoiVertex& left, const VoronoiVertex& right) {
+  return left.x() == right.x() && left.y() == right.y();
+}
+}  // namespace polygon
+}  // namespace boost
 
 PYBIND11_MODULE(MODULE_NAME, m) {
   m.doc() = R"pbdoc(Python binding of Voxel8/pyvoronoi library.)pbdoc";
@@ -210,6 +225,13 @@ PYBIND11_MODULE(MODULE_NAME, m) {
           vertices.push_back(self.GetVertex(index));
         return vertices;
       });
+
+  py::class_<VoronoiVertex>(m, VORONOI_VERTEX_NAME)
+      .def(py::init<double, double>(), py::arg("x"), py::arg("y"))
+      .def("__repr__", repr<VoronoiVertex>)
+      .def(py::self == py::self)
+      .def_property_readonly("x", &VoronoiVertex::x)
+      .def_property_readonly("y", &VoronoiVertex::y);
 
 #ifdef VERSION_INFO
   m.attr("__version__") = VERSION_INFO;
