@@ -6,7 +6,7 @@ from tests.utils import (BoundPoint,
 from . import strategies
 
 
-@given(strategies.integers_32, strategies.integers_32)
+@given(strategies.coordinates, strategies.coordinates)
 def test_basic(x: int, y: int) -> None:
     bound, ported = BoundPoint(x, y), PortedPoint(x, y)
 
