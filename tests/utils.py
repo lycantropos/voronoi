@@ -2,12 +2,14 @@ from typing import (List,
                     Tuple)
 
 from _voronoi import (Cell as BoundCell,
+                      Edge as BoundEdge,
                       Point as BoundPoint,
                       Segment as BoundSegment,
                       Vertex as BoundVertex)
 from hypothesis.strategies import SearchStrategy
 
 from voronoi.cell import Cell as PortedCell
+from voronoi.edge import Edge as PortedEdge
 from voronoi.point import Point as PortedPoint
 from voronoi.segment import Segment as PortedSegment
 from voronoi.vertex import Vertex as PortedVertex
@@ -15,16 +17,19 @@ from voronoi.vertex import Vertex as PortedVertex
 Strategy = SearchStrategy
 
 BoundCell = BoundCell
+BoundEdge = BoundEdge
 BoundPoint = BoundPoint
 BoundSegment = BoundSegment
 BoundVertex = BoundVertex
 
 PortedCell = PortedCell
+PortedEdge = PortedEdge
 PortedPoint = PortedPoint
 PortedSegment = PortedSegment
 PortedVertex = PortedVertex
 
 BoundPortedCellsPair = Tuple[BoundCell, PortedCell]
+BoundPortedEdgesPair = Tuple[BoundEdge, PortedEdge]
 BoundPortedPointsPair = Tuple[BoundPoint, PortedPoint]
 BoundPortedSegmentsPair = Tuple[BoundSegment, PortedSegment]
 BoundPortedVerticesPair = Tuple[BoundVertex, PortedVertex]
@@ -45,6 +50,16 @@ def are_bound_ported_cells_equal(bound: BoundCell,
             and bound.vertices_indices == ported.vertices_indices
             and bound.edges_indices == ported.edges_indices
             and bound.source_category == ported.source_category)
+
+
+def are_bound_ported_edges_equal(bound: BoundEdge,
+                                 ported: PortedEdge) -> bool:
+    return (bound.start_index == ported.start_index
+            and bound.end_index == ported.end_index
+            and bound.is_primary is ported.is_primary
+            and bound.is_linear is ported.is_linear
+            and bound.cell_index == ported.cell_index
+            and bound.twin_index == ported.twin_index)
 
 
 def are_bound_ported_points_equal(bound: BoundPoint,
@@ -79,6 +94,18 @@ def to_bound_with_ported_cells_pair(index: int,
             PortedCell(index, site, contains_point, contains_segment, is_open,
                        is_degenerate, vertices_indices, edges_indices,
                        source_category))
+
+
+def to_bound_with_ported_edges_pair(start_index: int,
+                                    end_index: int,
+                                    is_primary: bool,
+                                    is_linear: bool,
+                                    cell_index: int,
+                                    twin_index: int) -> BoundPortedEdgesPair:
+    return (BoundEdge(start_index, end_index, is_primary, is_linear,
+                      cell_index, twin_index),
+            PortedEdge(start_index, end_index, is_primary, is_linear,
+                       cell_index, twin_index))
 
 
 def to_bound_with_ported_points_pair(x: int, y: int) -> BoundPortedPointsPair:
