@@ -3,26 +3,31 @@ from typing import (List,
 
 from _voronoi import (Cell as BoundCell,
                       Point as BoundPoint,
-                      Segment as BoundSegment)
+                      Segment as BoundSegment,
+                      Vertex as BoundVertex)
 from hypothesis.strategies import SearchStrategy
 
 from voronoi.cell import Cell as PortedCell
 from voronoi.point import Point as PortedPoint
 from voronoi.segment import Segment as PortedSegment
+from voronoi.vertex import Vertex as PortedVertex
 
 Strategy = SearchStrategy
 
 BoundCell = BoundCell
 BoundPoint = BoundPoint
 BoundSegment = BoundSegment
+BoundVertex = BoundVertex
 
 PortedCell = PortedCell
 PortedPoint = PortedPoint
 PortedSegment = PortedSegment
+PortedVertex = PortedVertex
 
 BoundPortedCellsPair = Tuple[BoundCell, PortedCell]
 BoundPortedPointsPair = Tuple[BoundPoint, PortedPoint]
 BoundPortedSegmentsPair = Tuple[BoundSegment, PortedSegment]
+BoundPortedVerticesPair = Tuple[BoundVertex, PortedVertex]
 
 
 def equivalence(left_statement: bool, right_statement: bool) -> bool:
@@ -51,6 +56,11 @@ def are_bound_ported_segments_equal(bound: BoundSegment,
                                     ported: PortedSegment) -> bool:
     return (are_bound_ported_points_equal(bound.start, ported.start)
             and are_bound_ported_points_equal(bound.end, ported.end))
+
+
+def are_bound_ported_vertices_equal(bound: BoundVertex, ported: PortedVertex
+                                    ) -> bool:
+    return bound.x == ported.x and bound.y == ported.y
 
 
 def to_bound_with_ported_cells_pair(index: int,
@@ -82,3 +92,8 @@ def to_bound_with_ported_segments_pair(starts_pair: BoundPortedPointsPair,
     bound_end, ported_end = ends_pair
     return (BoundSegment(bound_start, bound_end),
             PortedSegment(ported_start, ported_end))
+
+
+def to_bound_with_ported_vertices_pair(x: int, y: int
+                                       ) -> BoundPortedVerticesPair:
+    return BoundVertex(x, y), PortedVertex(x, y)
