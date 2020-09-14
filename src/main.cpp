@@ -33,6 +33,7 @@ namespace py = pybind11;
 #define VORONOI_VERTEX_NAME "VoronoiVertex"
 
 using coordinate_t = int;
+using Point = boost::polygon::detail::point_2d<coordinate_t>;
 using VoronoiBuilder = boost::polygon::default_voronoi_builder;
 using VoronoiDiagram = boost::polygon::voronoi_diagram<double>;
 using VoronoiCell = boost::polygon::voronoi_cell<double>;
@@ -62,11 +63,6 @@ static void write_sequence(std::ostream& stream, const Sequence& sequence) {
   stream << "]";
 };
 
-struct Point {
-  int x, y;
-  Point(int x_, int y_) : x(x_), y(y_) {}
-};
-
 struct Segment {
   Point start, end;
   Segment(const Point& start_, const Point& end_) : start(start_), end(end_) {}
@@ -74,6 +70,13 @@ struct Segment {
 
 namespace boost {
 namespace polygon {
+namespace detail {
+static std::ostream& operator<<(std::ostream& stream, const Point& point) {
+  return stream << C_STR(MODULE_NAME) "." POINT_NAME "(" << point.x() << ", "
+                << point.y() << ")";
+}
+}  // namespace detail
+
 static std::ostream& operator<<(std::ostream& stream,
                                 const VoronoiVertex& vertex) {
   return stream << C_STR(MODULE_NAME) "." VORONOI_VERTEX_NAME "(" << vertex.x()
@@ -94,7 +97,7 @@ struct point_traits<Point> {
   typedef int coordinate_type;
 
   static inline coordinate_type get(const Point& point, orientation_2d orient) {
-    return (orient == HORIZONTAL) ? point.x : point.y;
+    return (orient == HORIZONTAL) ? point.x() : point.y();
   }
 };
 
@@ -116,18 +119,9 @@ struct segment_traits<Segment> {
 }  // namespace polygon
 }  // namespace boost
 
-static std::ostream& operator<<(std::ostream& stream, const Point& point) {
-  return stream << C_STR(MODULE_NAME) "." POINT_NAME "(" << point.x << ", "
-                << point.y << ")";
-}
-
 static std::ostream& operator<<(std::ostream& stream, const Segment& segment) {
   return stream << C_STR(MODULE_NAME) "." SEGMENT_NAME "(" << segment.start
                 << ", " << segment.end << ")";
-}
-
-static bool operator==(const Point& left, const Point& right) {
-  return left.x == right.x && left.y == right.y;
 }
 
 static bool operator==(const Segment& left, const Segment& right) {
@@ -158,8 +152,8 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::init<coordinate_t, coordinate_t>(), py::arg("x"), py::arg("y"))
       .def("__repr__", repr<Point>)
       .def(py::self == py::self)
-      .def_readonly("x", &Point::x)
-      .def_readonly("y", &Point::y);
+      .def_property_readonly("x", [](const Point& self) { return self.x(); })
+      .def_property_readonly("y", [](const Point& self) { return self.y(); });
 
   py::class_<Segment>(m, SEGMENT_NAME)
       .def(py::init<Point, Point>(), py::arg("start"), py::arg("end"))
