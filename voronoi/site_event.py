@@ -8,13 +8,20 @@ class SiteEvent:
     __slots__ = ('start', 'end', 'sorted_index', 'initial_index', 'is_inverse',
                  'source_category')
 
-    def __init__(self, start: Point, end: Point) -> None:
+    def __init__(self,
+                 start: Point,
+                 end: Point,
+                 sorted_index: int = 0,
+                 initial_index: int = 0,
+                 is_inverse: bool = False,
+                 source_category: SourceCategory = SourceCategory.SINGLE_POINT
+                 ) -> None:
         self.start = start
         self.end = end
-        self.sorted_index = 0
-        self.initial_index = 0
-        self.is_inverse = False
-        self.source_category = SourceCategory.SINGLE_POINT
+        self.sorted_index = sorted_index
+        self.initial_index = initial_index
+        self.is_inverse = is_inverse
+        self.source_category = source_category
 
     __repr__ = generate_repr(__init__)
 
