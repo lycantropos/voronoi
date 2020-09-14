@@ -83,6 +83,11 @@ struct Segment {
 namespace boost {
 namespace polygon {
 namespace detail {
+static bool operator==(const CircleEvent& left, const CircleEvent& right) {
+  return left.x() == right.x() && left.y() == right.y() &&
+         left.is_active() == right.is_active();
+}
+
 static std::ostream& operator<<(std::ostream& stream,
                                 const CircleEvent& event) {
   return stream << C_STR(MODULE_NAME) "." CIRCLE_EVENT_NAME "(" << event.x()
@@ -185,27 +190,32 @@ PYBIND11_MODULE(MODULE_NAME, m) {
 
   py::class_<CircleEvent>(m, CIRCLE_EVENT_NAME)
       .def(py::init([](coordinate_t center_x, coordinate_t center_y,
-                       coordinate_t lower_x, bool active = true) {
+                       coordinate_t lower_x, bool is_active = true) {
              CircleEvent result{center_x, center_y, lower_x};
-             return (active ? result : result.deactivate());
+             return (is_active ? result : result.deactivate());
            }),
            py::arg("center_x"), py::arg("center_y"), py::arg("lower_x"),
-           py::arg("active") = true)
+           py::arg("is_active") = true)
+      .def(py::self == py::self)
       .def("__repr__", repr<CircleEvent>)
       .def("deactivate", &CircleEvent::deactivate)
       .def_property_readonly("center_x",
                              [](const CircleEvent& self) { return self.x(); })
       .def_property_readonly("center_y",
                              [](const CircleEvent& self) { return self.y(); })
-      .def("is_active", &CircleEvent::is_active)
+      .def_property_readonly("is_active", &CircleEvent::is_active)
       .def_property_readonly(
           "lower_x", [](const CircleEvent& self) { return self.lower_x(); })
-      .def_property_readonly("lower_y", &CircleEvent::lower_y);
+      .def_property_readonly("lower_y", &CircleEvent::lower_y)
+      .def_property_readonly("x",
+                             [](const CircleEvent& self) { return self.x(); })
+      .def_property_readonly("y",
+                             [](const CircleEvent& self) { return self.y(); });
 
   py::class_<Point>(m, POINT_NAME)
       .def(py::init<coordinate_t, coordinate_t>(), py::arg("x"), py::arg("y"))
-      .def("__repr__", repr<Point>)
       .def(py::self == py::self)
+      .def("__repr__", repr<Point>)
       .def_property_readonly("x", [](const Point& self) { return self.x(); })
       .def_property_readonly("y", [](const Point& self) { return self.y(); });
 
