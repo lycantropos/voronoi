@@ -7,7 +7,16 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "voronoi.hpp"
+#define BOOST_POLYGON_NO_DEPS
+#define BOOST_NO_USER_CONFIG
+#define BOOST_NO_COMPILER_CONFIG
+#define BOOST_NO_STDLIB_CONFIG
+#define BOOST_NO_PLATFORM_CONFIG
+#define BOOST_HAS_STDINT_H
+
+#define __GLIBC__ 0
+
+#include <boost/polygon/voronoi.hpp>
 
 namespace py = pybind11;
 
@@ -26,9 +35,10 @@ namespace py = pybind11;
 #define VORONOI_VERTEX_NAME "VoronoiVertex"
 
 using coordinate_t = int;
-using VoronoiCell = voronoi_cell<double>;
-using VoronoiEdge = voronoi_edge<double>;
-using VoronoiVertex = voronoi_vertex<double>;
+using VoronoiDiagram = boost::polygon::voronoi_diagram<double>;
+using VoronoiCell = boost::polygon::voronoi_cell<double>;
+using VoronoiEdge = boost::polygon::voronoi_edge<double>;
+using VoronoiVertex = boost::polygon::voronoi_vertex<double>;
 
 static std::string bool_repr(bool value) { return py::str(py::bool_(value)); }
 
@@ -53,67 +63,15 @@ static void write_sequence(std::ostream& stream, const Sequence& sequence) {
   stream << "]";
 };
 
-static std::ostream& operator<<(std::ostream& stream, const c_Edge& edge) {
-  return stream << C_STR(MODULE_NAME) "." EDGE_NAME "(" << edge.start << ", "
-                << edge.end << ", " << bool_repr(edge.isPrimary) << ", "
-                << bool_repr(edge.isLinear) << ", " << edge.cell << ", "
-                << edge.twin << ")";
-}
+struct Point {
+  int x, y;
+  Point(int x_, int y_) : x(x_), y(y_) {}
+};
 
-static std::ostream& operator<<(std::ostream& stream, const c_Cell& cell) {
-  stream << C_STR(MODULE_NAME) "." CELL_NAME "(" << cell.cell_identifier << ", "
-         << cell.site << ", " << bool_repr(cell.contains_point) << ", "
-         << bool_repr(cell.contains_segment) << ", " << bool_repr(cell.is_open)
-         << ", " << bool_repr(cell.is_degenerate) << ", ";
-  write_sequence(stream, cell.vertices);
-  stream << ", ";
-  write_sequence(stream, cell.edges);
-  return stream << ", " << cell.source_category << ")";
-}
-
-static std::ostream& operator<<(std::ostream& stream, const Point& point) {
-  return stream << C_STR(MODULE_NAME) "." POINT_NAME "(" << point.X << ", "
-                << point.Y << ")";
-}
-
-static std::ostream& operator<<(std::ostream& stream, const Segment& segment) {
-  return stream << C_STR(MODULE_NAME) "." SEGMENT_NAME "(" << segment.p0 << ", "
-                << segment.p1 << ")";
-}
-
-static std::ostream& operator<<(std::ostream& stream, const c_Vertex& vertex) {
-  return stream << C_STR(MODULE_NAME) "." VERTEX_NAME "(" << vertex.X << ", "
-                << vertex.Y << ")";
-}
-
-static bool operator==(const c_Cell& left, const c_Cell& right) {
-  return left.cell_identifier == right.cell_identifier &&
-         left.site == right.site &&
-         left.contains_point == right.contains_point &&
-         left.contains_segment == right.contains_segment &&
-         left.is_open == right.is_open &&
-         left.is_degenerate == right.is_degenerate &&
-         left.source_category == right.source_category &&
-         left.vertices == right.vertices && left.edges == right.edges;
-}
-
-static bool operator==(const c_Edge& left, const c_Edge& right) {
-  return left.start == right.start && left.end == right.end &&
-         left.isPrimary == right.isPrimary && left.isLinear == right.isLinear &&
-         left.cell == right.cell && left.twin == right.twin;
-}
-
-static bool operator==(const Point& left, const Point& right) {
-  return left.X == right.X && left.Y == right.Y;
-}
-
-static bool operator==(const Segment& left, const Segment& right) {
-  return left.p0 == right.p0 && left.p1 == right.p1;
-}
-
-static bool operator==(const c_Vertex& left, const c_Vertex& right) {
-  return left.X == right.X && left.Y == right.Y;
-}
+struct Segment {
+  Point start, end;
+  Segment(const Point& start_, const Point& end_) : start(start_), end(end_) {}
+};
 
 namespace boost {
 namespace polygon {
@@ -126,13 +84,61 @@ static std::ostream& operator<<(std::ostream& stream,
 static bool operator==(const VoronoiVertex& left, const VoronoiVertex& right) {
   return left.x() == right.x() && left.y() == right.y();
 }
+
+template <>
+struct geometry_concept<Point> {
+  typedef point_concept type;
+};
+
+template <>
+struct point_traits<Point> {
+  typedef int coordinate_type;
+
+  static inline coordinate_type get(const Point& point, orientation_2d orient) {
+    return (orient == HORIZONTAL) ? point.x : point.y;
+  }
+};
+
+template <>
+struct geometry_concept<Segment> {
+  typedef segment_concept type;
+};
+
+template <>
+struct segment_traits<Segment> {
+  typedef Segment segment_type;
+  typedef Point point_type;
+  typedef int coordinate_type;
+
+  static point_type get(const segment_type& segment, direction_1d dir) {
+    return dir.to_int() ? segment.end : segment.start;
+  }
+};
 }  // namespace polygon
 }  // namespace boost
 
-PYBIND11_MODULE(MODULE_NAME, m) {
-  m.doc() = R"pbdoc(Python binding of Voxel8/pyvoronoi library.)pbdoc";
+static std::ostream& operator<<(std::ostream& stream, const Point& point) {
+  return stream << C_STR(MODULE_NAME) "." POINT_NAME "(" << point.x << ", "
+                << point.y << ")";
+}
 
-  py::enum_<SourceCategory>(m, SOURCE_CATEGORY_NAME)
+static std::ostream& operator<<(std::ostream& stream, const Segment& segment) {
+  return stream << C_STR(MODULE_NAME) "." SEGMENT_NAME "(" << segment.start
+                << ", " << segment.end << ")";
+}
+
+static bool operator==(const Point& left, const Point& right) {
+  return left.x == right.x && left.y == right.y;
+}
+
+static bool operator==(const Segment& left, const Segment& right) {
+  return left.start == right.start && left.end == right.end;
+}
+
+PYBIND11_MODULE(MODULE_NAME, m) {
+  m.doc() = R"pbdoc(Python binding of boost/polygon library.)pbdoc";
+
+  py::enum_<boost::polygon::SourceCategory>(m, SOURCE_CATEGORY_NAME)
       .value("SINGLE_POINT",
              boost::polygon::SourceCategory::SOURCE_CATEGORY_SINGLE_POINT)
       .value(
@@ -149,69 +155,19 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .value("BITMASK",
              boost::polygon::SourceCategory::SOURCE_CATEGORY_BITMASK);
 
-  py::class_<c_Cell>(m, CELL_NAME)
-      .def(py::init([](std::size_t index, std::size_t site, bool contains_point,
-                       bool contains_segment, bool is_open, bool is_degenerate,
-                       const std::vector<long long>& vertices_indices,
-                       const std::vector<long long>& edges_indices,
-                       int source_category) {
-             c_Cell result{index,          site,
-                           contains_point, contains_segment,
-                           is_open,        source_category};
-             result.is_degenerate = is_degenerate;
-             result.vertices = vertices_indices;
-             result.edges = edges_indices;
-             return result;
-           }),
-           py::arg("index"), py::arg("site"), py::arg("contains_point"),
-           py::arg("contains_segment"), py::arg("is_open"),
-           py::arg("is_degenerate"), py::arg("vertices_indices"),
-           py::arg("edges_indices"), py::arg("source_category"))
-      .def("__repr__", repr<c_Cell>)
-      .def(py::self == py::self)
-      .def_readonly("index", &c_Cell::cell_identifier)
-      .def_readonly("contains_point", &c_Cell::contains_point)
-      .def_readonly("contains_segment", &c_Cell::contains_segment)
-      .def_readonly("edges_indices", &c_Cell::edges)
-      .def_readonly("is_degenerate", &c_Cell::is_degenerate)
-      .def_readonly("is_open", &c_Cell::is_open)
-      .def_readonly("site", &c_Cell::site)
-      .def_readonly("source_category", &c_Cell::source_category)
-      .def_readonly("vertices_indices", &c_Cell::vertices);
-
-  py::class_<c_Edge>(m, EDGE_NAME)
-      .def(py::init<long long, long long, bool, bool, long long, long long>(),
-           py::arg("start_index"), py::arg("end_index"), py::arg("is_primary"),
-           py::arg("is_linear"), py::arg("cell_index"), py::arg("twin_index"))
-      .def("__repr__", repr<c_Edge>)
-      .def(py::self == py::self)
-      .def_readonly("start_index", &c_Edge::start)
-      .def_readonly("end_index", &c_Edge::end)
-      .def_readonly("is_primary", &c_Edge::isPrimary)
-      .def_readonly("is_linear", &c_Edge::isLinear)
-      .def_readonly("cell_index", &c_Edge::cell)
-      .def_readonly("twin_index", &c_Edge::twin);
-
   py::class_<Point>(m, POINT_NAME)
       .def(py::init<coordinate_t, coordinate_t>(), py::arg("x"), py::arg("y"))
       .def("__repr__", repr<Point>)
       .def(py::self == py::self)
-      .def_readonly("x", &Point::X)
-      .def_readonly("y", &Point::Y);
+      .def_readonly("x", &Point::x)
+      .def_readonly("y", &Point::y);
 
   py::class_<Segment>(m, SEGMENT_NAME)
       .def(py::init<Point, Point>(), py::arg("start"), py::arg("end"))
       .def("__repr__", repr<Segment>)
       .def(py::self == py::self)
-      .def_readonly("start", &Segment::p0)
-      .def_readonly("end", &Segment::p1);
-
-  py::class_<c_Vertex>(m, VERTEX_NAME)
-      .def(py::init<double, double>(), py::arg("x"), py::arg("y"))
-      .def("__repr__", repr<c_Vertex>)
-      .def(py::self == py::self)
-      .def_readonly("x", &c_Vertex::X)
-      .def_readonly("y", &c_Vertex::Y);
+      .def_readonly("start", &Segment::start)
+      .def_readonly("end", &Segment::end);
 
   py::class_<VoronoiCell>(m, VORONOI_CELL_NAME)
       .def(py::init<std::size_t, boost::polygon::SourceCategory>(),
@@ -228,40 +184,14 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_property_readonly("source_category", &VoronoiCell::source_category);
 
   py::class_<VoronoiDiagram>(m, VORONOI_DIAGRAM_NAME)
-      .def(py::init<>())
-      .def("add_point", &VoronoiDiagram::AddPoint)
-      .def("add_segment", &VoronoiDiagram::AddSegment)
-      .def("construct",
-           [](VoronoiDiagram& self) {
-             self.Construct();
-             self.MapVertexIndexes();
-             self.MapEdgeIndexes();
-             self.MapCellIndexes();
-           })
-      .def_property_readonly("cells",
-                             [](VoronoiDiagram& self) {
-                               std::vector<c_Cell> cells;
-                               for (std::size_t index = 0;
-                                    index < self.CountCells(); ++index)
-                                 cells.push_back(self.GetCell(index));
-                               return cells;
-                             })
-      .def_property_readonly("edges",
-                             [](VoronoiDiagram& self) {
-                               std::vector<c_Edge> edges;
-                               for (std::size_t index = 0;
-                                    index < self.CountEdges(); ++index)
-                                 edges.push_back(self.GetEdge(index));
-                               return edges;
-                             })
-      .def_property_readonly("points", &VoronoiDiagram::GetPoints)
-      .def_property_readonly("segments", &VoronoiDiagram::GetSegments)
-      .def_property_readonly("vertices", [](VoronoiDiagram& self) {
-        std::vector<c_Vertex> vertices;
-        for (std::size_t index = 0; index < self.CountVertices(); ++index)
-          vertices.push_back(self.GetVertex(index));
-        return vertices;
-      });
+      .def(py::init<>([](const std::vector<Point>& points,
+                         const std::vector<Segment>& segments) {
+        auto* diagram = new VoronoiDiagram{};
+        boost::polygon::construct_voronoi(points.begin(), points.end(),
+                                          segments.begin(), segments.end(),
+                                          diagram);
+        return diagram;
+      }));
 
   py::class_<VoronoiEdge, std::unique_ptr<VoronoiEdge, py::nodelete>>(
       m, VORONOI_EDGE_NAME)
