@@ -20,9 +20,11 @@ namespace py = pybind11;
 #define SEGMENT_NAME "Segment"
 #define VERTEX_NAME "Vertex"
 #define VORONOI_DIAGRAM_NAME "VoronoiDiagram"
+#define VORONOI_EDGE_NAME "VoronoiEdge"
 #define VORONOI_VERTEX_NAME "VoronoiVertex"
 
 using coordinate_t = int;
+using VoronoiEdge = voronoi_edge<double>;
 using VoronoiVertex = voronoi_vertex<double>;
 
 static std::string bool_repr(bool value) { return py::str(py::bool_(value)); }
@@ -112,9 +114,10 @@ static bool operator==(const c_Vertex& left, const c_Vertex& right) {
 
 namespace boost {
 namespace polygon {
-static std::ostream& operator<<(std::ostream& stream, const VoronoiVertex& vertex) {
-  return stream << C_STR(MODULE_NAME) "." VORONOI_VERTEX_NAME "(" << vertex.x() << ", "
-                << vertex.y() << ")";
+static std::ostream& operator<<(std::ostream& stream,
+                                const VoronoiVertex& vertex) {
+  return stream << C_STR(MODULE_NAME) "." VORONOI_VERTEX_NAME "(" << vertex.x()
+                << ", " << vertex.y() << ")";
 }
 
 static bool operator==(const VoronoiVertex& left, const VoronoiVertex& right) {
@@ -225,6 +228,36 @@ PYBIND11_MODULE(MODULE_NAME, m) {
           vertices.push_back(self.GetVertex(index));
         return vertices;
       });
+
+  py::class_<VoronoiEdge, std::unique_ptr<VoronoiEdge, py::nodelete>>(
+      m, VORONOI_EDGE_NAME)
+      .def(py::init<bool, bool>(), py::arg("is_linear"), py::arg("is_primary"))
+      .def_property_readonly(
+          "cell", [](const VoronoiEdge& self) { return self.cell(); })
+      .def_property_readonly(
+          "color", [](const VoronoiEdge& self) { return self.color(); })
+      .def_property_readonly("is_curved", &VoronoiEdge::is_curved)
+      .def_property_readonly("is_finite", &VoronoiEdge::is_finite)
+      .def_property_readonly("is_infinite", &VoronoiEdge::is_infinite)
+      .def_property_readonly("is_linear", &VoronoiEdge::is_linear)
+      .def_property_readonly("is_primary", &VoronoiEdge::is_primary)
+      .def_property_readonly("is_secondary", &VoronoiEdge::is_secondary)
+      .def_property_readonly(
+          "next", [](const VoronoiEdge& self) { return self.next(); })
+      .def_property_readonly(
+          "prev", [](const VoronoiEdge& self) { return self.prev(); })
+      .def_property_readonly("rot_next",
+                             [](const VoronoiEdge& self) {
+                               return self.prev() == nullptr ? nullptr
+                                                             : self.rot_next();
+                             })
+      .def_property_readonly("rot_prev",
+                             [](const VoronoiEdge& self) {
+                               return self.prev() == nullptr ? nullptr
+                                                             : self.rot_prev();
+                             })
+      .def_property_readonly(
+          "twin", [](const VoronoiEdge& self) { return self.twin(); });
 
   py::class_<VoronoiVertex>(m, VORONOI_VERTEX_NAME)
       .def(py::init<double, double>(), py::arg("x"), py::arg("y"))
