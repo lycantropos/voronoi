@@ -16,6 +16,8 @@
 
 #define __GLIBC__ 0
 
+#define private public
+
 #include <boost/polygon/voronoi.hpp>
 
 namespace py = pybind11;
@@ -240,10 +242,17 @@ PYBIND11_MODULE(MODULE_NAME, m) {
           "start", [](const SiteEvent& self) { return self.point0(); });
 
   py::class_<VoronoiBuilder>(m, VORONOI_BUILDER_NAME)
+      .def(py::init<>())
       .def("clear", &VoronoiBuilder::clear)
       .def("construct", &VoronoiBuilder::construct<VoronoiDiagram>)
       .def("insert_point", &VoronoiBuilder::insert_point)
-      .def("insert_segment", &VoronoiBuilder::insert_segment);
+      .def("insert_segment", &VoronoiBuilder::insert_segment)
+      .def("process_circle_event",
+           &VoronoiBuilder::process_circle_event<VoronoiDiagram>)
+      .def("process_site_event",
+           &VoronoiBuilder::process_site_event<VoronoiDiagram>)
+      .def_readonly("beach_line", &VoronoiBuilder::beach_line_)
+      .def_readonly("site_events", &VoronoiBuilder::site_events_);
 
   py::class_<VoronoiCell>(m, VORONOI_CELL_NAME)
       .def(py::init<std::size_t, boost::polygon::SourceCategory>(),
