@@ -25,6 +25,7 @@ namespace py = pybind11;
 #define C_STR(a) C_STR_HELPER(a)
 #define POINT_NAME "Point"
 #define SEGMENT_NAME "Segment"
+#define SITE_EVENT_NAME "SiteEvent"
 #define SOURCE_CATEGORY_NAME "SourceCategory"
 #define VORONOI_BUILDER_NAME "VoronoiBuilder"
 #define VORONOI_CELL_NAME "VoronoiCell"
@@ -34,6 +35,7 @@ namespace py = pybind11;
 
 using coordinate_t = int;
 using Point = boost::polygon::detail::point_2d<coordinate_t>;
+using SiteEvent = boost::polygon::detail::site_event<coordinate_t>;
 using VoronoiBuilder = boost::polygon::default_voronoi_builder;
 using VoronoiDiagram = boost::polygon::voronoi_diagram<double>;
 using VoronoiCell = boost::polygon::voronoi_cell<double>;
@@ -161,6 +163,28 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::self == py::self)
       .def_readonly("start", &Segment::start)
       .def_readonly("end", &Segment::end);
+
+  py::class_<SiteEvent>(m, SITE_EVENT_NAME)
+      .def(py::init<Point>(), py::arg("point"))
+      .def(py::init<Point, Point>(), py::arg("start"), py::arg("end"))
+      .def(py::self == py::self)
+      .def("inverse", &SiteEvent::inverse)
+      .def_property_readonly(
+          "end", [](const SiteEvent& self) { return self.point1(); })
+      .def_property_readonly(
+          "initial_index",
+          [](const SiteEvent& self) { return self.initial_index(); })
+      .def_property_readonly("is_inverse", &SiteEvent::is_inverse)
+      .def_property_readonly("is_point", &SiteEvent::is_point)
+      .def_property_readonly("is_segment", &SiteEvent::is_segment)
+      .def_property_readonly(
+          "sorted_index",
+          [](const SiteEvent& self) { return self.sorted_index(); })
+      .def_property_readonly(
+          "source_category",
+          [](const SiteEvent& self) { return self.source_category(); })
+      .def_property_readonly(
+          "start", [](const SiteEvent& self) { return self.point0(); });
 
   py::class_<VoronoiBuilder>(m, VORONOI_BUILDER_NAME)
       .def("clear", &VoronoiBuilder::clear)
