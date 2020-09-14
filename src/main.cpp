@@ -184,8 +184,13 @@ PYBIND11_MODULE(MODULE_NAME, m) {
           [](const BeachLineNodeValue& self) { return self.circle_event(); });
 
   py::class_<CircleEvent>(m, CIRCLE_EVENT_NAME)
-      .def(py::init<coordinate_t, coordinate_t, coordinate_t>(),
-           py::arg("center_x"), py::arg("center_y"), py::arg("lower_x"))
+      .def(py::init([](coordinate_t center_x, coordinate_t center_y,
+                       coordinate_t lower_x, bool active = true) {
+             CircleEvent result{center_x, center_y, lower_x};
+             return (active ? result : result.deactivate());
+           }),
+           py::arg("center_x"), py::arg("center_y"), py::arg("lower_x"),
+           py::arg("active") = true)
       .def("__repr__", repr<CircleEvent>)
       .def("deactivate", &CircleEvent::deactivate)
       .def_property_readonly("center_x",
