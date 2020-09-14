@@ -80,6 +80,12 @@ struct Segment {
 namespace boost {
 namespace polygon {
 namespace detail {
+static std::ostream& operator<<(std::ostream& stream,
+                                const CircleEvent& event) {
+  return stream << C_STR(MODULE_NAME) "." CIRCLE_EVENT_NAME "(" << event.x()
+                << ", " << event.y() << ", " << event.lower_x() << ")";
+}
+
 static std::ostream& operator<<(std::ostream& stream, const Point& point) {
   return stream << C_STR(MODULE_NAME) "." POINT_NAME "(" << point.x() << ", "
                 << point.y() << ")";
@@ -185,6 +191,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::init<>())
       .def(py::init<coordinate_t, coordinate_t, coordinate_t>(),
            py::arg("center_x"), py::arg("center_y"), py::arg("lower_x"))
+      .def("__repr__", repr<CircleEvent>)
       .def("deactivate", &CircleEvent::deactivate)
       .def_property_readonly("center_x",
                              [](const CircleEvent& self) { return self.x(); })
