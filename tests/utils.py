@@ -3,12 +3,14 @@ from typing import (List,
                     Tuple,
                     Type)
 
-from _voronoi import (Point as BoundPoint,
+from _voronoi import (CircleEvent as BoundCircleEvent,
+                      Point as BoundPoint,
                       Segment as BoundSegment,
                       SiteEvent as BoundSiteEvent,
                       SourceCategory as BoundSourceCategory)
 from hypothesis.strategies import SearchStrategy
 
+from voronoi.circle_event import CircleEvent as PortedCircleEvent
 from voronoi.point import Point as PortedPoint
 from voronoi.segment import Segment as PortedSegment
 from voronoi.site_event import SiteEvent as PortedSiteEvent
@@ -16,16 +18,19 @@ from voronoi.source_category import SourceCategory as PortedSourceCategory
 
 Strategy = SearchStrategy
 
+BoundCircleEvent = BoundCircleEvent
 BoundPoint = BoundPoint
 BoundSegment = BoundSegment
 BoundSiteEvent = BoundSiteEvent
 BoundSourceCategory = BoundSourceCategory
 
+PortedCircleEvent = PortedCircleEvent
 PortedPoint = PortedPoint
 PortedSegment = PortedSegment
 PortedSiteEvent = PortedSiteEvent
 PortedSourceCategory = PortedSourceCategory
 
+BoundPortedCircleEventsPair = Tuple[BoundCircleEvent, PortedCircleEvent]
 BoundPortedPointsPair = Tuple[BoundPoint, PortedPoint]
 BoundPortedSegmentsPair = Tuple[BoundSegment, PortedSegment]
 BoundPortedSiteEventsPair = Tuple[BoundSiteEvent, PortedSiteEvent]
@@ -43,6 +48,14 @@ ported_source_categories = enum_to_values(PortedSourceCategory)
 
 def equivalence(left_statement: bool, right_statement: bool) -> bool:
     return left_statement is right_statement
+
+
+def are_bound_ported_circle_events_equal(bound: BoundCircleEvent,
+                                         ported: PortedCircleEvent) -> bool:
+    return (bound.center_x == ported.center_x
+            and bound.center_y == ported.center_y
+            and bound.lower_x == ported.lower_x
+            and bound.is_active is ported.is_active)
 
 
 def are_bound_ported_points_equal(bound: BoundPoint,
@@ -64,6 +77,15 @@ def are_bound_ported_site_events_equal(bound: BoundSiteEvent,
             and bound.initial_index == ported.initial_index
             and bound.is_inverse is ported.is_inverse
             and bound.source_category == ported.source_category)
+
+
+def to_bound_with_ported_circle_events_pair(center_x: int,
+                                            center_y: int,
+                                            lower_x: int,
+                                            is_active: bool
+                                            ) -> BoundPortedCircleEventsPair:
+    return (BoundCircleEvent(center_x, center_y, lower_x, is_active),
+            PortedCircleEvent(center_x, center_y, lower_x, is_active))
 
 
 def to_bound_with_ported_points_pair(x: int, y: int) -> BoundPortedPointsPair:
