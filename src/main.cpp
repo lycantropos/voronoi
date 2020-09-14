@@ -20,11 +20,13 @@ namespace py = pybind11;
 #define SEGMENT_NAME "Segment"
 #define SOURCE_CATEGORY_NAME "SourceCategory"
 #define VERTEX_NAME "Vertex"
+#define VORONOI_CELL_NAME "VoronoiCell"
 #define VORONOI_DIAGRAM_NAME "VoronoiDiagram"
 #define VORONOI_EDGE_NAME "VoronoiEdge"
 #define VORONOI_VERTEX_NAME "VoronoiVertex"
 
 using coordinate_t = int;
+using VoronoiCell = voronoi_cell<double>;
 using VoronoiEdge = voronoi_edge<double>;
 using VoronoiVertex = voronoi_vertex<double>;
 
@@ -210,6 +212,20 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::self == py::self)
       .def_readonly("x", &c_Vertex::X)
       .def_readonly("y", &c_Vertex::Y);
+
+  py::class_<VoronoiCell>(m, VORONOI_CELL_NAME)
+      .def(py::init<std::size_t, boost::polygon::SourceCategory>(),
+           py::arg("source_index"), py::arg("source_category"))
+      .def_property_readonly(
+          "color", [](const VoronoiCell& self) { return self.color(); })
+      .def_property_readonly("contains_point", &VoronoiCell::contains_point)
+      .def_property_readonly("contains_segment", &VoronoiCell::contains_segment)
+      .def_property_readonly(
+          "incident_edge",
+          [](const VoronoiCell& self) { return self.incident_edge(); })
+      .def_property_readonly("is_degenerate", &VoronoiCell::is_degenerate)
+      .def_property_readonly("source_index", &VoronoiCell::source_index)
+      .def_property_readonly("source_category", &VoronoiCell::source_category);
 
   py::class_<VoronoiDiagram>(m, VORONOI_DIAGRAM_NAME)
       .def(py::init<>())
