@@ -26,12 +26,14 @@ namespace py = pybind11;
 #define POINT_NAME "Point"
 #define SEGMENT_NAME "Segment"
 #define SOURCE_CATEGORY_NAME "SourceCategory"
+#define VORONOI_BUILDER_NAME "VoronoiBuilder"
 #define VORONOI_CELL_NAME "VoronoiCell"
 #define VORONOI_DIAGRAM_NAME "VoronoiDiagram"
 #define VORONOI_EDGE_NAME "VoronoiEdge"
 #define VORONOI_VERTEX_NAME "VoronoiVertex"
 
 using coordinate_t = int;
+using VoronoiBuilder = boost::polygon::default_voronoi_builder;
 using VoronoiDiagram = boost::polygon::voronoi_diagram<double>;
 using VoronoiCell = boost::polygon::voronoi_cell<double>;
 using VoronoiEdge = boost::polygon::voronoi_edge<double>;
@@ -165,6 +167,12 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::self == py::self)
       .def_readonly("start", &Segment::start)
       .def_readonly("end", &Segment::end);
+
+  py::class_<VoronoiBuilder>(m, VORONOI_BUILDER_NAME)
+      .def("clear", &VoronoiBuilder::clear)
+      .def("construct", &VoronoiBuilder::construct<VoronoiDiagram>)
+      .def("insert_point", &VoronoiBuilder::insert_point)
+      .def("insert_segment", &VoronoiBuilder::insert_segment);
 
   py::class_<VoronoiCell>(m, VORONOI_CELL_NAME)
       .def(py::init<std::size_t, boost::polygon::SourceCategory>(),
