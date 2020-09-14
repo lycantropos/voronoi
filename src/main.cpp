@@ -43,6 +43,7 @@ using CircleEvent = boost::polygon::detail::circle_event<coordinate_t>;
 using Point = boost::polygon::detail::point_2d<coordinate_t>;
 using SiteEvent = boost::polygon::detail::site_event<coordinate_t>;
 using BeachLineNodeKey = boost::polygon::detail::beach_line_node_key<SiteEvent>;
+using SourceCategory = boost::polygon::SourceCategory;
 using VoronoiBuilder = boost::polygon::default_voronoi_builder;
 using VoronoiDiagram = boost::polygon::voronoi_diagram<double>;
 using VoronoiCell = boost::polygon::voronoi_cell<double>;
@@ -153,22 +154,15 @@ static bool operator==(const Segment& left, const Segment& right) {
 PYBIND11_MODULE(MODULE_NAME, m) {
   m.doc() = R"pbdoc(Python binding of boost/polygon library.)pbdoc";
 
-  py::enum_<boost::polygon::SourceCategory>(m, SOURCE_CATEGORY_NAME)
-      .value("SINGLE_POINT",
-             boost::polygon::SourceCategory::SOURCE_CATEGORY_SINGLE_POINT)
-      .value(
-          "SEGMENT_START_POINT",
-          boost::polygon::SourceCategory::SOURCE_CATEGORY_SEGMENT_START_POINT)
+  py::enum_<SourceCategory>(m, SOURCE_CATEGORY_NAME)
+      .value("SINGLE_POINT", SourceCategory::SOURCE_CATEGORY_SINGLE_POINT)
+      .value("SEGMENT_START_POINT",
+             SourceCategory::SOURCE_CATEGORY_SEGMENT_START_POINT)
       .value("SEGMENT_END_POINT",
-             boost::polygon::SourceCategory::SOURCE_CATEGORY_SEGMENT_END_POINT)
-      .value("INITIAL_SEGMENT",
-             boost::polygon::SourceCategory::SOURCE_CATEGORY_INITIAL_SEGMENT)
+             SourceCategory::SOURCE_CATEGORY_SEGMENT_END_POINT)
+      .value("INITIAL_SEGMENT", SourceCategory::SOURCE_CATEGORY_INITIAL_SEGMENT)
       .value("REVERSE_SEGMENT",
-             boost::polygon::SourceCategory::SOURCE_CATEGORY_REVERSE_SEGMENT)
-      .value("GEOMETRY_SHIFT",
-             boost::polygon::SourceCategory::SOURCE_CATEGORY_GEOMETRY_SHIFT)
-      .value("BITMASK",
-             boost::polygon::SourceCategory::SOURCE_CATEGORY_BITMASK);
+             SourceCategory::SOURCE_CATEGORY_REVERSE_SEGMENT);
 
   py::class_<BeachLineNodeKey>(m, BEACH_LINE_NODE_KEY)
       .def(py::init<SiteEvent>(), py::arg("site"))
@@ -255,8 +249,8 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_readonly("site_events", &VoronoiBuilder::site_events_);
 
   py::class_<VoronoiCell>(m, VORONOI_CELL_NAME)
-      .def(py::init<std::size_t, boost::polygon::SourceCategory>(),
-           py::arg("source_index"), py::arg("source_category"))
+      .def(py::init<std::size_t, SourceCategory>(), py::arg("source_index"),
+           py::arg("source_category"))
       .def_property_readonly(
           "color", [](const VoronoiCell& self) { return self.color(); })
       .def_property_readonly("contains_point", &VoronoiCell::contains_point)
