@@ -24,6 +24,7 @@ namespace py = pybind11;
 #define C_STR_HELPER(a) #a
 #define C_STR(a) C_STR_HELPER(a)
 #define BEACH_LINE_NODE_KEY "BeachLineNodeKey"
+#define BEACH_LINE_NODE_VALUE "BeachLineNodeValue"
 #define CIRCLE_EVENT_NAME "CircleEvent"
 #define POINT_NAME "Point"
 #define SEGMENT_NAME "Segment"
@@ -44,6 +45,8 @@ using VoronoiBuilder = boost::polygon::default_voronoi_builder;
 using VoronoiDiagram = boost::polygon::voronoi_diagram<double>;
 using VoronoiCell = boost::polygon::voronoi_cell<double>;
 using VoronoiEdge = boost::polygon::voronoi_edge<double>;
+using BeachLineNodeValue =
+    boost::polygon::detail::beach_line_node_data<VoronoiEdge, CircleEvent>;
 using VoronoiVertex = boost::polygon::voronoi_vertex<double>;
 
 static std::string bool_repr(bool value) { return py::str(py::bool_(value)); }
@@ -164,6 +167,14 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_property_readonly("right_site", [](const BeachLineNodeKey& self) {
         return self.right_site();
       });
+
+  py::class_<BeachLineNodeValue>(m, BEACH_LINE_NODE_VALUE)
+      .def(py::init<VoronoiEdge*>(), py::arg("edge"))
+      .def_property_readonly(
+          "edge", [](const BeachLineNodeValue& self) { return self.edge(); })
+      .def_property_readonly(
+          "circle_event",
+          [](const BeachLineNodeValue& self) { return self.circle_event(); });
 
   py::class_<CircleEvent>(m, CIRCLE_EVENT_NAME)
       .def(py::init<>())
