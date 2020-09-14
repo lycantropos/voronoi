@@ -184,7 +184,6 @@ PYBIND11_MODULE(MODULE_NAME, m) {
           [](const BeachLineNodeValue& self) { return self.circle_event(); });
 
   py::class_<CircleEvent>(m, CIRCLE_EVENT_NAME)
-      .def(py::init<>())
       .def(py::init<coordinate_t, coordinate_t, coordinate_t>(),
            py::arg("center_x"), py::arg("center_y"), py::arg("lower_x"))
       .def("__repr__", repr<CircleEvent>)
