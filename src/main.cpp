@@ -91,7 +91,8 @@ static bool operator==(const CircleEvent& left, const CircleEvent& right) {
 static std::ostream& operator<<(std::ostream& stream,
                                 const CircleEvent& event) {
   return stream << C_STR(MODULE_NAME) "." CIRCLE_EVENT_NAME "(" << event.x()
-                << ", " << event.y() << ", " << event.lower_x() << ")";
+                << ", " << event.y() << ", " << event.lower_x() << ", "
+                << bool_repr(event.is_active()) << ")";
 }
 
 static std::ostream& operator<<(std::ostream& stream, const Point& point) {
