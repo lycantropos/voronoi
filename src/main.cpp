@@ -84,6 +84,11 @@ static std::ostream& operator<<(std::ostream& stream, const Point& point) {
   return stream << C_STR(MODULE_NAME) "." POINT_NAME "(" << point.x() << ", "
                 << point.y() << ")";
 }
+
+static std::ostream& operator<<(std::ostream& stream, const SiteEvent& event) {
+  return stream << C_STR(MODULE_NAME) "." SITE_EVENT_NAME "(" << event.point0()
+                << ", " << event.point1() << ")";
+}
 }  // namespace detail
 
 static std::ostream& operator<<(std::ostream& stream,
@@ -208,6 +213,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::init<Point>(), py::arg("point"))
       .def(py::init<Point, Point>(), py::arg("start"), py::arg("end"))
       .def(py::self == py::self)
+      .def("__repr__", repr<SiteEvent>)
       .def("inverse", &SiteEvent::inverse)
       .def_property_readonly(
           "end", [](const SiteEvent& self) { return self.point1(); })
