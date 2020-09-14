@@ -184,14 +184,20 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_property_readonly("source_category", &VoronoiCell::source_category);
 
   py::class_<VoronoiDiagram>(m, VORONOI_DIAGRAM_NAME)
-      .def(py::init<>([](const std::vector<Point>& points,
-                         const std::vector<Segment>& segments) {
-        auto* diagram = new VoronoiDiagram{};
-        boost::polygon::construct_voronoi(points.begin(), points.end(),
-                                          segments.begin(), segments.end(),
-                                          diagram);
-        return diagram;
-      }));
+      .def(py::init<>())
+      .def("clear", &VoronoiDiagram::clear)
+      .def(
+          "construct",
+          [](VoronoiDiagram* self, const std::vector<Point>& points,
+             const std::vector<Segment>& segments) {
+            boost::polygon::construct_voronoi(points.begin(), points.end(),
+                                              segments.begin(), segments.end(),
+                                              self);
+          },
+          py::arg("points"), py::arg("segments"))
+      .def_property_readonly("cells", &VoronoiDiagram::cells)
+      .def_property_readonly("edges", &VoronoiDiagram::edges)
+      .def_property_readonly("vertices", &VoronoiDiagram::vertices);
 
   py::class_<VoronoiEdge, std::unique_ptr<VoronoiEdge, py::nodelete>>(
       m, VORONOI_EDGE_NAME)
