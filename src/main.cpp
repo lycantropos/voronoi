@@ -85,6 +85,7 @@ namespace polygon {
 namespace detail {
 static bool operator==(const CircleEvent& left, const CircleEvent& right) {
   return left.x() == right.x() && left.y() == right.y() &&
+         left.lower_x() == right.lower_x() &&
          left.is_active() == right.is_active();
 }
 
