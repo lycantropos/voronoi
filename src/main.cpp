@@ -23,12 +23,9 @@ namespace py = pybind11;
 #define MODULE_NAME _voronoi
 #define C_STR_HELPER(a) #a
 #define C_STR(a) C_STR_HELPER(a)
-#define CELL_NAME "Cell"
-#define EDGE_NAME "Edge"
 #define POINT_NAME "Point"
 #define SEGMENT_NAME "Segment"
 #define SOURCE_CATEGORY_NAME "SourceCategory"
-#define VERTEX_NAME "Vertex"
 #define VORONOI_CELL_NAME "VoronoiCell"
 #define VORONOI_DIAGRAM_NAME "VoronoiDiagram"
 #define VORONOI_EDGE_NAME "VoronoiEdge"
