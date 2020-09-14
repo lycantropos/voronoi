@@ -23,6 +23,7 @@ namespace py = pybind11;
 #define MODULE_NAME _voronoi
 #define C_STR_HELPER(a) #a
 #define C_STR(a) C_STR_HELPER(a)
+#define CIRCLE_EVENT_NAME "CircleEvent"
 #define POINT_NAME "Point"
 #define SEGMENT_NAME "Segment"
 #define SITE_EVENT_NAME "SiteEvent"
@@ -34,6 +35,7 @@ namespace py = pybind11;
 #define VORONOI_VERTEX_NAME "VoronoiVertex"
 
 using coordinate_t = int;
+using CircleEvent = boost::polygon::detail::circle_event<coordinate_t>;
 using Point = boost::polygon::detail::point_2d<coordinate_t>;
 using SiteEvent = boost::polygon::detail::site_event<coordinate_t>;
 using VoronoiBuilder = boost::polygon::default_voronoi_builder;
@@ -149,6 +151,20 @@ PYBIND11_MODULE(MODULE_NAME, m) {
              boost::polygon::SourceCategory::SOURCE_CATEGORY_GEOMETRY_SHIFT)
       .value("BITMASK",
              boost::polygon::SourceCategory::SOURCE_CATEGORY_BITMASK);
+
+  py::class_<CircleEvent>(m, CIRCLE_EVENT_NAME)
+      .def(py::init<>())
+      .def(py::init<coordinate_t, coordinate_t, coordinate_t>(),
+           py::arg("center_x"), py::arg("center_y"), py::arg("lower_x"))
+      .def("deactivate", &CircleEvent::deactivate)
+      .def_property_readonly("center_x",
+                             [](const CircleEvent& self) { return self.x(); })
+      .def_property_readonly("center_y",
+                             [](const CircleEvent& self) { return self.y(); })
+      .def("is_active", &CircleEvent::is_active)
+      .def_property_readonly(
+          "lower_x", [](const CircleEvent& self) { return self.lower_x(); })
+      .def_property_readonly("lower_y", &CircleEvent::lower_y);
 
   py::class_<Point>(m, POINT_NAME)
       .def(py::init<coordinate_t, coordinate_t>(), py::arg("x"), py::arg("y"))
