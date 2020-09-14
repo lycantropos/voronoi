@@ -23,6 +23,7 @@ namespace py = pybind11;
 #define MODULE_NAME _voronoi
 #define C_STR_HELPER(a) #a
 #define C_STR(a) C_STR_HELPER(a)
+#define BEACH_LINE_NODE_KEY "BeachLineNodeKey"
 #define CIRCLE_EVENT_NAME "CircleEvent"
 #define POINT_NAME "Point"
 #define SEGMENT_NAME "Segment"
@@ -38,6 +39,7 @@ using coordinate_t = int;
 using CircleEvent = boost::polygon::detail::circle_event<coordinate_t>;
 using Point = boost::polygon::detail::point_2d<coordinate_t>;
 using SiteEvent = boost::polygon::detail::site_event<coordinate_t>;
+using BeachLineNodeKey = boost::polygon::detail::beach_line_node_key<SiteEvent>;
 using VoronoiBuilder = boost::polygon::default_voronoi_builder;
 using VoronoiDiagram = boost::polygon::voronoi_diagram<double>;
 using VoronoiCell = boost::polygon::voronoi_cell<double>;
@@ -151,6 +153,17 @@ PYBIND11_MODULE(MODULE_NAME, m) {
              boost::polygon::SourceCategory::SOURCE_CATEGORY_GEOMETRY_SHIFT)
       .value("BITMASK",
              boost::polygon::SourceCategory::SOURCE_CATEGORY_BITMASK);
+
+  py::class_<BeachLineNodeKey>(m, BEACH_LINE_NODE_KEY)
+      .def(py::init<SiteEvent>(), py::arg("site"))
+      .def(py::init<SiteEvent, SiteEvent>(), py::arg("left_site"),
+           py::arg("right_site"))
+      .def_property_readonly(
+          "left_site",
+          [](const BeachLineNodeKey& self) { return self.left_site(); })
+      .def_property_readonly("right_site", [](const BeachLineNodeKey& self) {
+        return self.right_site();
+      });
 
   py::class_<CircleEvent>(m, CIRCLE_EVENT_NAME)
       .def(py::init<>())
