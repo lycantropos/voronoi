@@ -213,8 +213,21 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_readonly("end", &Segment::end);
 
   py::class_<SiteEvent>(m, SITE_EVENT_NAME)
-      .def(py::init<Point>(), py::arg("point"))
-      .def(py::init<Point, Point>(), py::arg("start"), py::arg("end"))
+      .def(py::init([](const Point& start, const Point& end,
+                       std::size_t sorted_index = 0,
+                       std::size_t initial_index = 0, bool is_inverse = false,
+                       SourceCategory source_category =
+                           SourceCategory::SOURCE_CATEGORY_SINGLE_POINT) {
+             return (is_inverse ? SiteEvent{end, start}.inverse()
+                                : SiteEvent{start, end})
+                 .sorted_index(sorted_index)
+                 .initial_index(initial_index)
+                 .source_category(source_category);
+           }),
+           py::arg("start"), py::arg("end"), py::arg("sorted_index") = 0,
+           py::arg("initial_index") = 0, py::arg("is_inverse") = false,
+           py::arg("source_category") =
+               SourceCategory::SOURCE_CATEGORY_SINGLE_POINT)
       .def(py::self == py::self)
       .def("__repr__", repr<SiteEvent>)
       .def("inverse", &SiteEvent::inverse)
