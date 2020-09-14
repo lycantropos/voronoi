@@ -18,6 +18,7 @@ namespace py = pybind11;
 #define EDGE_NAME "Edge"
 #define POINT_NAME "Point"
 #define SEGMENT_NAME "Segment"
+#define SOURCE_CATEGORY_NAME "SourceCategory"
 #define VERTEX_NAME "Vertex"
 #define VORONOI_DIAGRAM_NAME "VoronoiDiagram"
 #define VORONOI_EDGE_NAME "VoronoiEdge"
@@ -128,6 +129,23 @@ static bool operator==(const VoronoiVertex& left, const VoronoiVertex& right) {
 
 PYBIND11_MODULE(MODULE_NAME, m) {
   m.doc() = R"pbdoc(Python binding of Voxel8/pyvoronoi library.)pbdoc";
+
+  py::enum_<SourceCategory>(m, SOURCE_CATEGORY_NAME)
+      .value("SINGLE_POINT",
+             boost::polygon::SourceCategory::SOURCE_CATEGORY_SINGLE_POINT)
+      .value(
+          "SEGMENT_START_POINT",
+          boost::polygon::SourceCategory::SOURCE_CATEGORY_SEGMENT_START_POINT)
+      .value("SEGMENT_END_POINT",
+             boost::polygon::SourceCategory::SOURCE_CATEGORY_SEGMENT_END_POINT)
+      .value("INITIAL_SEGMENT",
+             boost::polygon::SourceCategory::SOURCE_CATEGORY_INITIAL_SEGMENT)
+      .value("REVERSE_SEGMENT",
+             boost::polygon::SourceCategory::SOURCE_CATEGORY_REVERSE_SEGMENT)
+      .value("GEOMETRY_SHIFT",
+             boost::polygon::SourceCategory::SOURCE_CATEGORY_GEOMETRY_SHIFT)
+      .value("BITMASK",
+             boost::polygon::SourceCategory::SOURCE_CATEGORY_BITMASK);
 
   py::class_<c_Cell>(m, CELL_NAME)
       .def(py::init([](std::size_t index, std::size_t site, bool contains_point,
