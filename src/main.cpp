@@ -281,6 +281,16 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            py::arg("source_category") =
                SourceCategory::SOURCE_CATEGORY_SINGLE_POINT)
       .def(py::self == py::self)
+      .def("__lt__",
+           [](const SiteEvent& self, const CircleEvent& other) {
+             static EventComparisonPredicate comparator;
+             return comparator(self, other);
+           })
+      .def("__lt__",
+           [](const SiteEvent& self, const SiteEvent& other) {
+             static EventComparisonPredicate comparator;
+             return comparator(self, other);
+           })
       .def("__repr__", repr<SiteEvent>)
       .def("inverse", &SiteEvent::inverse)
       .def_property_readonly(
