@@ -1,4 +1,5 @@
-from typing import TypeVar
+from typing import (Any,
+                    TypeVar)
 
 from reprit.base import generate_repr
 
@@ -118,6 +119,12 @@ class SiteEvent:
                                    ULPS) is ComparisonResult.LESS
                     if isinstance(other, CircleEvent)
                     else NotImplemented)
+
+    @classmethod
+    def from_point(cls, point: Point,
+                   *args: Any,
+                   **kwargs: Any) -> 'SiteEvent':
+        return cls(point, point, *args, **kwargs)
 
     @property
     def is_point(self) -> bool:
