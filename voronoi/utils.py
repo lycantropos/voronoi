@@ -2,12 +2,21 @@ import struct
 from enum import (IntEnum,
                   unique)
 
+from .point import Point
+
 
 @unique
 class ComparisonResult(IntEnum):
     LESS = -1
     EQUAL = 0
     MORE = 1
+
+
+@unique
+class Orientation(IntEnum):
+    RIGHT = -1
+    COLLINEAR = 0
+    LEFT = 1
 
 
 def compare_floats(left: float, right: float, max_ulps: int
@@ -27,6 +36,20 @@ def robust_cross_product(first_dx: int,
                          second_dx: int,
                          second_dy: int) -> float:
     return float(first_dx * second_dy - second_dx * first_dy)
+
+
+def to_orientation(vertex: Point,
+                   first_ray_point: Point,
+                   second_ray_point: Point) -> Orientation:
+    cross_product = robust_cross_product(first_ray_point.x - vertex.x,
+                                         first_ray_point.y - vertex.y,
+                                         second_ray_point.x - vertex.x,
+                                         second_ray_point.y - vertex.y)
+    return (Orientation.LEFT
+            if cross_product > 0
+            else (Orientation.RIGHT
+                  if cross_product < 0
+                  else Orientation.COLLINEAR))
 
 
 def _float_to_uint(value: float,
