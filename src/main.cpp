@@ -352,10 +352,13 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_property_readonly("x", &VoronoiVertex::x)
       .def_property_readonly("y", &VoronoiVertex::y);
 
-  m.def("compare_floats", [](double left, double right, std::uint64_t max_ulps) {
-    static UlpComparator comparator;
-    return comparator(left, right, max_ulps);
-  });
+  m.def(
+      "compare_floats",
+      [](double left, double right, std::uint64_t max_ulps) {
+        static UlpComparator comparator;
+        return comparator(left, right, max_ulps);
+      },
+      py::arg("left"), py::arg("right"), py::arg("max_ulps"));
 
 #ifdef VERSION_INFO
   m.attr("__version__") = VERSION_INFO;
