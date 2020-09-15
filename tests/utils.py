@@ -69,7 +69,8 @@ def are_bound_ported_builders_equal(bound: BoundBuilder,
                                     ported: PortedBuilder) -> bool:
     return (bound.index == ported.index
             and all(map(are_bound_ported_site_events_equal, bound.site_events,
-                        ported.site_events)))
+                        ported.site_events))
+            and bound.site_event_index == ported.site_event_index)
 
 
 def are_bound_ported_circle_events_equal(bound: BoundCircleEvent,
