@@ -15,16 +15,23 @@ class Builder:
     def __init__(self,
                  index: int = 0,
                  site_events: Optional[List[SiteEvent]] = None,
-                 _site_event_index: int = 0) -> None:
+                 site_event_index: Optional[int] = None) -> None:
         self.index = index
         self.site_events = [] if site_events is None else site_events
-        self._site_event_index = min(_site_event_index, len(self.site_events))
+        self._site_event_index = (
+            None
+            if (site_event_index is None
+                or site_event_index >= len(self.site_events))
+            else site_event_index)
 
     __repr__ = generate_repr(__init__)
 
     @property
     def site_event_index(self) -> int:
-        return min(self._site_event_index, len(self.site_events))
+        return (len(self.site_events)
+                if (self._site_event_index is None
+                    or self._site_event_index >= len(self.site_events))
+                else self._site_event_index)
 
     def init_sites_queue(self) -> None:
         self.site_events.sort()
