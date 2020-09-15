@@ -57,6 +57,8 @@ using BeachLineNodeValue =
     boost::polygon::detail::beach_line_node_data<VoronoiEdge, CircleEvent>;
 using VoronoiPredicates =
     boost::polygon::detail::voronoi_predicates<CTypeTraits>;
+using EventComparisonPredicate =
+    VoronoiPredicates::event_comparison_predicate<SiteEvent, CircleEvent>;
 using Orientation = VoronoiPredicates::orientation_test::Orientation;
 using VoronoiVertex = boost::polygon::voronoi_vertex<double>;
 
@@ -217,6 +219,16 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            py::arg("center_x"), py::arg("center_y"), py::arg("lower_x"),
            py::arg("is_active") = true)
       .def(py::self == py::self)
+      .def("__lt__",
+           [](const CircleEvent& self, const CircleEvent& other) {
+             static EventComparisonPredicate comparator;
+             return comparator(self, other);
+           })
+      .def("__lt__",
+           [](const CircleEvent& self, const SiteEvent& other) {
+             static EventComparisonPredicate comparator;
+             return comparator(self, other);
+           })
       .def("__repr__", repr<CircleEvent>)
       .def("deactivate", &CircleEvent::deactivate)
       .def_property_readonly("center_x",
