@@ -14,6 +14,7 @@ services:
       - ./voronoi/:/opt/voronoi/voronoi/
       - ./tests/:/opt/voronoi/tests/
       - ./README.md:/opt/voronoi/README.md
+      - ./requirements-tests.txt:/opt/voronoi/requirements-setup.txt
       - ./requirements.txt:/opt/voronoi/requirements.txt
       - ./requirements-tests.txt:/opt/voronoi/requirements-tests.txt
       - ./setup.py:/opt/voronoi/setup.py

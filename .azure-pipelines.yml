@@ -38,6 +38,8 @@ jobs:
         displayName: 'Install packaging tools'
       - script: python -m pip install --upgrade codecov
         displayName: 'Install codecov'
+      - script: python -m pip install --force-reinstall -r requirements-setup.txt
+        displayName: 'Install setup requirements'
       - script: python -m pip install --force-reinstall -r requirements.txt
         displayName: 'Install requirements'
       - script: python -m pip install --force-reinstall -r requirements-tests.txt
@@ -96,6 +98,8 @@ jobs:
         displayName: 'Install codecov'
       - script: python -m pip install --upgrade gcovr
         displayName: 'Install gcovr'
+      - script: python -m pip install --force-reinstall -r requirements-setup.txt
+        displayName: 'Install setup requirements'
       - script: python -m pip install --force-reinstall -r requirements.txt
         displayName: 'Install requirements'
       - script: python -m pip install --force-reinstall -r requirements-tests.txt

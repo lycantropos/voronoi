@@ -36,9 +36,9 @@ git clone https://github.com/lycantropos/voronoi.git
 cd voronoi
 ```
 
-Install dependencies:
+Install setup dependencies:
 ```bash
-python -m pip install --force-reinstall -r requirements.txt
+python -m pip install --force-reinstall -r requirements-setup.txt
 ```
 
 Install:
