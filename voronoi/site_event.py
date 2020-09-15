@@ -30,6 +30,10 @@ class SiteEvent:
                 if isinstance(other, SiteEvent)
                 else NotImplemented)
 
+    @property
+    def is_vertical(self) -> bool:
+        return self.start.x == self.end.x
+
     def inverse(self) -> 'SiteEvent':
         self.start, self.end, self.is_inverse = (self.end, self.start,
                                                  not self.is_inverse)
