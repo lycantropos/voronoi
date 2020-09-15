@@ -1,7 +1,8 @@
 from enum import Enum
 from typing import (List,
                     Tuple,
-                    Type)
+                    Type,
+                    Union)
 
 from _voronoi import (CircleEvent as BoundCircleEvent,
                       Point as BoundPoint,
@@ -34,6 +35,8 @@ BoundPortedCircleEventsPair = Tuple[BoundCircleEvent, PortedCircleEvent]
 BoundPortedPointsPair = Tuple[BoundPoint, PortedPoint]
 BoundPortedSegmentsPair = Tuple[BoundSegment, PortedSegment]
 BoundPortedSiteEventsPair = Tuple[BoundSiteEvent, PortedSiteEvent]
+BoundPortedEventsPair = Union[BoundPortedCircleEventsPair,
+                              BoundPortedSiteEventsPair]
 BoundPortedSourceCategoriesPair = Tuple[BoundSourceCategory,
                                         PortedSourceCategory]
 
