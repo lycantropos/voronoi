@@ -250,20 +250,20 @@ PYBIND11_MODULE(MODULE_NAME, m) {
           [](const BeachLineNodeValue& self) { return self.circle_event(); });
 
   py::class_<Builder>(m, BUILDER_NAME)
-      .def(py::init([](std::size_t index = 0,
-                       const std::vector<SiteEvent>& site_events = {},
-                       std::size_t site_event_index = 0) {
+      .def(py::init([](std::size_t index,
+                       const std::vector<SiteEvent>& site_events,
+                       std::size_t site_event_index) {
              auto result = std::make_unique<Builder>();
              result->index_ = index;
              result->site_events_ = site_events;
              result->site_event_iterator_ =
                  result->site_events_.begin() +
-                 std::min(site_event_index, site_events.size());
+                 std::min(site_event_index, result->site_events_.size());
              return result;
            }),
            py::arg("index") = 0,
            py::arg("site_events") = std::vector<SiteEvent>{},
-           py::arg("site_event_index") = 0)
+           py::arg("site_event_index") = std::numeric_limits<std::size_t>::max())
       .def("__repr__", repr<Builder>)
       .def("clear", &Builder::clear)
       .def("construct", &Builder::construct<Diagram>, py::arg("diagram"))
