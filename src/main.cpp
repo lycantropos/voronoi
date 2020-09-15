@@ -241,6 +241,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::init<>())
       .def("clear", &Builder::clear)
       .def("construct", &Builder::construct<Diagram>)
+      .def("init_sites_queue", &Builder::init_sites_queue)
       .def("insert_point", &Builder::insert_point)
       .def("insert_segment", &Builder::insert_segment)
       .def("process_circle_event", &Builder::process_circle_event<Diagram>)
