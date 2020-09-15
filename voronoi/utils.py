@@ -1,8 +1,13 @@
 import struct
+from itertools import groupby
+from typing import (List,
+                    TypeVar)
 
 from .enums import (ComparisonResult,
                     Orientation)
 from .point import Point
+
+Domain = TypeVar('Domain')
 
 
 def compare_floats(left: float, right: float, max_ulps: int
@@ -36,6 +41,10 @@ def to_orientation(vertex: Point,
             else (Orientation.RIGHT
                   if cross_product < 0
                   else Orientation.COLLINEAR))
+
+
+def to_unique_just_seen(iterable: List[Domain]) -> List[Domain]:
+    return [key for key, _ in groupby(iterable)]
 
 
 def _float_to_uint(value: float,

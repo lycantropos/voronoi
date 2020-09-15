@@ -6,6 +6,7 @@ from reprit.base import generate_repr
 from .enums import SourceCategory
 from .events import SiteEvent
 from .point import Point
+from .utils import to_unique_just_seen
 
 
 class Builder:
@@ -20,6 +21,13 @@ class Builder:
         self.site_event_index = min(site_event_index, len(self.site_events))
 
     __repr__ = generate_repr(__init__)
+
+    def init_sites_queue(self) -> None:
+        self.site_events.sort()
+        self.site_events = to_unique_just_seen(self.site_events)
+        for index, event in enumerate(self.site_events):
+            event.sorted_index = index
+        self.site_event_index = 0
 
     def insert_point(self, x: int, y: int) -> int:
         index = self.index
