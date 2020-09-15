@@ -31,6 +31,14 @@ class SiteEvent:
                 else NotImplemented)
 
     @property
+    def is_point(self) -> bool:
+        return self.start == self.end
+
+    @property
+    def is_segment(self) -> bool:
+        return self.start != self.end
+
+    @property
     def is_vertical(self) -> bool:
         return self.start.x == self.end.x
 
