@@ -248,12 +248,15 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            py::arg("index") = 0,
            py::arg("site_events") = std::vector<SiteEvent>{})
       .def("clear", &Builder::clear)
-      .def("construct", &Builder::construct<Diagram>)
+      .def("construct", &Builder::construct<Diagram>, py::arg("diagram"))
       .def("init_sites_queue", &Builder::init_sites_queue)
-      .def("insert_point", &Builder::insert_point)
-      .def("insert_segment", &Builder::insert_segment)
-      .def("process_circle_event", &Builder::process_circle_event<Diagram>)
-      .def("process_site_event", &Builder::process_site_event<Diagram>)
+      .def("insert_point", &Builder::insert_point, py::arg("x"), py::arg("y"))
+      .def("insert_segment", &Builder::insert_segment, py::arg("start_x"),
+           py::arg("start_y"), py::arg("end_x"), py::arg("end_y"))
+      .def("process_circle_event", &Builder::process_circle_event<Diagram>,
+           py::arg("diagram"))
+      .def("process_site_event", &Builder::process_site_event<Diagram>,
+           py::arg("diagram"))
       .def_readonly("beach_line", &Builder::beach_line_)
       .def_readonly("index", &Builder::index_)
       .def_readonly("site_events", &Builder::site_events_);
