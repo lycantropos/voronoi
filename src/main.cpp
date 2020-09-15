@@ -301,6 +301,10 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_property_readonly("is_inverse", &SiteEvent::is_inverse)
       .def_property_readonly("is_point", &SiteEvent::is_point)
       .def_property_readonly("is_segment", &SiteEvent::is_segment)
+      .def_property_readonly("is_vertical",
+                             [](const SiteEvent& self) {
+                               return VoronoiPredicates::is_vertical(self);
+                             })
       .def_property_readonly(
           "sorted_index",
           [](const SiteEvent& self) { return self.sorted_index(); })
