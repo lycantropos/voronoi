@@ -55,7 +55,8 @@ using VoronoiCell = boost::polygon::voronoi_cell<double>;
 using VoronoiEdge = boost::polygon::voronoi_edge<double>;
 using BeachLineNodeValue =
     boost::polygon::detail::beach_line_node_data<VoronoiEdge, CircleEvent>;
-using VoronoiPredicates = boost::polygon::detail::voronoi_predicates<CTypeTraits>;
+using VoronoiPredicates =
+    boost::polygon::detail::voronoi_predicates<CTypeTraits>;
 using Orientation = VoronoiPredicates::orientation_test::Orientation;
 using VoronoiVertex = boost::polygon::voronoi_vertex<double>;
 
@@ -368,6 +369,10 @@ PYBIND11_MODULE(MODULE_NAME, m) {
         return comparator(left, right, max_ulps);
       },
       py::arg("left"), py::arg("right"), py::arg("max_ulps"));
+
+  m.def("robust_cross_product", &VoronoiPredicates::robust_cross_product,
+        py::arg("first_dx"), py::arg("first_dy"), py::arg("second_dx"),
+        py::arg("second_dy"));
 
 #ifdef VERSION_INFO
   m.attr("__version__") = VERSION_INFO;
