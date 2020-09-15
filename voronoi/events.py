@@ -35,6 +35,14 @@ class CircleEvent:
                 if isinstance(other, CircleEvent)
                 else NotImplemented)
 
+    def __lt__(self, other: 'Event') -> bool:
+        return ((self.lower_x, self.y) < (other.lower_x, other.y)
+                if isinstance(other, CircleEvent)
+                else (compare_floats(float(self.lower_x), float(other.start.x),
+                                     ULPS) is ComparisonResult.LESS
+                      if isinstance(other, SiteEvent)
+                      else NotImplemented))
+
     @property
     def lower_y(self) -> int:
         return self.center_y
