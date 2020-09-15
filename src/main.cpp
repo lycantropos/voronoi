@@ -238,7 +238,15 @@ PYBIND11_MODULE(MODULE_NAME, m) {
           [](const BeachLineNodeValue& self) { return self.circle_event(); });
 
   py::class_<Builder>(m, BUILDER_NAME)
-      .def(py::init<>())
+      .def(py::init([](std::size_t index = 0,
+                       const std::vector<SiteEvent>& site_events = {}) {
+             auto result = std::make_unique<Builder>();
+             result->index_ = index;
+             result->site_events_ = site_events;
+             return result;
+           }),
+           py::arg("index") = 0,
+           py::arg("site_events") = std::vector<SiteEvent>{})
       .def("clear", &Builder::clear)
       .def("construct", &Builder::construct<Diagram>)
       .def("init_sites_queue", &Builder::init_sites_queue)
