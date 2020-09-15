@@ -1,4 +1,5 @@
 from enum import Enum
+from operator import is_
 from typing import (List,
                     Tuple,
                     Type,
@@ -56,9 +57,7 @@ def enum_to_values(cls: Type[Enum]) -> List[Enum]:
 bound_source_categories = enum_to_values(BoundSourceCategory)
 ported_source_categories = enum_to_values(PortedSourceCategory)
 
-
-def equivalence(left_statement: bool, right_statement: bool) -> bool:
-    return left_statement is right_statement
+equivalence = is_
 
 
 def transpose_pairs(pairs: List[Tuple[Domain, Range]]
