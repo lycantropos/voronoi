@@ -84,6 +84,12 @@ static void write_sequence(std::ostream& stream, const Sequence& sequence) {
   stream << "]";
 };
 
+static std::size_t get_builder_site_event_index(const Builder& builder) {
+  std::size_t index =
+      builder.site_event_iterator_ - builder.site_events_.begin();
+  return std::min(index, builder.site_events_.size());
+}
+
 struct Segment {
   Point start, end;
   Segment(const Point& start_, const Point& end_) : start(start_), end(end_) {}
@@ -269,6 +275,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            py::arg("diagram"))
       .def("process_site_event", &Builder::process_site_event<Diagram>,
            py::arg("diagram"))
+      .def_property_readonly("site_event_index", get_builder_site_event_index)
       .def_readonly("beach_line", &Builder::beach_line_)
       .def_readonly("index", &Builder::index_)
       .def_readonly("site_events", &Builder::site_events_);
