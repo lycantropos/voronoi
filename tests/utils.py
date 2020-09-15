@@ -2,35 +2,43 @@ from enum import Enum
 from typing import (List,
                     Tuple,
                     Type,
+                    TypeVar,
                     Union)
 
-from _voronoi import (CircleEvent as BoundCircleEvent,
+from _voronoi import (Builder as BoundBuilder,
+                      CircleEvent as BoundCircleEvent,
                       Point as BoundPoint,
                       Segment as BoundSegment,
                       SiteEvent as BoundSiteEvent,
                       SourceCategory as BoundSourceCategory)
 from hypothesis.strategies import SearchStrategy
 
+from voronoi.builder import Builder as PortedBuilder
 from voronoi.enums import SourceCategory as PortedSourceCategory
 from voronoi.events import (CircleEvent as PortedCircleEvent,
                             SiteEvent as PortedSiteEvent)
 from voronoi.point import Point as PortedPoint
 from voronoi.segment import Segment as PortedSegment
 
+Domain = TypeVar('Domain')
+Range = TypeVar('Range')
 Strategy = SearchStrategy
 
+BoundBuilder = BoundBuilder
 BoundCircleEvent = BoundCircleEvent
 BoundPoint = BoundPoint
 BoundSegment = BoundSegment
 BoundSiteEvent = BoundSiteEvent
 BoundSourceCategory = BoundSourceCategory
 
+PortedBuilder = PortedBuilder
 PortedCircleEvent = PortedCircleEvent
 PortedPoint = PortedPoint
 PortedSegment = PortedSegment
 PortedSiteEvent = PortedSiteEvent
 PortedSourceCategory = PortedSourceCategory
 
+BoundPortedBuildersPair = Tuple[BoundBuilder, PortedBuilder]
 BoundPortedCircleEventsPair = Tuple[BoundCircleEvent, PortedCircleEvent]
 BoundPortedPointsPair = Tuple[BoundPoint, PortedPoint]
 BoundPortedSegmentsPair = Tuple[BoundSegment, PortedSegment]
@@ -51,6 +59,18 @@ ported_source_categories = enum_to_values(PortedSourceCategory)
 
 def equivalence(left_statement: bool, right_statement: bool) -> bool:
     return left_statement is right_statement
+
+
+def transpose_pairs(pairs: List[Tuple[Domain, Range]]
+                    ) -> Tuple[List[Domain], List[Range]]:
+    return tuple(map(list, zip(*pairs))) if pairs else ([], [])
+
+
+def are_bound_ported_builders_equal(bound: BoundBuilder,
+                                    ported: PortedBuilder) -> bool:
+    return (bound.index == ported.index
+            and all(map(are_bound_ported_site_events_equal, bound.site_events,
+                        ported.site_events)))
 
 
 def are_bound_ported_circle_events_equal(bound: BoundCircleEvent,
@@ -80,6 +100,15 @@ def are_bound_ported_site_events_equal(bound: BoundSiteEvent,
             and bound.initial_index == ported.initial_index
             and bound.is_inverse is ported.is_inverse
             and bound.source_category == ported.source_category)
+
+
+def to_bound_with_ported_builders_pair(index: int,
+                                       site_events_pair
+                                       : List[BoundPortedSiteEventsPair]
+                                       ) -> BoundPortedBuildersPair:
+    bound_site_events, ported_site_events = site_events_pair
+    return (BoundBuilder(index, bound_site_events),
+            PortedBuilder(index, ported_site_events))
 
 
 def to_bound_with_ported_circle_events_pair(center_x: int,
