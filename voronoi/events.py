@@ -104,15 +104,13 @@ class SiteEvent:
                 elif other.is_vertical:
                     return self.start.y <= other.start.y
                 return True
+            elif other.is_vertical:
+                return self.is_vertical and self.start.y < other.start.y
+            elif self.is_vertical:
+                return True
+            elif self.start.y != other.start.y:
+                return self.start.y < other.start.y
             else:
-                if other.is_vertical:
-                    if self.is_vertical:
-                        return self.start.y < other.start.y
-                    return False
-                elif self.is_vertical:
-                    return True
-                elif self.start.y != other.start.y:
-                    return self.start.y < other.start.y
                 return (to_orientation(self.end, self.start, other.end)
                         is Orientation.LEFT)
         else:
