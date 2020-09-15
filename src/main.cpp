@@ -374,6 +374,16 @@ PYBIND11_MODULE(MODULE_NAME, m) {
         py::arg("first_dx"), py::arg("first_dy"), py::arg("second_dx"),
         py::arg("second_dy"));
 
+  m.def(
+      "to_orientation",
+      [](const Point& vertex, const Point& first_ray_point,
+         const Point& second_ray_point) {
+        return VoronoiPredicates::ot::eval(vertex, first_ray_point,
+                                           second_ray_point);
+      },
+      py::arg("vertex"), py::arg("first_ray_point"),
+      py::arg("second_ray_point"));
+
 #ifdef VERSION_INFO
   m.attr("__version__") = VERSION_INFO;
 #else
