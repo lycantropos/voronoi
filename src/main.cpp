@@ -117,6 +117,12 @@ static std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
+static std::ostream& operator<<(std::ostream& stream, const Builder& builder) {
+  stream << C_STR(MODULE_NAME) "." BUILDER_NAME "(" << builder.index_ << ", ";
+  write_sequence(stream, builder.site_events_);
+  return stream << ")";
+}
+
 static std::ostream& operator<<(std::ostream& stream, const Vertex& vertex) {
   return stream << C_STR(MODULE_NAME) "." VERTEX_NAME "(" << vertex.x() << ", "
                 << vertex.y() << ")";
@@ -247,6 +253,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            }),
            py::arg("index") = 0,
            py::arg("site_events") = std::vector<SiteEvent>{})
+      .def("__repr__", repr<Builder>)
       .def("clear", &Builder::clear)
       .def("construct", &Builder::construct<Diagram>, py::arg("diagram"))
       .def("init_sites_queue", &Builder::init_sites_queue)
