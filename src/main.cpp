@@ -29,6 +29,7 @@ namespace py = pybind11;
 #define BEACH_LINE_NODE_VALUE "BeachLineNodeValue"
 #define CIRCLE_EVENT_NAME "CircleEvent"
 #define COMPARISON_RESULT_NAME "ComparisonResult"
+#define ORIENTATION_NAME "Orientation"
 #define POINT_NAME "Point"
 #define SEGMENT_NAME "Segment"
 #define SITE_EVENT_NAME "SiteEvent"
@@ -39,10 +40,11 @@ namespace py = pybind11;
 #define VORONOI_EDGE_NAME "VoronoiEdge"
 #define VORONOI_VERTEX_NAME "VoronoiVertex"
 
-using coordinate_t = int;
+using coordinate_t = boost::polygon::detail::int32;
 using CircleEvent = boost::polygon::detail::circle_event<coordinate_t>;
 using UlpComparator = boost::polygon::detail::ulp_comparison<double>;
 using ComparisonResult = UlpComparator::Result;
+using CTypeTraits = boost::polygon::detail::voronoi_ctype_traits<coordinate_t>;
 using Point = boost::polygon::detail::point_2d<coordinate_t>;
 using SiteEvent = boost::polygon::detail::site_event<coordinate_t>;
 using BeachLineNodeKey = boost::polygon::detail::beach_line_node_key<SiteEvent>;
@@ -53,6 +55,8 @@ using VoronoiCell = boost::polygon::voronoi_cell<double>;
 using VoronoiEdge = boost::polygon::voronoi_edge<double>;
 using BeachLineNodeValue =
     boost::polygon::detail::beach_line_node_data<VoronoiEdge, CircleEvent>;
+using VoronoiPredicates = boost::polygon::detail::voronoi_predicates<CTypeTraits>;
+using Orientation = VoronoiPredicates::orientation_test::Orientation;
 using VoronoiVertex = boost::polygon::voronoi_vertex<double>;
 
 static std::string bool_repr(bool value) { return py::str(py::bool_(value)); }
@@ -168,6 +172,11 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .value("LESS", ComparisonResult::LESS)
       .value("EQUAL", ComparisonResult::EQUAL)
       .value("MORE", ComparisonResult::MORE);
+
+  py::enum_<Orientation>(m, ORIENTATION_NAME)
+      .value("RIGHT", Orientation::RIGHT)
+      .value("COLLINEAR", Orientation::COLLINEAR)
+      .value("LEFT", Orientation::LEFT);
 
   py::enum_<SourceCategory>(m, SOURCE_CATEGORY_NAME)
       .value("SINGLE_POINT", SourceCategory::SOURCE_CATEGORY_SINGLE_POINT)
