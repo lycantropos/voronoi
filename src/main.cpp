@@ -92,6 +92,42 @@ struct Segment {
 
 namespace boost {
 namespace polygon {
+static std::ostream& operator<<(std::ostream& stream,
+                                const SourceCategory& source_category) {
+  stream << C_STR(MODULE_NAME) "." SOURCE_CATEGORY_NAME;
+  switch (source_category) {
+    case SourceCategory::SOURCE_CATEGORY_SINGLE_POINT:
+      stream << ".SINGLE_POINT";
+      break;
+    case SourceCategory::SOURCE_CATEGORY_SEGMENT_START_POINT:
+      stream << ".SEGMENT_START_POINT";
+      break;
+    case SourceCategory::SOURCE_CATEGORY_SEGMENT_END_POINT:
+      stream << ".SEGMENT_END_POINT";
+      break;
+    case SourceCategory::SOURCE_CATEGORY_INITIAL_SEGMENT:
+      stream << ".INITIAL_SEGMENT";
+      break;
+    case SourceCategory::SOURCE_CATEGORY_REVERSE_SEGMENT:
+      stream << ".REVERSE_SEGMENT";
+      break;
+    default:
+      throw std::runtime_error(std::string("Unknown `SourceCategory`: ") +
+                               std::to_string(source_category) + ".");
+  }
+  return stream;
+}
+
+static std::ostream& operator<<(std::ostream& stream,
+                                const VoronoiVertex& vertex) {
+  return stream << C_STR(MODULE_NAME) "." VORONOI_VERTEX_NAME "(" << vertex.x()
+                << ", " << vertex.y() << ")";
+}
+
+static bool operator==(const VoronoiVertex& left, const VoronoiVertex& right) {
+  return left.x() == right.x() && left.y() == right.y();
+}
+
 namespace detail {
 static bool operator==(const CircleEvent& left, const CircleEvent& right) {
   return left.x() == right.x() && left.y() == right.y() &&
@@ -113,19 +149,12 @@ static std::ostream& operator<<(std::ostream& stream, const Point& point) {
 
 static std::ostream& operator<<(std::ostream& stream, const SiteEvent& event) {
   return stream << C_STR(MODULE_NAME) "." SITE_EVENT_NAME "(" << event.point0()
-                << ", " << event.point1() << ")";
+                << ", " << event.point1() << ", " << event.sorted_index()
+                << ", " << event.initial_index() << ", "
+                << bool_repr(event.is_inverse()) << ", "
+                << event.source_category() << ")";
 }
 }  // namespace detail
-
-static std::ostream& operator<<(std::ostream& stream,
-                                const VoronoiVertex& vertex) {
-  return stream << C_STR(MODULE_NAME) "." VORONOI_VERTEX_NAME "(" << vertex.x()
-                << ", " << vertex.y() << ")";
-}
-
-static bool operator==(const VoronoiVertex& left, const VoronoiVertex& right) {
-  return left.x() == right.x() && left.y() == right.y();
-}
 
 template <>
 struct geometry_concept<Point> {
