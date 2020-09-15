@@ -22,6 +22,13 @@ def compare_floats(left: float, right: float, max_ulps: int
                   else ComparisonResult.MORE))
 
 
+def robust_cross_product(first_dx: int,
+                         first_dy: int,
+                         second_dx: int,
+                         second_dy: int) -> float:
+    return float(first_dx * second_dy - second_dx * first_dy)
+
+
 def _float_to_uint(value: float,
                    *,
                    sign_bit_mask: int = 2 ** 63) -> int:
