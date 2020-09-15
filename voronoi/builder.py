@@ -10,24 +10,28 @@ from .utils import to_unique_just_seen
 
 
 class Builder:
-    __slots__ = 'index', 'site_events', 'site_event_index'
+    __slots__ = 'index', 'site_events', '_site_event_index'
 
     def __init__(self,
                  index: int = 0,
                  site_events: Optional[List[SiteEvent]] = None,
-                 site_event_index: int = 0) -> None:
+                 _site_event_index: int = 0) -> None:
         self.index = index
         self.site_events = [] if site_events is None else site_events
-        self.site_event_index = min(site_event_index, len(self.site_events))
+        self._site_event_index = min(_site_event_index, len(self.site_events))
 
     __repr__ = generate_repr(__init__)
+
+    @property
+    def site_event_index(self) -> int:
+        return min(self._site_event_index, len(self.site_events))
 
     def init_sites_queue(self) -> None:
         self.site_events.sort()
         self.site_events = to_unique_just_seen(self.site_events)
         for index, event in enumerate(self.site_events):
             event.sorted_index = index
-        self.site_event_index = 0
+        self._site_event_index = 0
 
     def insert_point(self, x: int, y: int) -> int:
         index = self.index
