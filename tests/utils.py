@@ -104,11 +104,12 @@ def are_bound_ported_site_events_equal(bound: BoundSiteEvent,
 
 def to_bound_with_ported_builders_pair(index: int,
                                        site_events_pair
-                                       : List[BoundPortedSiteEventsPair]
+                                       : List[BoundPortedSiteEventsPair],
+                                       site_event_index: int
                                        ) -> BoundPortedBuildersPair:
     bound_site_events, ported_site_events = site_events_pair
-    return (BoundBuilder(index, bound_site_events),
-            PortedBuilder(index, ported_site_events))
+    return (BoundBuilder(index, bound_site_events, site_event_index),
+            PortedBuilder(index, ported_site_events, site_event_index))
 
 
 def to_bound_with_ported_circle_events_pair(center_x: int,
