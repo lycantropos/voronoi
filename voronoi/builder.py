@@ -9,13 +9,15 @@ from .point import Point
 
 
 class Builder:
-    __slots__ = 'index', 'site_events'
+    __slots__ = 'index', 'site_events', 'site_event_index'
 
     def __init__(self,
                  index: int = 0,
-                 site_events: Optional[List[SiteEvent]] = None) -> None:
+                 site_events: Optional[List[SiteEvent]] = None,
+                 site_event_index: int = 0) -> None:
         self.index = index
         self.site_events = [] if site_events is None else site_events
+        self.site_event_index = min(site_event_index, len(self.site_events))
 
     __repr__ = generate_repr(__init__)
 
