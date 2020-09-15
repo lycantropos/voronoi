@@ -34,33 +34,32 @@ namespace py = pybind11;
 #define SEGMENT_NAME "Segment"
 #define SITE_EVENT_NAME "SiteEvent"
 #define SOURCE_CATEGORY_NAME "SourceCategory"
-#define VORONOI_BUILDER_NAME "VoronoiBuilder"
-#define VORONOI_CELL_NAME "VoronoiCell"
-#define VORONOI_DIAGRAM_NAME "VoronoiDiagram"
-#define VORONOI_EDGE_NAME "VoronoiEdge"
-#define VORONOI_VERTEX_NAME "VoronoiVertex"
+#define BUILDER_NAME "Builder"
+#define CELL_NAME "Cell"
+#define DIAGRAM_NAME "Diagram"
+#define EDGE_NAME "Edge"
+#define VERTEX_NAME "Vertex"
 
 using coordinate_t = boost::polygon::detail::int32;
+using Builder = boost::polygon::default_voronoi_builder;
+using Diagram = boost::polygon::voronoi_diagram<double>;
+using Cell = boost::polygon::voronoi_cell<double>;
 using CircleEvent = boost::polygon::detail::circle_event<coordinate_t>;
 using UlpComparator = boost::polygon::detail::ulp_comparison<double>;
 using ComparisonResult = UlpComparator::Result;
 using CTypeTraits = boost::polygon::detail::voronoi_ctype_traits<coordinate_t>;
+using Edge = boost::polygon::voronoi_edge<double>;
 using Point = boost::polygon::detail::point_2d<coordinate_t>;
 using SiteEvent = boost::polygon::detail::site_event<coordinate_t>;
 using BeachLineNodeKey = boost::polygon::detail::beach_line_node_key<SiteEvent>;
 using SourceCategory = boost::polygon::SourceCategory;
-using VoronoiBuilder = boost::polygon::default_voronoi_builder;
-using VoronoiDiagram = boost::polygon::voronoi_diagram<double>;
-using VoronoiCell = boost::polygon::voronoi_cell<double>;
-using VoronoiEdge = boost::polygon::voronoi_edge<double>;
 using BeachLineNodeValue =
-    boost::polygon::detail::beach_line_node_data<VoronoiEdge, CircleEvent>;
-using VoronoiPredicates =
-    boost::polygon::detail::voronoi_predicates<CTypeTraits>;
+    boost::polygon::detail::beach_line_node_data<Edge, CircleEvent>;
+using Predicates = boost::polygon::detail::voronoi_predicates<CTypeTraits>;
 using EventComparisonPredicate =
-    VoronoiPredicates::event_comparison_predicate<SiteEvent, CircleEvent>;
-using Orientation = VoronoiPredicates::orientation_test::Orientation;
-using VoronoiVertex = boost::polygon::voronoi_vertex<double>;
+    Predicates::event_comparison_predicate<SiteEvent, CircleEvent>;
+using Orientation = Predicates::orientation_test::Orientation;
+using Vertex = boost::polygon::voronoi_vertex<double>;
 
 static std::string bool_repr(bool value) { return py::str(py::bool_(value)); }
 
@@ -118,13 +117,12 @@ static std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-static std::ostream& operator<<(std::ostream& stream,
-                                const VoronoiVertex& vertex) {
-  return stream << C_STR(MODULE_NAME) "." VORONOI_VERTEX_NAME "(" << vertex.x()
-                << ", " << vertex.y() << ")";
+static std::ostream& operator<<(std::ostream& stream, const Vertex& vertex) {
+  return stream << C_STR(MODULE_NAME) "." VERTEX_NAME "(" << vertex.x() << ", "
+                << vertex.y() << ")";
 }
 
-static bool operator==(const VoronoiVertex& left, const VoronoiVertex& right) {
+static bool operator==(const Vertex& left, const Vertex& right) {
   return left.x() == right.x() && left.y() == right.y();
 }
 
@@ -232,7 +230,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       });
 
   py::class_<BeachLineNodeValue>(m, BEACH_LINE_NODE_VALUE)
-      .def(py::init<VoronoiEdge*>(), py::arg("edge"))
+      .def(py::init<Edge*>(), py::arg("edge"))
       .def_property_readonly(
           "edge", [](const BeachLineNodeValue& self) { return self.edge(); })
       .def_property_readonly(
@@ -278,8 +276,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::self == py::self)
       .def("__lt__",
            [](const Point& self, const Point& other) {
-             static VoronoiPredicates::point_comparison_predicate<Point>
-                 comparator;
+             static Predicates::point_comparison_predicate<Point> comparator;
              return comparator(self, other);
            })
       .def("__repr__", repr<Point>)
@@ -330,10 +327,9 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_property_readonly("is_inverse", &SiteEvent::is_inverse)
       .def_property_readonly("is_point", &SiteEvent::is_point)
       .def_property_readonly("is_segment", &SiteEvent::is_segment)
-      .def_property_readonly("is_vertical",
-                             [](const SiteEvent& self) {
-                               return VoronoiPredicates::is_vertical(self);
-                             })
+      .def_property_readonly(
+          "is_vertical",
+          [](const SiteEvent& self) { return Predicates::is_vertical(self); })
       .def_property_readonly(
           "sorted_index",
           [](const SiteEvent& self) { return self.sorted_index(); })
@@ -343,85 +339,82 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_property_readonly(
           "start", [](const SiteEvent& self) { return self.point0(); });
 
-  py::class_<VoronoiBuilder>(m, VORONOI_BUILDER_NAME)
+  py::class_<Builder>(m, BUILDER_NAME)
       .def(py::init<>())
-      .def("clear", &VoronoiBuilder::clear)
-      .def("construct", &VoronoiBuilder::construct<VoronoiDiagram>)
-      .def("insert_point", &VoronoiBuilder::insert_point)
-      .def("insert_segment", &VoronoiBuilder::insert_segment)
-      .def("process_circle_event",
-           &VoronoiBuilder::process_circle_event<VoronoiDiagram>)
-      .def("process_site_event",
-           &VoronoiBuilder::process_site_event<VoronoiDiagram>)
-      .def_readonly("beach_line", &VoronoiBuilder::beach_line_)
-      .def_readonly("site_events", &VoronoiBuilder::site_events_);
+      .def("clear", &Builder::clear)
+      .def("construct", &Builder::construct<Diagram>)
+      .def("insert_point", &Builder::insert_point)
+      .def("insert_segment", &Builder::insert_segment)
+      .def("process_circle_event", &Builder::process_circle_event<Diagram>)
+      .def("process_site_event", &Builder::process_site_event<Diagram>)
+      .def_readonly("beach_line", &Builder::beach_line_)
+      .def_readonly("site_events", &Builder::site_events_);
 
-  py::class_<VoronoiCell>(m, VORONOI_CELL_NAME)
+  py::class_<Cell>(m, CELL_NAME)
       .def(py::init<std::size_t, SourceCategory>(), py::arg("source_index"),
            py::arg("source_category"))
-      .def_property_readonly(
-          "color", [](const VoronoiCell& self) { return self.color(); })
-      .def_property_readonly("contains_point", &VoronoiCell::contains_point)
-      .def_property_readonly("contains_segment", &VoronoiCell::contains_segment)
+      .def_property_readonly("color",
+                             [](const Cell& self) { return self.color(); })
+      .def_property_readonly("contains_point", &Cell::contains_point)
+      .def_property_readonly("contains_segment", &Cell::contains_segment)
       .def_property_readonly(
           "incident_edge",
-          [](const VoronoiCell& self) { return self.incident_edge(); })
-      .def_property_readonly("is_degenerate", &VoronoiCell::is_degenerate)
-      .def_property_readonly("source_index", &VoronoiCell::source_index)
-      .def_property_readonly("source_category", &VoronoiCell::source_category);
+          [](const Cell& self) { return self.incident_edge(); })
+      .def_property_readonly("is_degenerate", &Cell::is_degenerate)
+      .def_property_readonly("source_index", &Cell::source_index)
+      .def_property_readonly("source_category", &Cell::source_category);
 
-  py::class_<VoronoiDiagram>(m, VORONOI_DIAGRAM_NAME)
+  py::class_<Diagram>(m, DIAGRAM_NAME)
       .def(py::init<>())
-      .def("clear", &VoronoiDiagram::clear)
+      .def("clear", &Diagram::clear)
       .def(
           "construct",
-          [](VoronoiDiagram* self, const std::vector<Point>& points,
+          [](Diagram* self, const std::vector<Point>& points,
              const std::vector<Segment>& segments) {
             boost::polygon::construct_voronoi(points.begin(), points.end(),
                                               segments.begin(), segments.end(),
                                               self);
           },
           py::arg("points"), py::arg("segments"))
-      .def_property_readonly("cells", &VoronoiDiagram::cells)
-      .def_property_readonly("edges", &VoronoiDiagram::edges)
-      .def_property_readonly("vertices", &VoronoiDiagram::vertices);
+      .def_property_readonly("cells", &Diagram::cells)
+      .def_property_readonly("edges", &Diagram::edges)
+      .def_property_readonly("vertices", &Diagram::vertices);
 
-  py::class_<VoronoiEdge, std::unique_ptr<VoronoiEdge, py::nodelete>>(
-      m, VORONOI_EDGE_NAME)
+  py::class_<Edge, std::unique_ptr<Edge, py::nodelete>>(m, EDGE_NAME)
       .def(py::init<bool, bool>(), py::arg("is_linear"), py::arg("is_primary"))
-      .def_property_readonly(
-          "cell", [](const VoronoiEdge& self) { return self.cell(); })
-      .def_property_readonly(
-          "color", [](const VoronoiEdge& self) { return self.color(); })
-      .def_property_readonly("is_curved", &VoronoiEdge::is_curved)
-      .def_property_readonly("is_finite", &VoronoiEdge::is_finite)
-      .def_property_readonly("is_infinite", &VoronoiEdge::is_infinite)
-      .def_property_readonly("is_linear", &VoronoiEdge::is_linear)
-      .def_property_readonly("is_primary", &VoronoiEdge::is_primary)
-      .def_property_readonly("is_secondary", &VoronoiEdge::is_secondary)
-      .def_property_readonly(
-          "next", [](const VoronoiEdge& self) { return self.next(); })
-      .def_property_readonly(
-          "prev", [](const VoronoiEdge& self) { return self.prev(); })
+      .def_property_readonly("cell",
+                             [](const Edge& self) { return self.cell(); })
+      .def_property_readonly("color",
+                             [](const Edge& self) { return self.color(); })
+      .def_property_readonly("is_curved", &Edge::is_curved)
+      .def_property_readonly("is_finite", &Edge::is_finite)
+      .def_property_readonly("is_infinite", &Edge::is_infinite)
+      .def_property_readonly("is_linear", &Edge::is_linear)
+      .def_property_readonly("is_primary", &Edge::is_primary)
+      .def_property_readonly("is_secondary", &Edge::is_secondary)
+      .def_property_readonly("next",
+                             [](const Edge& self) { return self.next(); })
+      .def_property_readonly("prev",
+                             [](const Edge& self) { return self.prev(); })
       .def_property_readonly("rot_next",
-                             [](const VoronoiEdge& self) {
+                             [](const Edge& self) {
                                return self.prev() == nullptr ? nullptr
                                                              : self.rot_next();
                              })
       .def_property_readonly("rot_prev",
-                             [](const VoronoiEdge& self) {
+                             [](const Edge& self) {
                                return self.prev() == nullptr ? nullptr
                                                              : self.rot_prev();
                              })
-      .def_property_readonly(
-          "twin", [](const VoronoiEdge& self) { return self.twin(); });
+      .def_property_readonly("twin",
+                             [](const Edge& self) { return self.twin(); });
 
-  py::class_<VoronoiVertex>(m, VORONOI_VERTEX_NAME)
+  py::class_<Vertex>(m, VERTEX_NAME)
       .def(py::init<double, double>(), py::arg("x"), py::arg("y"))
-      .def("__repr__", repr<VoronoiVertex>)
+      .def("__repr__", repr<Vertex>)
       .def(py::self == py::self)
-      .def_property_readonly("x", &VoronoiVertex::x)
-      .def_property_readonly("y", &VoronoiVertex::y);
+      .def_property_readonly("x", &Vertex::x)
+      .def_property_readonly("y", &Vertex::y);
 
   m.def(
       "compare_floats",
@@ -431,7 +424,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       },
       py::arg("left"), py::arg("right"), py::arg("max_ulps"));
 
-  m.def("robust_cross_product", &VoronoiPredicates::robust_cross_product,
+  m.def("robust_cross_product", &Predicates::robust_cross_product,
         py::arg("first_dx"), py::arg("first_dy"), py::arg("second_dx"),
         py::arg("second_dy"));
 
@@ -439,8 +432,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       "to_orientation",
       [](const Point& vertex, const Point& first_ray_point,
          const Point& second_ray_point) {
-        return VoronoiPredicates::ot::eval(vertex, first_ray_point,
-                                           second_ray_point);
+        return Predicates::ot::eval(vertex, first_ray_point, second_ray_point);
       },
       py::arg("vertex"), py::arg("first_ray_point"),
       py::arg("second_ray_point"));
