@@ -85,9 +85,9 @@ static void write_sequence(std::ostream& stream, const Sequence& sequence) {
 };
 
 static std::size_t get_builder_site_event_index(const Builder& builder) {
-  std::size_t index =
-      builder.site_event_iterator_ - builder.site_events_.begin();
-  return std::min(index, builder.site_events_.size());
+  return std::min(static_cast<std::size_t>(builder.site_event_iterator_ -
+                                           builder.site_events_.begin()),
+                  builder.site_events_.size());
 }
 
 struct Segment {
