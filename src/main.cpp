@@ -28,6 +28,7 @@ namespace py = pybind11;
 #define BEACH_LINE_NODE_KEY "BeachLineNodeKey"
 #define BEACH_LINE_NODE_VALUE "BeachLineNodeValue"
 #define CIRCLE_EVENT_NAME "CircleEvent"
+#define COMPARISON_RESULT_NAME "ComparisonResult"
 #define POINT_NAME "Point"
 #define SEGMENT_NAME "Segment"
 #define SITE_EVENT_NAME "SiteEvent"
@@ -40,6 +41,8 @@ namespace py = pybind11;
 
 using coordinate_t = int;
 using CircleEvent = boost::polygon::detail::circle_event<coordinate_t>;
+using UlpComparator = boost::polygon::detail::ulp_comparison<double>;
+using ComparisonResult = UlpComparator::Result;
 using Point = boost::polygon::detail::point_2d<coordinate_t>;
 using SiteEvent = boost::polygon::detail::site_event<coordinate_t>;
 using BeachLineNodeKey = boost::polygon::detail::beach_line_node_key<SiteEvent>;
@@ -160,6 +163,11 @@ static bool operator==(const Segment& left, const Segment& right) {
 
 PYBIND11_MODULE(MODULE_NAME, m) {
   m.doc() = R"pbdoc(Python binding of boost/polygon library.)pbdoc";
+
+  py::enum_<ComparisonResult>(m, COMPARISON_RESULT_NAME)
+      .value("LESS", ComparisonResult::LESS)
+      .value("EQUAL", ComparisonResult::EQUAL)
+      .value("MORE", ComparisonResult::MORE);
 
   py::enum_<SourceCategory>(m, SOURCE_CATEGORY_NAME)
       .value("SINGLE_POINT", SourceCategory::SOURCE_CATEGORY_SINGLE_POINT)
@@ -343,6 +351,11 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::self == py::self)
       .def_property_readonly("x", &VoronoiVertex::x)
       .def_property_readonly("y", &VoronoiVertex::y);
+
+  m.def("compare_floats", [](double left, double right, std::uint64_t max_ulps) {
+    static UlpComparator comparator;
+    return comparator(left, right, max_ulps);
+  });
 
 #ifdef VERSION_INFO
   m.attr("__version__") = VERSION_INFO;
