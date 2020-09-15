@@ -247,6 +247,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def("process_circle_event", &Builder::process_circle_event<Diagram>)
       .def("process_site_event", &Builder::process_site_event<Diagram>)
       .def_readonly("beach_line", &Builder::beach_line_)
+      .def_readonly("index", &Builder::index_)
       .def_readonly("site_events", &Builder::site_events_);
 
   py::class_<Cell>(m, CELL_NAME)
