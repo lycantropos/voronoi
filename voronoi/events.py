@@ -1,7 +1,15 @@
+from typing import TypeVar
+
 from reprit.base import generate_repr
 
-from voronoi.enums import SourceCategory
+from voronoi.enums import (ComparisonResult,
+                           Orientation,
+                           SourceCategory)
 from voronoi.point import Point
+from voronoi.utils import (compare_floats,
+                           to_orientation)
+
+ULPS = 64
 
 
 class CircleEvent:
@@ -78,6 +86,33 @@ class SiteEvent:
                 if isinstance(other, SiteEvent)
                 else NotImplemented)
 
+    def __lt__(self, other: 'Event') -> bool:
+        if isinstance(other, SiteEvent):
+            if self.start.x != other.start.x:
+                return self.start.x < other.start.x
+            elif not self.is_segment:
+                if not other.is_segment:
+                    return self.start.y < other.start.y
+                elif other.is_vertical:
+                    return self.start.y <= other.start.y
+                return True
+            else:
+                if other.is_vertical:
+                    if self.is_vertical:
+                        return self.start.y < other.start.y
+                    return False
+                elif self.is_vertical:
+                    return True
+                elif self.start.y != other.start.y:
+                    return self.start.y < other.start.y
+                return (to_orientation(self.end, self.start, other.end)
+                        is Orientation.LEFT)
+        else:
+            return (compare_floats(float(self.start.x), float(other.lower_x),
+                                   ULPS) is ComparisonResult.LESS
+                    if isinstance(other, CircleEvent)
+                    else NotImplemented)
+
     @property
     def is_point(self) -> bool:
         return self.start == self.end
@@ -94,3 +129,6 @@ class SiteEvent:
         self.start, self.end, self.is_inverse = (self.end, self.start,
                                                  not self.is_inverse)
         return self
+
+
+Event = TypeVar('Event', CircleEvent, SiteEvent)
