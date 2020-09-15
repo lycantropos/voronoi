@@ -21,4 +21,4 @@ site_events_pairs = strategies.builds(to_bound_with_ported_site_events_pair,
 site_events_lists_pairs = (strategies.lists(site_events_pairs)
                            .map(transpose_pairs))
 builders_pairs = strategies.builds(to_bound_with_ported_builders_pair,
-                                   sizes, site_events_lists_pairs, sizes)
+                                   sizes, site_events_lists_pairs)
