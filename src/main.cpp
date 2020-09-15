@@ -237,6 +237,31 @@ PYBIND11_MODULE(MODULE_NAME, m) {
           "circle_event",
           [](const BeachLineNodeValue& self) { return self.circle_event(); });
 
+  py::class_<Builder>(m, BUILDER_NAME)
+      .def(py::init<>())
+      .def("clear", &Builder::clear)
+      .def("construct", &Builder::construct<Diagram>)
+      .def("insert_point", &Builder::insert_point)
+      .def("insert_segment", &Builder::insert_segment)
+      .def("process_circle_event", &Builder::process_circle_event<Diagram>)
+      .def("process_site_event", &Builder::process_site_event<Diagram>)
+      .def_readonly("beach_line", &Builder::beach_line_)
+      .def_readonly("site_events", &Builder::site_events_);
+
+  py::class_<Cell>(m, CELL_NAME)
+      .def(py::init<std::size_t, SourceCategory>(), py::arg("source_index"),
+           py::arg("source_category"))
+      .def_property_readonly("color",
+                             [](const Cell& self) { return self.color(); })
+      .def_property_readonly("contains_point", &Cell::contains_point)
+      .def_property_readonly("contains_segment", &Cell::contains_segment)
+      .def_property_readonly(
+          "incident_edge",
+          [](const Cell& self) { return self.incident_edge(); })
+      .def_property_readonly("is_degenerate", &Cell::is_degenerate)
+      .def_property_readonly("source_index", &Cell::source_index)
+      .def_property_readonly("source_category", &Cell::source_category);
+
   py::class_<CircleEvent>(m, CIRCLE_EVENT_NAME)
       .def(py::init([](coordinate_t center_x, coordinate_t center_y,
                        coordinate_t lower_x, bool is_active = true) {
@@ -270,6 +295,51 @@ PYBIND11_MODULE(MODULE_NAME, m) {
                              [](const CircleEvent& self) { return self.x(); })
       .def_property_readonly("y",
                              [](const CircleEvent& self) { return self.y(); });
+
+  py::class_<Diagram>(m, DIAGRAM_NAME)
+      .def(py::init<>())
+      .def("clear", &Diagram::clear)
+      .def(
+          "construct",
+          [](Diagram* self, const std::vector<Point>& points,
+             const std::vector<Segment>& segments) {
+            boost::polygon::construct_voronoi(points.begin(), points.end(),
+                                              segments.begin(), segments.end(),
+                                              self);
+          },
+          py::arg("points"), py::arg("segments"))
+      .def_property_readonly("cells", &Diagram::cells)
+      .def_property_readonly("edges", &Diagram::edges)
+      .def_property_readonly("vertices", &Diagram::vertices);
+
+  py::class_<Edge, std::unique_ptr<Edge, py::nodelete>>(m, EDGE_NAME)
+      .def(py::init<bool, bool>(), py::arg("is_linear"), py::arg("is_primary"))
+      .def_property_readonly("cell",
+                             [](const Edge& self) { return self.cell(); })
+      .def_property_readonly("color",
+                             [](const Edge& self) { return self.color(); })
+      .def_property_readonly("is_curved", &Edge::is_curved)
+      .def_property_readonly("is_finite", &Edge::is_finite)
+      .def_property_readonly("is_infinite", &Edge::is_infinite)
+      .def_property_readonly("is_linear", &Edge::is_linear)
+      .def_property_readonly("is_primary", &Edge::is_primary)
+      .def_property_readonly("is_secondary", &Edge::is_secondary)
+      .def_property_readonly("next",
+                             [](const Edge& self) { return self.next(); })
+      .def_property_readonly("prev",
+                             [](const Edge& self) { return self.prev(); })
+      .def_property_readonly("rot_next",
+                             [](const Edge& self) {
+                               return self.prev() == nullptr ? nullptr
+                                                             : self.rot_next();
+                             })
+      .def_property_readonly("rot_prev",
+                             [](const Edge& self) {
+                               return self.prev() == nullptr ? nullptr
+                                                             : self.rot_prev();
+                             })
+      .def_property_readonly("twin",
+                             [](const Edge& self) { return self.twin(); });
 
   py::class_<Point>(m, POINT_NAME)
       .def(py::init<coordinate_t, coordinate_t>(), py::arg("x"), py::arg("y"))
@@ -338,76 +408,6 @@ PYBIND11_MODULE(MODULE_NAME, m) {
           [](const SiteEvent& self) { return self.source_category(); })
       .def_property_readonly(
           "start", [](const SiteEvent& self) { return self.point0(); });
-
-  py::class_<Builder>(m, BUILDER_NAME)
-      .def(py::init<>())
-      .def("clear", &Builder::clear)
-      .def("construct", &Builder::construct<Diagram>)
-      .def("insert_point", &Builder::insert_point)
-      .def("insert_segment", &Builder::insert_segment)
-      .def("process_circle_event", &Builder::process_circle_event<Diagram>)
-      .def("process_site_event", &Builder::process_site_event<Diagram>)
-      .def_readonly("beach_line", &Builder::beach_line_)
-      .def_readonly("site_events", &Builder::site_events_);
-
-  py::class_<Cell>(m, CELL_NAME)
-      .def(py::init<std::size_t, SourceCategory>(), py::arg("source_index"),
-           py::arg("source_category"))
-      .def_property_readonly("color",
-                             [](const Cell& self) { return self.color(); })
-      .def_property_readonly("contains_point", &Cell::contains_point)
-      .def_property_readonly("contains_segment", &Cell::contains_segment)
-      .def_property_readonly(
-          "incident_edge",
-          [](const Cell& self) { return self.incident_edge(); })
-      .def_property_readonly("is_degenerate", &Cell::is_degenerate)
-      .def_property_readonly("source_index", &Cell::source_index)
-      .def_property_readonly("source_category", &Cell::source_category);
-
-  py::class_<Diagram>(m, DIAGRAM_NAME)
-      .def(py::init<>())
-      .def("clear", &Diagram::clear)
-      .def(
-          "construct",
-          [](Diagram* self, const std::vector<Point>& points,
-             const std::vector<Segment>& segments) {
-            boost::polygon::construct_voronoi(points.begin(), points.end(),
-                                              segments.begin(), segments.end(),
-                                              self);
-          },
-          py::arg("points"), py::arg("segments"))
-      .def_property_readonly("cells", &Diagram::cells)
-      .def_property_readonly("edges", &Diagram::edges)
-      .def_property_readonly("vertices", &Diagram::vertices);
-
-  py::class_<Edge, std::unique_ptr<Edge, py::nodelete>>(m, EDGE_NAME)
-      .def(py::init<bool, bool>(), py::arg("is_linear"), py::arg("is_primary"))
-      .def_property_readonly("cell",
-                             [](const Edge& self) { return self.cell(); })
-      .def_property_readonly("color",
-                             [](const Edge& self) { return self.color(); })
-      .def_property_readonly("is_curved", &Edge::is_curved)
-      .def_property_readonly("is_finite", &Edge::is_finite)
-      .def_property_readonly("is_infinite", &Edge::is_infinite)
-      .def_property_readonly("is_linear", &Edge::is_linear)
-      .def_property_readonly("is_primary", &Edge::is_primary)
-      .def_property_readonly("is_secondary", &Edge::is_secondary)
-      .def_property_readonly("next",
-                             [](const Edge& self) { return self.next(); })
-      .def_property_readonly("prev",
-                             [](const Edge& self) { return self.prev(); })
-      .def_property_readonly("rot_next",
-                             [](const Edge& self) {
-                               return self.prev() == nullptr ? nullptr
-                                                             : self.rot_next();
-                             })
-      .def_property_readonly("rot_prev",
-                             [](const Edge& self) {
-                               return self.prev() == nullptr ? nullptr
-                                                             : self.rot_prev();
-                             })
-      .def_property_readonly("twin",
-                             [](const Edge& self) { return self.twin(); });
 
   py::class_<Vertex>(m, VERTEX_NAME)
       .def(py::init<double, double>(), py::arg("x"), py::arg("y"))
