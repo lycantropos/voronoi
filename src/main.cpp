@@ -126,7 +126,7 @@ static std::ostream& operator<<(std::ostream& stream,
 static std::ostream& operator<<(std::ostream& stream, const Builder& builder) {
   stream << C_STR(MODULE_NAME) "." BUILDER_NAME "(" << builder.index_ << ", ";
   write_sequence(stream, builder.site_events_);
-  return stream << ")";
+  return stream << ", " << get_builder_site_event_index(builder) << ")";
 }
 
 static std::ostream& operator<<(std::ostream& stream, const Vertex& vertex) {
