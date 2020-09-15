@@ -128,7 +128,7 @@ jobs:
         condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
         displayName: 'Install build requirements'
       - bash:
-          CIBW_BEFORE_BUILD='python -m pip install -r requirements.txt'
+          CIBW_BEFORE_BUILD='python -m pip install -r requirements-setup.txt'
           CIBW_BUILD=$(python -c 'import sys; print("cp" + "".join(map(str, sys.version_info[:2])) + "-*")')
           cibuildwheel --output-dir dist
         condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
