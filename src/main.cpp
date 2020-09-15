@@ -235,6 +235,12 @@ PYBIND11_MODULE(MODULE_NAME, m) {
   py::class_<Point>(m, POINT_NAME)
       .def(py::init<coordinate_t, coordinate_t>(), py::arg("x"), py::arg("y"))
       .def(py::self == py::self)
+      .def("__lt__",
+           [](const Point& self, const Point& other) {
+             static VoronoiPredicates::point_comparison_predicate<Point>
+                 comparator;
+             return comparator(self, other);
+           })
       .def("__repr__", repr<Point>)
       .def_property_readonly("x", [](const Point& self) { return self.x(); })
       .def_property_readonly("y", [](const Point& self) { return self.y(); });
