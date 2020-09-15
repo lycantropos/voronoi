@@ -1,7 +1,7 @@
 from reprit.base import generate_repr
 
+from .enums import SourceCategory
 from .point import Point
-from .source_category import SourceCategory
 
 
 class SiteEvent:

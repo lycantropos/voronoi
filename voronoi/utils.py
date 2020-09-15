@@ -1,22 +1,8 @@
 import struct
-from enum import (IntEnum,
-                  unique)
 
+from .enums import (ComparisonResult,
+                    Orientation)
 from .point import Point
-
-
-@unique
-class ComparisonResult(IntEnum):
-    LESS = -1
-    EQUAL = 0
-    MORE = 1
-
-
-@unique
-class Orientation(IntEnum):
-    RIGHT = -1
-    COLLINEAR = 0
-    LEFT = 1
 
 
 def compare_floats(left: float, right: float, max_ulps: int

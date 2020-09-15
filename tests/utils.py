@@ -11,10 +11,10 @@ from _voronoi import (CircleEvent as BoundCircleEvent,
 from hypothesis.strategies import SearchStrategy
 
 from voronoi.circle_event import CircleEvent as PortedCircleEvent
+from voronoi.enums import SourceCategory as PortedSourceCategory
 from voronoi.point import Point as PortedPoint
 from voronoi.segment import Segment as PortedSegment
 from voronoi.site_event import SiteEvent as PortedSiteEvent
-from voronoi.source_category import SourceCategory as PortedSourceCategory
 
 Strategy = SearchStrategy
 
