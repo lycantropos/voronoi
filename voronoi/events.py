@@ -153,6 +153,13 @@ def are_vertical_endpoints(start: Point, end: Point) -> bool:
     return start.x == end.x
 
 
+def distance_to_point_arc(site: SiteEvent, point: Point) -> float:
+    dx = float(site.start.x) - float(point.x)
+    dy = float(site.start.y) - float(point.y)
+    # the relative error is at most 3EPS
+    return (dx * dx + dy * dy) / (2.0 * dx)
+
+
 def distance_to_segment_arc(site: SiteEvent, point: Point) -> float:
     if site.is_vertical:
         return (float(site.start.x) - float(point.x)) * 0.5
