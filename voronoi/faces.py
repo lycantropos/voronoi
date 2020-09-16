@@ -57,8 +57,8 @@ class Edge:
         self.is_linear = is_linear
         self.is_primary = is_primary
 
-    __repr__ = generate_repr(__init__,
-                             field_seeker=seekers.complex_)
+    __repr__ = recursive_repr()(generate_repr(__init__,
+                                              field_seeker=seekers.complex_))
 
     @property
     def end(self) -> Optional[Vertex]:
