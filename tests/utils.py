@@ -1,18 +1,21 @@
 from enum import Enum
 from operator import is_
 from typing import (List,
-                    Tuple,
+                    Optional, Tuple,
                     Type,
                     TypeVar,
                     Union)
 
 from _voronoi import (Builder as BoundBuilder,
                       CircleEvent as BoundCircleEvent,
+                      Edge as BoundEdge,
                       GeometryCategory as BoundGeometryCategory,
                       Point as BoundPoint,
                       Segment as BoundSegment,
                       SiteEvent as BoundSiteEvent,
-                      SourceCategory as BoundSourceCategory)
+                      SourceCategory as BoundSourceCategory,
+                      Vertex as BoundVertex)
+from hypothesis import strategies
 from hypothesis.strategies import SearchStrategy
 
 from voronoi.builder import Builder as PortedBuilder
@@ -20,6 +23,8 @@ from voronoi.enums import (GeometryCategory as PortedGeometryCategory,
                            SourceCategory as PortedSourceCategory)
 from voronoi.events import (CircleEvent as PortedCircleEvent,
                             SiteEvent as PortedSiteEvent)
+from voronoi.faces import (Edge as PortedEdge,
+                           Vertex as PortedVertex)
 from voronoi.point import Point as PortedPoint
 from voronoi.segment import Segment as PortedSegment
 
@@ -29,24 +34,30 @@ Strategy = SearchStrategy
 
 BoundBuilder = BoundBuilder
 BoundCircleEvent = BoundCircleEvent
+BoundEdge = BoundEdge
 BoundGeometryCategory = BoundGeometryCategory
 BoundPoint = BoundPoint
 BoundSegment = BoundSegment
 BoundSiteEvent = BoundSiteEvent
 BoundSourceCategory = BoundSourceCategory
+BoundVertex = BoundVertex
 
 PortedBuilder = PortedBuilder
 PortedCircleEvent = PortedCircleEvent
+PortedEdge = PortedEdge
 PortedGeometryCategory = PortedGeometryCategory
 PortedPoint = PortedPoint
 PortedSegment = PortedSegment
 PortedSiteEvent = PortedSiteEvent
 PortedSourceCategory = PortedSourceCategory
+PortedVertex = PortedVertex
 
 BoundPortedBuildersPair = Tuple[BoundBuilder, PortedBuilder]
 BoundPortedCircleEventsPair = Tuple[BoundCircleEvent, PortedCircleEvent]
 BoundPortedGeometryCategoriesPair = Tuple[BoundGeometryCategory,
                                           PortedGeometryCategory]
+BoundPortedEdgesPair = Tuple[BoundEdge, PortedEdge]
+BoundPortedMaybeEdgesPair = Tuple[Optional[BoundEdge], Optional[PortedEdge]]
 BoundPortedPointsPair = Tuple[BoundPoint, PortedPoint]
 BoundPortedSegmentsPair = Tuple[BoundSegment, PortedSegment]
 BoundPortedSiteEventsPair = Tuple[BoundSiteEvent, PortedSiteEvent]
@@ -54,6 +65,7 @@ BoundPortedEventsPair = Union[BoundPortedCircleEventsPair,
                               BoundPortedSiteEventsPair]
 BoundPortedSourceCategoriesPair = Tuple[BoundSourceCategory,
                                         PortedSourceCategory]
+BoundPortedVerticesPair = Tuple[BoundVertex, PortedVertex]
 
 
 def enum_to_values(cls: Type[Enum]) -> List[Enum]:
@@ -89,13 +101,13 @@ def are_bound_ported_circle_events_equal(bound: BoundCircleEvent,
             and bound.is_active is ported.is_active)
 
 
-def are_bound_ported_points_equal(bound: BoundPoint,
-                                  ported: PortedPoint) -> bool:
+def are_bound_ported_points_equal(bound: BoundPoint, ported: PortedPoint
+                                  ) -> bool:
     return bound.x == ported.x and bound.y == ported.y
 
 
-def are_bound_ported_segments_equal(bound: BoundSegment,
-                                    ported: PortedSegment) -> bool:
+def are_bound_ported_segments_equal(bound: BoundSegment, ported: PortedSegment
+                                    ) -> bool:
     return (are_bound_ported_points_equal(bound.start, ported.start)
             and are_bound_ported_points_equal(bound.end, ported.end))
 
@@ -108,6 +120,11 @@ def are_bound_ported_site_events_equal(bound: BoundSiteEvent,
             and bound.initial_index == ported.initial_index
             and bound.is_inverse is ported.is_inverse
             and bound.source_category == ported.source_category)
+
+
+def are_bound_ported_vertices_equal(bound: BoundVertex, ported: PortedVertex
+                                    ) -> bool:
+    return bound.x == ported.x and bound.y == ported.y
 
 
 def to_bound_with_ported_builders_pair(index: int,
@@ -156,3 +173,17 @@ def to_bound_with_ported_site_events_pair(starts_pair: BoundPortedPointsPair,
                            is_inverse, bound_source_category),
             PortedSiteEvent(ported_start, ported_end, sorted_index,
                             initial_index, is_inverse, ported_source_category))
+
+
+def to_bound_with_ported_vertices_pair(x: int,
+                                       y: int,
+                                       incident_edges_pair
+                                       : BoundPortedMaybeEdgesPair
+                                       ) -> BoundPortedVerticesPair:
+    bound_incident_edge, ported_incident_edge = incident_edges_pair
+    return (BoundVertex(x, y, bound_incident_edge),
+            PortedVertex(x, y, ported_incident_edge))
+
+
+def to_pairs(strategy: Strategy[Domain]) -> Strategy[Tuple[Domain, Domain]]:
+    return strategies.tuples(strategy, strategy)
