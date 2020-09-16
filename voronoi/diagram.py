@@ -51,6 +51,11 @@ class Diagram:
         edge_rot_prev.prev = twin_rot_next.twin
         twin_rot_next.twin.next = edge_rot_prev
 
+    def clear(self) -> None:
+        self.cells.clear()
+        self.edges.clear()
+        self.vertices.clear()
+
     def _build(self) -> None:
         last_edge_index = 0
         for index, edge in enumerate(self.edges):
