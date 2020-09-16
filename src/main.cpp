@@ -464,10 +464,8 @@ PYBIND11_MODULE(MODULE_NAME, m) {
 
   py::class_<SiteEvent>(m, SITE_EVENT_NAME)
       .def(py::init([](const Point& start, const Point& end,
-                       std::size_t sorted_index = 0,
-                       std::size_t initial_index = 0, bool is_inverse = false,
-                       SourceCategory source_category =
-                           SourceCategory::SOURCE_CATEGORY_SINGLE_POINT) {
+                       std::size_t sorted_index, std::size_t initial_index,
+                       bool is_inverse, SourceCategory source_category) {
              return (is_inverse ? SiteEvent{end, start}.inverse()
                                 : SiteEvent{start, end})
                  .sorted_index(sorted_index)
