@@ -182,7 +182,9 @@ static std::ostream& operator<<(std::ostream& stream, const Edge& edge) {
 }
 
 static bool operator==(const Vertex& left, const Vertex& right) {
-  return left.x() == right.x() && left.y() == right.y();
+  static voronoi_diagram_traits<double>::vertex_equality_predicate_type
+      comparator;
+  return comparator(left, right);
 }
 
 namespace detail {
