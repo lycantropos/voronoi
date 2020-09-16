@@ -430,6 +430,21 @@ PYBIND11_MODULE(MODULE_NAME, m) {
                                   static_cast<Edge*>(result.second));
           },
           py::arg("first_event"), py::arg("second_event"))
+      .def(
+          "_insert_new_edge_from_intersection",
+          [](Diagram& self, const SiteEvent& first_site_event,
+             const SiteEvent& second_site_event,
+             const CircleEvent& circle_event, Edge* first_bisector,
+             Edge* second_bisector) {
+            auto result = self._insert_new_edge(
+                first_site_event, second_site_event, circle_event,
+                first_bisector, second_bisector);
+            return std::make_pair(static_cast<Edge*>(result.first),
+                                  static_cast<Edge*>(result.second));
+          },
+          py::arg("first_site_event"), py::arg("second_site_event"),
+          py::arg("circle_event"), py::arg("first_bisector"),
+          py::arg("second_bisector"))
       .def("_process_single_site", &Diagram::_process_single_site<coordinate_t>,
            py::arg("site"))
       .def_property_readonly("cells", &Diagram::cells)
