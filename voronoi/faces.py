@@ -100,6 +100,8 @@ class Cell:
         self.source_category = source_category
         self.incident_edge = incident_edge
 
+    __repr__ = recursive_repr()(generate_repr(__init__))
+
     @property
     def contains_point(self) -> bool:
         return self.source_category.belongs(GeometryCategory.POINT)
