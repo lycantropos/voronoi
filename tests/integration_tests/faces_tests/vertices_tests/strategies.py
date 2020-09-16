@@ -6,6 +6,7 @@ from tests.utils import (BoundPortedEdgesPair,
                          Strategy,
                          bound_source_categories,
                          ported_source_categories,
+                         recursive,
                          to_bound_with_ported_cells_pair,
                          to_bound_with_ported_edges_pair,
                          to_bound_with_ported_vertices_pair,
@@ -33,11 +34,11 @@ def to_edges_pairs(base: Strategy[BoundPortedEdgesPair]
             booleans, booleans)
 
 
-edges_pairs = strategies.recursive(
-        strategies.builds(to_bound_with_ported_edges_pair, nones_pairs,
-                          nones_pairs, nones_pairs, nones_pairs, nones_pairs,
-                          booleans, booleans),
-        to_edges_pairs)
+edges_pairs = recursive(strategies.builds(to_bound_with_ported_edges_pair,
+                                          nones_pairs, nones_pairs,
+                                          nones_pairs, nones_pairs,
+                                          nones_pairs, booleans, booleans),
+                        to_edges_pairs)
 maybe_edges_pairs = to_maybe_pairs(edges_pairs)
 vertices_pairs = strategies.builds(to_bound_with_ported_vertices_pair,
                                    coordinates, coordinates, maybe_edges_pairs)

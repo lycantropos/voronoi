@@ -1,4 +1,5 @@
 from enum import Enum
+from functools import partial
 from operator import is_
 from typing import (Callable,
                     List,
@@ -260,6 +261,10 @@ def to_bound_with_ported_vertices_pair(x: int,
     bound_incident_edge, ported_incident_edge = incident_edges_pair
     return (BoundVertex(x, y, bound_incident_edge),
             PortedVertex(x, y, ported_incident_edge))
+
+
+recursive = partial(strategies.recursive,
+                    max_leaves=2)
 
 
 def to_maybe_pairs(strategy: Strategy[Tuple[Domain, Range]]
