@@ -463,7 +463,12 @@ PYBIND11_MODULE(MODULE_NAME, m) {
           "start", [](const SiteEvent& self) { return self.point0(); });
 
   py::class_<Vertex>(m, VERTEX_NAME)
-      .def(py::init<double, double>(), py::arg("x"), py::arg("y"))
+      .def(py::init([](double x, double y, Edge* incident_edge) {
+             Vertex result{x, y};
+             result.incident_edge(incident_edge);
+             return result;
+           }),
+           py::arg("x"), py::arg("y"), py::arg("incident_edge") = nullptr)
       .def("__repr__", repr<Vertex>)
       .def(py::self == py::self)
       .def_property_readonly("x", &Vertex::x)
