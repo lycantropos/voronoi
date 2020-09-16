@@ -69,12 +69,12 @@ class Edge:
         return not self.is_linear
 
     @property
-    def is_infinite(self) -> bool:
-        return self.start is None or self.end is None
-
-    @property
     def is_finite(self) -> bool:
         return not self.is_infinite
+
+    @property
+    def is_infinite(self) -> bool:
+        return self.start is None or self.end is None
 
     @property
     def is_secondary(self) -> bool:
@@ -82,11 +82,11 @@ class Edge:
 
     @property
     def rot_next(self) -> Optional['Edge']:
-        return self.prev.twin
+        return None if self.prev is None else self.prev.twin
 
     @property
     def rot_prev(self) -> Optional['Edge']:
-        return self.twin.next
+        return None if self.twin is None else self.twin.next
 
 
 class Cell:
