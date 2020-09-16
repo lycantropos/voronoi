@@ -1,5 +1,6 @@
 from typing import (List,
-                    Optional)
+                    Optional,
+                    Tuple)
 
 from reprit.base import generate_repr
 
@@ -137,6 +138,32 @@ class Diagram:
                 while right_edge.next is not None:
                     right_edge = right_edge.next
                 left_edge.prev, right_edge.next = right_edge, left_edge
+
+    def _insert_new_edge(self,
+                         first_event: SiteEvent,
+                         second_event: SiteEvent) -> Tuple[Edge, Edge]:
+        first_event_index = first_event.sorted_index
+        second_event_index = second_event.sorted_index
+        is_linear = self.is_linear_edge(first_event, second_event)
+        is_primary = self.is_primary_edge(first_event, second_event)
+        # create a new half-edge that belongs to the first site
+        first_edge = Edge(None, None, None, None, None, is_linear, is_primary)
+        self.edges.append(first_edge)
+        # create a new half-edge that belongs to the second site
+        second_edge = Edge(None, None, None, None, None, is_linear, is_primary)
+        self.edges.append(second_edge)
+        # add the initial cell during the first edge insertion
+        if not self.cells:
+            self.cells.append(Cell(first_event.initial_index,
+                                   first_event.source_category))
+        # the second site represents a new site during site event processing,
+        # add a new cell to the cell records
+        self.cells.append(Cell(second_event.initial_index,
+                               second_event.source_category))
+        first_edge.cell, second_edge.cell = (self.cells[first_event_index],
+                                             self.cells[second_event_index])
+        first_edge.twin, second_edge.twin = second_edge, first_edge
+        return first_edge, second_edge
 
     def _process_single_site(self, site: SiteEvent) -> None:
         self.cells.append(Cell(site.initial_index, site.source_category))
