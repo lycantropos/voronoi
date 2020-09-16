@@ -37,3 +37,6 @@ class SourceCategory(Base):
     # segment subtypes
     INITIAL_SEGMENT = 0x8
     REVERSE_SEGMENT = 0x9
+
+    def belongs(self, geometry_category: GeometryCategory) -> bool:
+        return (self.value >> 0x3) == geometry_category
