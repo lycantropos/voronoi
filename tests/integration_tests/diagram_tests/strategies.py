@@ -1,6 +1,7 @@
 from hypothesis import strategies
 
 from tests.strategies import (doubles,
+                              integers_32,
                               sizes)
 from tests.utils import (BoundPortedEdgesPair,
                          Strategy,
@@ -10,6 +11,8 @@ from tests.utils import (BoundPortedEdgesPair,
                          to_bound_with_ported_cells_pair,
                          to_bound_with_ported_diagrams_pair,
                          to_bound_with_ported_edges_pair,
+                         to_bound_with_ported_points_pair,
+                         to_bound_with_ported_site_events_pair,
                          to_bound_with_ported_vertices_pair,
                          to_maybe_pairs,
                          to_pairs,
@@ -52,3 +55,8 @@ vertices_lists_pairs = strategies.lists(vertices_pairs).map(transpose_pairs)
 diagrams_pairs = strategies.builds(to_bound_with_ported_diagrams_pair,
                                    cells_lists_pairs, edges_lists_pairs,
                                    vertices_lists_pairs)
+points_pairs = strategies.builds(to_bound_with_ported_points_pair,
+                                 integers_32, integers_32)
+site_events_pairs = strategies.builds(to_bound_with_ported_site_events_pair,
+                                      points_pairs, points_pairs, sizes, sizes,
+                                      booleans, source_categories_pairs)
