@@ -23,6 +23,12 @@ class Diagram:
     __repr__ = generate_repr(__init__)
 
     @staticmethod
+    def is_linear_edge(first_event: SiteEvent,
+                       second_event: SiteEvent) -> bool:
+        return (not Diagram.is_primary_edge(first_event, second_event)
+                or first_event.is_segment is second_event.is_segment)
+
+    @staticmethod
     def is_primary_edge(first_event: SiteEvent,
                         second_event: SiteEvent) -> bool:
         first_event_is_segment, second_event_is_segment = (
