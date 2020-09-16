@@ -15,6 +15,12 @@ class ComparisonResult(Base):
 
 
 @unique
+class GeometryCategory(Base):
+    POINT = 0x0,
+    SEGMENT = 0x1
+
+
+@unique
 class Orientation(Base):
     RIGHT = -1
     COLLINEAR = 0
