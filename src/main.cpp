@@ -349,7 +349,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
 
   py::class_<CircleEvent>(m, CIRCLE_EVENT_NAME)
       .def(py::init([](coordinate_t center_x, coordinate_t center_y,
-                       coordinate_t lower_x, bool is_active = true) {
+                       coordinate_t lower_x, bool is_active) {
              CircleEvent result{center_x, center_y, lower_x};
              return (is_active ? result : result.deactivate());
            }),
