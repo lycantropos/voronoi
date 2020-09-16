@@ -29,6 +29,7 @@ namespace py = pybind11;
 #define BEACH_LINE_NODE_VALUE "BeachLineNodeValue"
 #define CIRCLE_EVENT_NAME "CircleEvent"
 #define COMPARISON_RESULT_NAME "ComparisonResult"
+#define GEOMETRY_CATEGORY_NAME "GeometryCategory"
 #define ORIENTATION_NAME "Orientation"
 #define POINT_NAME "Point"
 #define SEGMENT_NAME "Segment"
@@ -49,6 +50,7 @@ using UlpComparator = boost::polygon::detail::ulp_comparison<double>;
 using ComparisonResult = UlpComparator::Result;
 using CTypeTraits = boost::polygon::detail::voronoi_ctype_traits<coordinate_t>;
 using Edge = boost::polygon::voronoi_edge<double>;
+using GeometryCategory = boost::polygon::GeometryCategory;
 using Point = boost::polygon::detail::point_2d<coordinate_t>;
 using SiteEvent = boost::polygon::detail::site_event<coordinate_t>;
 using BeachLineNodeKey = boost::polygon::detail::beach_line_node_key<SiteEvent>;
@@ -214,6 +216,10 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .value("LESS", ComparisonResult::LESS)
       .value("EQUAL", ComparisonResult::EQUAL)
       .value("MORE", ComparisonResult::MORE);
+
+  py::enum_<GeometryCategory>(m, GEOMETRY_CATEGORY_NAME)
+      .value("POINT", GeometryCategory::GEOMETRY_CATEGORY_POINT)
+      .value("SEGMENT", GeometryCategory::GEOMETRY_CATEGORY_SEGMENT);
 
   py::enum_<Orientation>(m, ORIENTATION_NAME)
       .value("RIGHT", Orientation::RIGHT)
