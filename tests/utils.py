@@ -8,6 +8,7 @@ from typing import (List,
 
 from _voronoi import (Builder as BoundBuilder,
                       CircleEvent as BoundCircleEvent,
+                      GeometryCategory as BoundGeometryCategory,
                       Point as BoundPoint,
                       Segment as BoundSegment,
                       SiteEvent as BoundSiteEvent,
@@ -15,7 +16,8 @@ from _voronoi import (Builder as BoundBuilder,
 from hypothesis.strategies import SearchStrategy
 
 from voronoi.builder import Builder as PortedBuilder
-from voronoi.enums import SourceCategory as PortedSourceCategory
+from voronoi.enums import (GeometryCategory as PortedGeometryCategory,
+                           SourceCategory as PortedSourceCategory)
 from voronoi.events import (CircleEvent as PortedCircleEvent,
                             SiteEvent as PortedSiteEvent)
 from voronoi.point import Point as PortedPoint
@@ -27,6 +29,7 @@ Strategy = SearchStrategy
 
 BoundBuilder = BoundBuilder
 BoundCircleEvent = BoundCircleEvent
+BoundGeometryCategory = BoundGeometryCategory
 BoundPoint = BoundPoint
 BoundSegment = BoundSegment
 BoundSiteEvent = BoundSiteEvent
@@ -34,6 +37,7 @@ BoundSourceCategory = BoundSourceCategory
 
 PortedBuilder = PortedBuilder
 PortedCircleEvent = PortedCircleEvent
+PortedGeometryCategory = PortedGeometryCategory
 PortedPoint = PortedPoint
 PortedSegment = PortedSegment
 PortedSiteEvent = PortedSiteEvent
@@ -41,6 +45,8 @@ PortedSourceCategory = PortedSourceCategory
 
 BoundPortedBuildersPair = Tuple[BoundBuilder, PortedBuilder]
 BoundPortedCircleEventsPair = Tuple[BoundCircleEvent, PortedCircleEvent]
+BoundPortedGeometryCategoriesPair = Tuple[BoundGeometryCategory,
+                                          PortedGeometryCategory]
 BoundPortedPointsPair = Tuple[BoundPoint, PortedPoint]
 BoundPortedSegmentsPair = Tuple[BoundSegment, PortedSegment]
 BoundPortedSiteEventsPair = Tuple[BoundSiteEvent, PortedSiteEvent]
@@ -54,7 +60,9 @@ def enum_to_values(cls: Type[Enum]) -> List[Enum]:
     return [value for _, value in sorted(cls.__members__.items())]
 
 
+bound_geometry_categories = enum_to_values(BoundGeometryCategory)
 bound_source_categories = enum_to_values(BoundSourceCategory)
+ported_geometry_categories = enum_to_values(PortedGeometryCategory)
 ported_source_categories = enum_to_values(PortedSourceCategory)
 
 equivalence = is_
