@@ -421,6 +421,15 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            py::arg("first_event"), py::arg("second_event"))
       .def("remove_edge", &Diagram::remove_edge, py::arg("edge").none(false))
       .def("_build", &Diagram::_build)
+      .def(
+          "_insert_new_edge",
+          [](Diagram& self, const SiteEvent& first_event,
+             const SiteEvent& second_event) {
+            auto result = self._insert_new_edge(first_event, second_event);
+            return std::make_pair(static_cast<Edge*>(result.first),
+                                  static_cast<Edge*>(result.second));
+          },
+          py::arg("first_event"), py::arg("second_event"))
       .def("_process_single_site", &Diagram::_process_single_site<coordinate_t>,
            py::arg("site"))
       .def_property_readonly("cells", &Diagram::cells)
