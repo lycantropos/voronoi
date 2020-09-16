@@ -38,21 +38,21 @@ class Vertex:
 
 
 class Edge:
-    __slots__ = ('start', 'twin', 'next', 'prev', 'cell', 'is_linear',
+    __slots__ = ('start', 'twin', 'prev', 'next', 'cell', 'is_linear',
                  'is_primary')
 
     def __init__(self,
                  start: Optional[Vertex],
                  twin: Optional['Edge'],
-                 next_: Optional['Edge'],
                  prev: Optional['Edge'],
+                 next_: Optional['Edge'],
                  cell: Optional['Cell'],
                  is_linear: bool,
                  is_primary: bool) -> None:
         self.start = start
         self.twin = twin
-        self.next = next_
         self.prev = prev
+        self.next = next_
         self.cell = cell
         self.is_linear = is_linear
         self.is_primary = is_primary
