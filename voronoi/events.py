@@ -3,12 +3,12 @@ from typing import (Any,
 
 from reprit.base import generate_repr
 
-from voronoi.enums import (ComparisonResult,
-                           Orientation,
-                           SourceCategory)
-from voronoi.point import Point
-from voronoi.utils import (compare_floats,
-                           to_orientation)
+from .enums import (ComparisonResult,
+                    Orientation,
+                    SourceCategory)
+from .point import Point
+from .utils import (compare_floats,
+                    to_orientation)
 
 ULPS = 64
 
