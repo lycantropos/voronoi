@@ -1,4 +1,4 @@
-from math import hypot
+from math import sqrt
 from typing import (Any,
                     TypeVar)
 
@@ -160,7 +160,7 @@ def distance_to_segment_arc(site: SiteEvent, point: Point) -> float:
         start, end = site.start, site.end
         a1 = float(end.x) - float(start.x)
         b1 = float(end.y) - float(start.y)
-        k = hypot(a1, b1)
+        k = sqrt(a1 * a1 + b1 * b1)
         # avoid subtraction while computing k
         if not b1 < 0:
             k = 1. / (b1 + k)
