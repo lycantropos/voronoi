@@ -309,7 +309,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_readonly("index", &Builder::index_)
       .def_readonly("site_events", &Builder::site_events_);
 
-  py::class_<Cell>(m, CELL_NAME)
+  py::class_<Cell, std::unique_ptr<Cell, py::nodelete>>(m, CELL_NAME)
       .def(py::init([](std::size_t source_index, SourceCategory source_category,
                        Edge* incident_edge) {
              Cell result{source_index, source_category};
