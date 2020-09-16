@@ -187,6 +187,16 @@ static bool operator==(const Vertex& left, const Vertex& right) {
   return comparator(left, right);
 }
 
+static std::ostream& operator<<(std::ostream& stream, const Diagram& diagram) {
+  stream << C_STR(MODULE_NAME) "." DIAGRAM_NAME "(";
+  write_sequence(stream, diagram.cells_);
+  stream << ", ";
+  write_sequence(stream, diagram.edges_);
+  stream << ", ";
+  write_sequence(stream, diagram.vertices_);
+  return stream << ")";
+}
+
 namespace detail {
 static bool operator==(const CircleEvent& left, const CircleEvent& right) {
   return left.x() == right.x() && left.y() == right.y() &&
@@ -394,6 +404,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            py::arg("cells") = std::vector<Cell>{},
            py::arg("edges") = std::vector<Edge>{},
            py::arg("vertices") = std::vector<Vertex>{})
+      .def("__repr__", repr<Diagram>)
       .def("clear", &Diagram::clear)
       .def(
           "construct",
