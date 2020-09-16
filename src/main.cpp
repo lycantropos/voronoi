@@ -382,7 +382,18 @@ PYBIND11_MODULE(MODULE_NAME, m) {
                              [](const CircleEvent& self) { return self.y(); });
 
   py::class_<Diagram>(m, DIAGRAM_NAME)
-      .def(py::init<>())
+      .def(py::init([](const std::vector<Cell>& cells,
+                       const std::vector<Edge>& edges,
+                       const std::vector<Vertex>& vertices) {
+             auto result = std::make_unique<Diagram>();
+             result->cells_ = cells;
+             result->edges_ = edges;
+             result->vertices_ = vertices;
+             return result;
+           }),
+           py::arg("cells") = std::vector<Cell>{},
+           py::arg("edges") = std::vector<Edge>{},
+           py::arg("vertices") = std::vector<Vertex>{})
       .def("clear", &Diagram::clear)
       .def(
           "construct",
