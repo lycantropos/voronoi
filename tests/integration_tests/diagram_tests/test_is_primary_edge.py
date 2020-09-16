@@ -15,6 +15,7 @@ def test_basic(pair: BoundPortedDiagramsPair,
     bound_first_event, ported_first_event = first_events_pair
     bound_second_event, ported_second_event = second_events_pair
 
-    assert equivalence(bound.is_primary_edge(bound_first_event, bound_second_event),
+    assert equivalence(bound.is_primary_edge(bound_first_event,
+                                             bound_second_event),
                        ported.is_primary_edge(ported_first_event,
                                               ported_second_event))
