@@ -1,3 +1,4 @@
+from math import hypot
 from typing import (Any,
                     TypeVar)
 
@@ -8,6 +9,7 @@ from .enums import (ComparisonResult,
                     SourceCategory)
 from .point import Point
 from .utils import (compare_floats,
+                    robust_cross_product,
                     to_orientation)
 
 ULPS = 64
@@ -149,3 +151,20 @@ Event = TypeVar('Event', CircleEvent, SiteEvent)
 
 def are_vertical_endpoints(start: Point, end: Point) -> bool:
     return start.x == end.x
+
+
+def distance_to_segment_arc(site: SiteEvent, point: Point) -> float:
+    if site.is_vertical:
+        return (float(site.start.x) - float(point.x)) * 0.5
+    else:
+        start, end = site.start, site.end
+        a1 = float(end.x) - float(start.x)
+        b1 = float(end.y) - float(start.y)
+        k = hypot(a1, b1)
+        # avoid subtraction while computing k
+        if not b1 < 0:
+            k = 1. / (b1 + k)
+        else:
+            k = (k - b1) / (a1 * a1)
+        return k * robust_cross_product(end.x - start.x, end.y - start.y,
+                                        point.x - start.x, point.y - start.y)
