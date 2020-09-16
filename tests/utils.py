@@ -7,6 +7,7 @@ from typing import (List,
                     Union)
 
 from _voronoi import (Builder as BoundBuilder,
+                      Cell as BoundCell,
                       CircleEvent as BoundCircleEvent,
                       Edge as BoundEdge,
                       GeometryCategory as BoundGeometryCategory,
@@ -23,7 +24,8 @@ from voronoi.enums import (GeometryCategory as PortedGeometryCategory,
                            SourceCategory as PortedSourceCategory)
 from voronoi.events import (CircleEvent as PortedCircleEvent,
                             SiteEvent as PortedSiteEvent)
-from voronoi.faces import (Edge as PortedEdge,
+from voronoi.faces import (Cell as PortedCell,
+                           Edge as PortedEdge,
                            Vertex as PortedVertex)
 from voronoi.point import Point as PortedPoint
 from voronoi.segment import Segment as PortedSegment
@@ -33,6 +35,7 @@ Range = TypeVar('Range')
 Strategy = SearchStrategy
 
 BoundBuilder = BoundBuilder
+BoundCell = BoundCell
 BoundCircleEvent = BoundCircleEvent
 BoundEdge = BoundEdge
 BoundGeometryCategory = BoundGeometryCategory
@@ -43,6 +46,7 @@ BoundSourceCategory = BoundSourceCategory
 BoundVertex = BoundVertex
 
 PortedBuilder = PortedBuilder
+PortedCell = PortedCell
 PortedCircleEvent = PortedCircleEvent
 PortedEdge = PortedEdge
 PortedGeometryCategory = PortedGeometryCategory
@@ -53,6 +57,7 @@ PortedSourceCategory = PortedSourceCategory
 PortedVertex = PortedVertex
 
 BoundPortedBuildersPair = Tuple[BoundBuilder, PortedBuilder]
+BoundPortedCellsPair = Tuple[BoundCell, PortedCell]
 BoundPortedCircleEventsPair = Tuple[BoundCircleEvent, PortedCircleEvent]
 BoundPortedGeometryCategoriesPair = Tuple[BoundGeometryCategory,
                                           PortedGeometryCategory]
@@ -91,6 +96,11 @@ def are_bound_ported_builders_equal(bound: BoundBuilder,
             and all(map(are_bound_ported_site_events_equal, bound.site_events,
                         ported.site_events))
             and bound.site_event_index == ported.site_event_index)
+
+
+def are_bound_ported_cells_equal(bound: BoundCell, ported: PortedCell) -> bool:
+    return (bound.source_index == ported.source_index
+            and bound.source_category == ported.source_category)
 
 
 def are_bound_ported_circle_events_equal(bound: BoundCircleEvent,
@@ -134,6 +144,20 @@ def to_bound_with_ported_builders_pair(index: int,
     bound_site_events, ported_site_events = site_events_pair
     return (BoundBuilder(index, bound_site_events),
             PortedBuilder(index, ported_site_events))
+
+
+def to_bound_with_ported_cells_pair(source_index: int,
+                                    source_categories_pair
+                                    : BoundPortedSourceCategoriesPair,
+                                    incident_edges_pair
+                                    : BoundPortedMaybeEdgesPair
+                                    ) -> BoundPortedCellsPair:
+    bound_source_category, ported_source_category = source_categories_pair
+    bound_incident_edge, ported_incident_edge = incident_edges_pair
+    return (BoundCell(source_index, bound_source_category,
+                      bound_incident_edge),
+            PortedCell(source_index, ported_source_category,
+                       ported_incident_edge))
 
 
 def to_bound_with_ported_circle_events_pair(center_x: int,
