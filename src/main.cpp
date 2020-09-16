@@ -350,7 +350,18 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_property_readonly("vertices", &Diagram::vertices);
 
   py::class_<Edge, std::unique_ptr<Edge, py::nodelete>>(m, EDGE_NAME)
-      .def(py::init<bool, bool>(), py::arg("is_linear"), py::arg("is_primary"))
+      .def(py::init([](Vertex* start, Edge* twin, Edge* next, Edge* prev,
+                       Cell* cell, bool is_linear, bool is_primary) {
+             Edge result{is_linear, is_primary};
+             result.vertex0(start);
+             result.twin(twin);
+             result.next(next);
+             result.prev(prev);
+             result.cell(cell);
+             return result;
+           }),
+           py::arg("start"), py::arg("twin"), py::arg("next"), py::arg("prev"),
+           py::arg("cell"), py::arg("is_linear"), py::arg("is_primary"))
       .def_property_readonly("cell",
                              [](const Edge& self) { return self.cell(); })
       .def_property_readonly("is_curved", &Edge::is_curved)
