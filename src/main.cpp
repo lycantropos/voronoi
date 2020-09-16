@@ -415,6 +415,8 @@ PYBIND11_MODULE(MODULE_NAME, m) {
                                               self);
           },
           py::arg("points"), py::arg("segments"))
+      .def("is_linear_edge", &Diagram::is_linear_edge<SiteEvent>,
+           py::arg("first_event"), py::arg("second_event"))
       .def("is_primary_edge", &Diagram::is_primary_edge<SiteEvent>,
            py::arg("first_event"), py::arg("second_event"))
       .def("remove_edge", &Diagram::remove_edge, py::arg("edge").none(false))
