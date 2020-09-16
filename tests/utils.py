@@ -4,7 +4,7 @@ from operator import is_
 from typing import (Callable,
                     List,
                     Optional,
-                    Tuple,
+                    Sequence, Tuple,
                     Type,
                     TypeVar,
                     Union)
@@ -12,6 +12,7 @@ from typing import (Callable,
 from _voronoi import (Builder as BoundBuilder,
                       Cell as BoundCell,
                       CircleEvent as BoundCircleEvent,
+                      Diagram as BoundDiagram,
                       Edge as BoundEdge,
                       GeometryCategory as BoundGeometryCategory,
                       Point as BoundPoint,
@@ -23,6 +24,7 @@ from hypothesis import strategies
 from hypothesis.strategies import SearchStrategy
 
 from voronoi.builder import Builder as PortedBuilder
+from voronoi.diagram import Diagram as PortedDiagram
 from voronoi.enums import (GeometryCategory as PortedGeometryCategory,
                            SourceCategory as PortedSourceCategory)
 from voronoi.events import (CircleEvent as PortedCircleEvent,
@@ -40,6 +42,7 @@ Strategy = SearchStrategy
 BoundBuilder = BoundBuilder
 BoundCell = BoundCell
 BoundCircleEvent = BoundCircleEvent
+BoundDiagram = BoundDiagram
 BoundEdge = BoundEdge
 BoundGeometryCategory = BoundGeometryCategory
 BoundPoint = BoundPoint
@@ -51,6 +54,7 @@ BoundVertex = BoundVertex
 PortedBuilder = PortedBuilder
 PortedCell = PortedCell
 PortedCircleEvent = PortedCircleEvent
+PortedDiagram = PortedDiagram
 PortedEdge = PortedEdge
 PortedGeometryCategory = PortedGeometryCategory
 PortedPoint = PortedPoint
@@ -61,12 +65,15 @@ PortedVertex = PortedVertex
 
 BoundPortedBuildersPair = Tuple[BoundBuilder, PortedBuilder]
 BoundPortedCellsPair = Tuple[BoundCell, PortedCell]
+BoundPortedCellsListsPair = Tuple[List[BoundCell], List[PortedCell]]
 BoundPortedMaybeCellsPair = Tuple[Optional[BoundCell], Optional[PortedCell]]
 BoundPortedCircleEventsPair = Tuple[BoundCircleEvent, PortedCircleEvent]
+BoundPortedDiagramsPair = Tuple[BoundDiagram, PortedDiagram]
+BoundPortedEdgesPair = Tuple[BoundEdge, PortedEdge]
+BoundPortedEdgesListsPair = Tuple[List[BoundEdge], List[PortedEdge]]
+BoundPortedMaybeEdgesPair = Tuple[Optional[BoundEdge], Optional[PortedEdge]]
 BoundPortedGeometryCategoriesPair = Tuple[BoundGeometryCategory,
                                           PortedGeometryCategory]
-BoundPortedEdgesPair = Tuple[BoundEdge, PortedEdge]
-BoundPortedMaybeEdgesPair = Tuple[Optional[BoundEdge], Optional[PortedEdge]]
 BoundPortedPointsPair = Tuple[BoundPoint, PortedPoint]
 BoundPortedSegmentsPair = Tuple[BoundSegment, PortedSegment]
 BoundPortedSiteEventsPair = Tuple[BoundSiteEvent, PortedSiteEvent]
@@ -75,6 +82,9 @@ BoundPortedEventsPair = Union[BoundPortedCircleEventsPair,
 BoundPortedSourceCategoriesPair = Tuple[BoundSourceCategory,
                                         PortedSourceCategory]
 BoundPortedVerticesPair = Tuple[BoundVertex, PortedVertex]
+BoundPortedVerticesListsPair = Tuple[List[BoundVertex], List[PortedVertex]]
+BoundPortedMaybeVerticesPair = Tuple[Optional[BoundVertex],
+                                     Optional[PortedVertex]]
 
 
 def enum_to_values(cls: Type[Enum]) -> List[Enum]:
@@ -103,6 +113,16 @@ def to_maybe_equals(equals: Callable[[Domain, Range], bool]
     return maybe_equals
 
 
+def to_sequences_equals(equals: Callable[[Domain, Range], bool]
+                        ) -> Callable[[Sequence[Domain], Sequence[Range]],
+                                      bool]:
+    def sequences_equals(left: Sequence[Domain],
+                         right: Sequence[Range]) -> bool:
+        return len(left) == len(right) and all(map(equals, left, right))
+
+    return sequences_equals
+
+
 def are_bound_ported_builders_equal(bound: BoundBuilder,
                                     ported: PortedBuilder) -> bool:
     return (bound.index == ported.index
@@ -116,6 +136,8 @@ def are_bound_ported_cells_equal(bound: BoundCell, ported: PortedCell) -> bool:
             and bound.source_category == ported.source_category)
 
 
+are_bound_ported_cells_lists_equal = to_sequences_equals(
+        are_bound_ported_cells_equal)
 are_bound_ported_maybe_cells_equal = to_maybe_equals(
         are_bound_ported_cells_equal)
 
@@ -126,6 +148,14 @@ def are_bound_ported_circle_events_equal(bound: BoundCircleEvent,
             and bound.center_y == ported.center_y
             and bound.lower_x == ported.lower_x
             and bound.is_active is ported.is_active)
+
+
+def are_bound_ported_diagrams_equal(bound: BoundDiagram, ported: PortedDiagram
+                                    ) -> bool:
+    return (are_bound_ported_cells_lists_equal(bound.cells, ported.cells)
+            and are_bound_ported_edges_lists_equal(bound.edges, ported.edges)
+            and are_bound_ported_vertices_lists_equal(bound.vertices,
+                                                      ported.vertices))
 
 
 def are_bound_ported_edges_equal(bound: BoundEdge, ported: PortedEdge
@@ -139,6 +169,8 @@ def are_bound_ported_edges_equal(bound: BoundEdge, ported: PortedEdge
             and bound.is_primary is ported.is_primary)
 
 
+are_bound_ported_edges_lists_equal = to_sequences_equals(
+        are_bound_ported_edges_equal)
 are_bound_ported_maybe_edges_equal = to_maybe_equals(
         are_bound_ported_edges_equal)
 
@@ -169,6 +201,8 @@ def are_bound_ported_vertices_equal(bound: BoundVertex, ported: PortedVertex
     return bound.x == ported.x and bound.y == ported.y
 
 
+are_bound_ported_vertices_lists_equal = to_sequences_equals(
+        are_bound_ported_vertices_equal)
 are_bound_ported_maybe_vertices_equal = to_maybe_equals(
         are_bound_ported_vertices_equal)
 
@@ -205,7 +239,19 @@ def to_bound_with_ported_circle_events_pair(center_x: int,
             PortedCircleEvent(center_x, center_y, lower_x, is_active))
 
 
-def to_bound_with_ported_edges_pair(starts_pair: BoundPortedVerticesPair,
+def to_bound_with_ported_diagrams_pair(cells_pair: BoundPortedCellsListsPair,
+                                       edges_pair: BoundPortedEdgesListsPair,
+                                       vertices_pair
+                                       : BoundPortedVerticesListsPair
+                                       ) -> BoundPortedDiagramsPair:
+    bound_cells, ported_cells = cells_pair
+    bound_edges, ported_edges = edges_pair
+    bound_vertices, ported_vertices = vertices_pair
+    return (BoundDiagram(bound_cells, bound_edges, bound_vertices),
+            PortedDiagram(ported_cells, ported_edges, ported_vertices))
+
+
+def to_bound_with_ported_edges_pair(starts_pair: BoundPortedMaybeVerticesPair,
                                     twins_pair: BoundPortedMaybeEdgesPair,
                                     prev_edges_pair: BoundPortedMaybeEdgesPair,
                                     next_edges_pair: BoundPortedMaybeEdgesPair,
