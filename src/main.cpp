@@ -343,8 +343,6 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::init<bool, bool>(), py::arg("is_linear"), py::arg("is_primary"))
       .def_property_readonly("cell",
                              [](const Edge& self) { return self.cell(); })
-      .def_property_readonly("color",
-                             [](const Edge& self) { return self.color(); })
       .def_property_readonly("is_curved", &Edge::is_curved)
       .def_property_readonly("is_finite", &Edge::is_finite)
       .def_property_readonly("is_infinite", &Edge::is_infinite)
