@@ -73,6 +73,14 @@ std::string repr(const Object& object) {
   return stream.str();
 }
 
+template <class Object>
+static void write_pointer(std::ostream& stream, Object* value) {
+  if (value == nullptr)
+    stream << py::none();
+  else
+    stream << *value;
+}
+
 template <typename Sequence>
 static void write_sequence(std::ostream& stream, const Sequence& sequence) {
   stream << "[";
@@ -139,6 +147,21 @@ static std::ostream& operator<<(std::ostream& stream, const Cell& cell) {
 static std::ostream& operator<<(std::ostream& stream, const Vertex& vertex) {
   return stream << C_STR(MODULE_NAME) "." VERTEX_NAME "(" << vertex.x() << ", "
                 << vertex.y() << ")";
+}
+
+static std::ostream& operator<<(std::ostream& stream, const Edge& edge) {
+  stream << C_STR(MODULE_NAME) "." EDGE_NAME "(";
+  write_pointer(stream, edge.vertex0());
+  stream << ", ";
+  write_pointer(stream, edge.twin());
+  stream << ", ";
+  write_pointer(stream, edge.next());
+  stream << ", ";
+  write_pointer(stream, edge.prev());
+  stream << ", ";
+  write_pointer(stream, edge.cell());
+  return stream << ", " << bool_repr(edge.is_linear()) << ", "
+                << bool_repr(edge.is_primary()) << ")";
 }
 
 static bool operator==(const Vertex& left, const Vertex& right) {
@@ -368,6 +391,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            }),
            py::arg("start"), py::arg("twin"), py::arg("next"), py::arg("prev"),
            py::arg("cell"), py::arg("is_linear"), py::arg("is_primary"))
+      .def("__repr__", repr<Edge>)
       .def_property_readonly("cell",
                              [](const Edge& self) { return self.cell(); })
       .def_property_readonly("end",
