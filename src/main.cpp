@@ -278,8 +278,6 @@ PYBIND11_MODULE(MODULE_NAME, m) {
   py::class_<Cell>(m, CELL_NAME)
       .def(py::init<std::size_t, SourceCategory>(), py::arg("source_index"),
            py::arg("source_category"))
-      .def_property_readonly("color",
-                             [](const Cell& self) { return self.color(); })
       .def_property_readonly("contains_point", &Cell::contains_point)
       .def_property_readonly("contains_segment", &Cell::contains_segment)
       .def_property_readonly(
