@@ -415,6 +415,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
                                               self);
           },
           py::arg("points"), py::arg("segments"))
+      .def("remove_edge", &Diagram::remove_edge, py::arg("edge").none(false))
       .def_property_readonly("cells", &Diagram::cells)
       .def_property_readonly("edges", &Diagram::edges)
       .def_property_readonly("vertices", &Diagram::vertices);
