@@ -418,6 +418,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def("is_primary_edge", &Diagram::is_primary_edge<SiteEvent>,
            py::arg("first_event"), py::arg("second_event"))
       .def("remove_edge", &Diagram::remove_edge, py::arg("edge").none(false))
+      .def("_build", &Diagram::_build)
       .def_property_readonly("cells", &Diagram::cells)
       .def_property_readonly("edges", &Diagram::edges)
       .def_property_readonly("vertices", &Diagram::vertices);
