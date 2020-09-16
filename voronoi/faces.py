@@ -1,3 +1,4 @@
+from reprlib import recursive_repr
 from typing import Optional
 
 from reprit import seekers
@@ -19,6 +20,8 @@ class Vertex:
         self.x = x
         self.y = y
         self.incident_edge = incident_edge
+
+    __repr__ = recursive_repr()(generate_repr(__init__))
 
     def __eq__(self, other: 'Vertex',
                *,
