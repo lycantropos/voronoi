@@ -131,6 +131,11 @@ static std::ostream& operator<<(std::ostream& stream, const Builder& builder) {
   return stream << ")";
 }
 
+static std::ostream& operator<<(std::ostream& stream, const Cell& cell) {
+  return stream << C_STR(MODULE_NAME) "." CELL_NAME "(" << cell.source_index()
+                << ", " << cell.source_category() << ")";
+}
+
 static std::ostream& operator<<(std::ostream& stream, const Vertex& vertex) {
   return stream << C_STR(MODULE_NAME) "." VERTEX_NAME "(" << vertex.x() << ", "
                 << vertex.y() << ")";
@@ -290,6 +295,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            }),
            py::arg("source_index"), py::arg("source_category"),
            py::arg("incident_edge") = nullptr)
+      .def("__repr__", repr<Cell>)
       .def_property_readonly("contains_point", &Cell::contains_point)
       .def_property_readonly("contains_segment", &Cell::contains_segment)
       .def_property_readonly(
