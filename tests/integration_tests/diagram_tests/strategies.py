@@ -8,6 +8,7 @@ from tests.utils import (BoundPortedEdgesPair,
                          ported_source_categories,
                          recursive,
                          to_bound_with_ported_cells_pair,
+                         to_bound_with_ported_diagrams_pair,
                          to_bound_with_ported_edges_pair,
                          to_bound_with_ported_vertices_pair,
                          to_maybe_pairs,
@@ -48,3 +49,6 @@ vertices_pairs = strategies.builds(to_bound_with_ported_vertices_pair,
 cells_lists_pairs = strategies.lists(cells_pairs).map(transpose_pairs)
 edges_lists_pairs = strategies.lists(edges_pairs).map(transpose_pairs)
 vertices_lists_pairs = strategies.lists(vertices_pairs).map(transpose_pairs)
+diagrams_pairs = strategies.builds(to_bound_with_ported_diagrams_pair,
+                                   cells_lists_pairs, edges_lists_pairs,
+                                   vertices_lists_pairs)
