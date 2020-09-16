@@ -492,7 +492,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_property_readonly(
           "start", [](const SiteEvent& self) { return self.point0(); });
 
-  py::class_<Vertex>(m, VERTEX_NAME)
+  py::class_<Vertex, std::unique_ptr<Vertex, py::nodelete>>(m, VERTEX_NAME)
       .def(py::init([](double x, double y, Edge* incident_edge) {
              Vertex result{x, y};
              result.incident_edge(incident_edge);
