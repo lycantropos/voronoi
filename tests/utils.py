@@ -1,7 +1,9 @@
 from enum import Enum
 from operator import is_
-from typing import (List,
-                    Optional, Tuple,
+from typing import (Callable,
+                    List,
+                    Optional,
+                    Tuple,
                     Type,
                     TypeVar,
                     Union)
@@ -58,6 +60,7 @@ PortedVertex = PortedVertex
 
 BoundPortedBuildersPair = Tuple[BoundBuilder, PortedBuilder]
 BoundPortedCellsPair = Tuple[BoundCell, PortedCell]
+BoundPortedMaybeCellsPair = Tuple[Optional[BoundCell], Optional[PortedCell]]
 BoundPortedCircleEventsPair = Tuple[BoundCircleEvent, PortedCircleEvent]
 BoundPortedGeometryCategoriesPair = Tuple[BoundGeometryCategory,
                                           PortedGeometryCategory]
@@ -90,6 +93,15 @@ def transpose_pairs(pairs: List[Tuple[Domain, Range]]
     return tuple(map(list, zip(*pairs))) if pairs else ([], [])
 
 
+def to_maybe_equals(equals: Callable[[Domain, Range], bool]
+                    ) -> Callable[[Optional[Domain], Optional[Range]], bool]:
+    def maybe_equals(left: Optional[Domain], right: Optional[Range]) -> bool:
+        return ((left is None) is (right is None)
+                and (left is None or equals(left, right)))
+
+    return maybe_equals
+
+
 def are_bound_ported_builders_equal(bound: BoundBuilder,
                                     ported: PortedBuilder) -> bool:
     return (bound.index == ported.index
@@ -103,12 +115,31 @@ def are_bound_ported_cells_equal(bound: BoundCell, ported: PortedCell) -> bool:
             and bound.source_category == ported.source_category)
 
 
+are_bound_ported_maybe_cells_equal = to_maybe_equals(
+        are_bound_ported_cells_equal)
+
+
 def are_bound_ported_circle_events_equal(bound: BoundCircleEvent,
                                          ported: PortedCircleEvent) -> bool:
     return (bound.center_x == ported.center_x
             and bound.center_y == ported.center_y
             and bound.lower_x == ported.lower_x
             and bound.is_active is ported.is_active)
+
+
+def are_bound_ported_edges_equal(bound: BoundEdge, ported: PortedEdge
+                                 ) -> bool:
+    return (are_bound_ported_maybe_vertices_equal(bound.start, ported.start)
+            and are_bound_ported_maybe_edges_equal(bound.twin, ported.twin)
+            and are_bound_ported_maybe_edges_equal(bound.prev, ported.prev)
+            and are_bound_ported_maybe_edges_equal(bound.next, ported.next)
+            and are_bound_ported_maybe_cells_equal(bound.cell, ported.cell)
+            and bound.is_linear is ported.is_linear
+            and bound.is_primary is ported.is_primary)
+
+
+are_bound_ported_maybe_edges_equal = to_maybe_equals(
+        are_bound_ported_edges_equal)
 
 
 def are_bound_ported_points_equal(bound: BoundPoint, ported: PortedPoint
@@ -135,6 +166,10 @@ def are_bound_ported_site_events_equal(bound: BoundSiteEvent,
 def are_bound_ported_vertices_equal(bound: BoundVertex, ported: PortedVertex
                                     ) -> bool:
     return bound.x == ported.x and bound.y == ported.y
+
+
+are_bound_ported_maybe_vertices_equal = to_maybe_equals(
+        are_bound_ported_vertices_equal)
 
 
 def to_bound_with_ported_builders_pair(index: int,
@@ -167,6 +202,24 @@ def to_bound_with_ported_circle_events_pair(center_x: int,
                                             ) -> BoundPortedCircleEventsPair:
     return (BoundCircleEvent(center_x, center_y, lower_x, is_active),
             PortedCircleEvent(center_x, center_y, lower_x, is_active))
+
+
+def to_bound_with_ported_edges_pair(starts_pair: BoundPortedVerticesPair,
+                                    twins_pair: BoundPortedMaybeEdgesPair,
+                                    prev_edges_pair: BoundPortedMaybeEdgesPair,
+                                    next_edges_pair: BoundPortedMaybeEdgesPair,
+                                    cells_pair: BoundPortedMaybeCellsPair,
+                                    is_linear: bool,
+                                    is_primary: bool) -> BoundPortedEdgesPair:
+    bound_start, ported_start = starts_pair
+    bound_twin, ported_twin = twins_pair
+    bound_prev, ported_prev = prev_edges_pair
+    bound_next, ported_next = next_edges_pair
+    bound_cell, ported_cell = cells_pair
+    return (BoundEdge(bound_start, bound_twin, bound_prev, bound_next,
+                      bound_cell, is_linear, is_primary),
+            PortedEdge(ported_start, ported_twin, ported_prev, ported_next,
+                       ported_cell, is_linear, is_primary))
 
 
 def to_bound_with_ported_points_pair(x: int, y: int) -> BoundPortedPointsPair:
@@ -207,6 +260,11 @@ def to_bound_with_ported_vertices_pair(x: int,
     bound_incident_edge, ported_incident_edge = incident_edges_pair
     return (BoundVertex(x, y, bound_incident_edge),
             PortedVertex(x, y, ported_incident_edge))
+
+
+def to_maybe_pairs(strategy: Strategy[Tuple[Domain, Range]]
+                   ) -> Strategy[Tuple[Optional[Domain], Optional[Range]]]:
+    return to_pairs(strategies.none()) | strategy
 
 
 def to_pairs(strategy: Strategy[Domain]) -> Strategy[Tuple[Domain, Domain]]:
