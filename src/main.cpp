@@ -364,6 +364,11 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            py::arg("cell"), py::arg("is_linear"), py::arg("is_primary"))
       .def_property_readonly("cell",
                              [](const Edge& self) { return self.cell(); })
+      .def_property_readonly("end",
+                             [](const Edge& self) {
+                               return self.twin() == nullptr ? nullptr
+                                                             : self.vertex1();
+                             })
       .def_property_readonly("is_curved", &Edge::is_curved)
       .def_property_readonly("is_finite", &Edge::is_finite)
       .def_property_readonly("is_infinite", &Edge::is_infinite)
@@ -384,6 +389,8 @@ PYBIND11_MODULE(MODULE_NAME, m) {
                                return self.prev() == nullptr ? nullptr
                                                              : self.rot_prev();
                              })
+      .def_property_readonly("start",
+                             [](const Edge& self) { return self.vertex0(); })
       .def_property_readonly("twin",
                              [](const Edge& self) { return self.twin(); });
 
