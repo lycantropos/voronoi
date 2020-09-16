@@ -125,3 +125,6 @@ class Diagram:
                 while right_edge.next is not None:
                     right_edge = right_edge.next
                 left_edge.prev, right_edge.next = right_edge, left_edge
+
+    def _process_single_site(self, site: SiteEvent) -> None:
+        self.cells.append(Cell(site.initial_index, site.source_category))
