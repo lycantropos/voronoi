@@ -155,9 +155,9 @@ static std::ostream& operator<<(std::ostream& stream, const Edge& edge) {
   stream << ", ";
   write_pointer(stream, edge.twin());
   stream << ", ";
-  write_pointer(stream, edge.next());
-  stream << ", ";
   write_pointer(stream, edge.prev());
+  stream << ", ";
+  write_pointer(stream, edge.next());
   stream << ", ";
   write_pointer(stream, edge.cell());
   return stream << ", " << bool_repr(edge.is_linear()) << ", "
@@ -379,17 +379,17 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_property_readonly("vertices", &Diagram::vertices);
 
   py::class_<Edge, std::unique_ptr<Edge, py::nodelete>>(m, EDGE_NAME)
-      .def(py::init([](Vertex* start, Edge* twin, Edge* next, Edge* prev,
+      .def(py::init([](Vertex* start, Edge* twin, Edge* prev, Edge* next,
                        Cell* cell, bool is_linear, bool is_primary) {
              Edge result{is_linear, is_primary};
              result.vertex0(start);
              result.twin(twin);
-             result.next(next);
              result.prev(prev);
+             result.next(next);
              result.cell(cell);
              return result;
            }),
-           py::arg("start"), py::arg("twin"), py::arg("next"), py::arg("prev"),
+           py::arg("start"), py::arg("twin"), py::arg("prev"), py::arg("next"),
            py::arg("cell"), py::arg("is_linear"), py::arg("is_primary"))
       .def("__repr__", repr<Edge>)
       .def_property_readonly("cell",
