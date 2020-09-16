@@ -1,4 +1,7 @@
-from math import nan, sqrt
+from math import (copysign,
+                  inf,
+                  nan,
+                  sqrt)
 from typing import (Any,
                     TypeVar)
 
@@ -157,10 +160,11 @@ def distance_to_point_arc(site: SiteEvent, point: Point) -> float:
     dx = float(site.start.x) - float(point.x)
     dy = float(site.start.y) - float(point.y)
     # the relative error is at most 3EPS
+    numerator = dx * dx + dy * dy
     try:
-        return (dx * dx + dy * dy) / (2.0 * dx)
+        return numerator / (2.0 * dx)
     except ZeroDivisionError:
-        return nan
+        return copysign(inf, dx) if numerator else nan
 
 
 def distance_to_segment_arc(site: SiteEvent, point: Point) -> float:
