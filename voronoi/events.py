@@ -136,7 +136,7 @@ class SiteEvent:
 
     @property
     def is_vertical(self) -> bool:
-        return self.start.x == self.end.x
+        return are_vertical_endpoints(self.start, self.end)
 
     def inverse(self) -> 'SiteEvent':
         self.start, self.end, self.is_inverse = (self.end, self.start,
@@ -145,3 +145,7 @@ class SiteEvent:
 
 
 Event = TypeVar('Event', CircleEvent, SiteEvent)
+
+
+def are_vertical_endpoints(start: Point, end: Point) -> bool:
+    return start.x == end.x
