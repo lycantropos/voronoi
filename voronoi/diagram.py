@@ -23,7 +23,8 @@ class Diagram:
     __repr__ = generate_repr(__init__)
 
     @staticmethod
-    def is_primary(first_event: SiteEvent, second_event: SiteEvent) -> bool:
+    def is_primary_edge(first_event: SiteEvent,
+                        second_event: SiteEvent) -> bool:
         first_event_is_segment, second_event_is_segment = (
             first_event.is_segment, second_event.is_segment)
         if first_event_is_segment and not second_event_is_segment:
