@@ -233,8 +233,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .value("SEGMENT_END_POINT",
              SourceCategory::SOURCE_CATEGORY_SEGMENT_END_POINT)
       .value("INITIAL_SEGMENT", SourceCategory::SOURCE_CATEGORY_INITIAL_SEGMENT)
-      .value("REVERSE_SEGMENT",
-             SourceCategory::SOURCE_CATEGORY_REVERSE_SEGMENT)
+      .value("REVERSE_SEGMENT", SourceCategory::SOURCE_CATEGORY_REVERSE_SEGMENT)
       .def("belongs", &boost::polygon::belongs);
 
   py::class_<BeachLineNodeKey>(m, BEACH_LINE_NODE_KEY)
