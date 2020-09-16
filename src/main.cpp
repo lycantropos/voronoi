@@ -603,6 +603,14 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       py::arg("second_ray_point"));
 
   m.def(
+      "distance_to_point_arc",
+      [](const SiteEvent& site, const Point& point) {
+        static const Predicates::distance_predicate<SiteEvent> comparator;
+        return comparator.find_distance_to_point_arc(site, point);
+      },
+      py::arg("site"), py::arg("point"));
+
+  m.def(
       "distance_to_segment_arc",
       [](const SiteEvent& site, const Point& point) {
         static const Predicates::distance_predicate<SiteEvent> comparator;
