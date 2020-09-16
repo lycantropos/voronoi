@@ -325,6 +325,8 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def("__repr__", repr<Builder>)
       .def("clear", &Builder::clear)
       .def("construct", &Builder::construct<Diagram>, py::arg("diagram"))
+      .def("init_beach_line", &Builder::init_beach_line<Diagram>,
+           py::arg("diagram"))
       .def("init_sites_queue", &Builder::init_sites_queue)
       .def("insert_point", &Builder::insert_point, py::arg("x"), py::arg("y"))
       .def("insert_segment", &Builder::insert_segment, py::arg("start_x"),
