@@ -1,4 +1,6 @@
+from functools import total_ordering
 from math import sqrt
+from typing import Any
 
 from reprit.base import generate_repr
 
@@ -7,6 +9,7 @@ from .utils import safe_divide_floats
 ROUNDING_ERROR = 1
 
 
+@total_ordering
 class RobustFloat:
     __slots__ = 'value', 'relative_error'
 
@@ -32,6 +35,12 @@ class RobustFloat:
     def __bool__(self) -> bool:
         return bool(self.value)
 
+    def __eq__(self, other: Any) -> bool:
+        return self.value == other
+
+    def __gt__(self, other: Any) -> bool:
+        return self.value > other
+
     def __imul__(self, other: 'RobustFloat') -> 'RobustFloat':
         self.value *= other.value
         self.relative_error += other.relative_error + ROUNDING_ERROR
@@ -41,6 +50,9 @@ class RobustFloat:
         self.value = safe_divide_floats(self.value, other.value)
         self.relative_error += other.relative_error + ROUNDING_ERROR
         return self
+
+    def __lt__(self, other: Any) -> bool:
+        return self.value < other
 
     def __mul__(self, other: 'RobustFloat') -> 'RobustFloat':
         return RobustFloat(self.value * other.value,
