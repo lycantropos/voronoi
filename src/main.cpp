@@ -567,6 +567,13 @@ PYBIND11_MODULE(MODULE_NAME, m) {
              return comparator(self, other);
            })
       .def("__repr__", repr<SiteEvent>)
+      .def_property_readonly(
+          "comparison_point",
+          [](const SiteEvent& self) {
+            static const Predicates::node_comparison_predicate<BeachLineKey>
+                comparator;
+            return comparator.get_comparison_point(self);
+          })
       .def("inverse", &SiteEvent::inverse)
       .def_property_readonly(
           "end", [](const SiteEvent& self) { return self.point1(); })
