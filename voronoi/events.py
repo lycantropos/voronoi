@@ -133,6 +133,10 @@ class SiteEvent:
         return cls(point, point, *args, **kwargs)
 
     @property
+    def comparison_point(self) -> Point:
+        return min(self.start, self.end)
+
+    @property
     def is_point(self) -> bool:
         return self.start == self.end
 
