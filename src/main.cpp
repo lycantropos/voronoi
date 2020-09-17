@@ -185,7 +185,7 @@ static std::ostream& operator<<(std::ostream& stream, const Edge& edge) {
 }
 
 static bool operator==(const Vertex& left, const Vertex& right) {
-  static voronoi_diagram_traits<double>::vertex_equality_predicate_type
+  static const voronoi_diagram_traits<double>::vertex_equality_predicate_type
       comparator;
   return comparator(left, right);
 }
@@ -392,12 +392,12 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::self == py::self)
       .def("__lt__",
            [](const CircleEvent& self, const CircleEvent& other) {
-             static EventComparisonPredicate comparator;
+             static const EventComparisonPredicate comparator;
              return comparator(self, other);
            })
       .def("__lt__",
            [](const CircleEvent& self, const SiteEvent& other) {
-             static EventComparisonPredicate comparator;
+             static const EventComparisonPredicate comparator;
              return comparator(self, other);
            })
       .def("__repr__", repr<CircleEvent>)
@@ -526,7 +526,8 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::self == py::self)
       .def("__lt__",
            [](const Point& self, const Point& other) {
-             static Predicates::point_comparison_predicate<Point> comparator;
+             static const Predicates::point_comparison_predicate<Point>
+                 comparator;
              return comparator(self, other);
            })
       .def("__repr__", repr<Point>)
@@ -557,12 +558,12 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::self == py::self)
       .def("__lt__",
            [](const SiteEvent& self, const CircleEvent& other) {
-             static EventComparisonPredicate comparator;
+             static const EventComparisonPredicate comparator;
              return comparator(self, other);
            })
       .def("__lt__",
            [](const SiteEvent& self, const SiteEvent& other) {
-             static EventComparisonPredicate comparator;
+             static const EventComparisonPredicate comparator;
              return comparator(self, other);
            })
       .def("__repr__", repr<SiteEvent>)
@@ -606,7 +607,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
   m.def(
       "compare_floats",
       [](double left, double right, std::uint64_t max_ulps) {
-        static UlpComparator comparator;
+        static const UlpComparator comparator;
         return comparator(left, right, max_ulps);
       },
       py::arg("left"), py::arg("right"), py::arg("max_ulps"));
