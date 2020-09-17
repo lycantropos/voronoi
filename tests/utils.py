@@ -77,6 +77,8 @@ BoundPortedGeometryCategoriesPair = Tuple[BoundGeometryCategory,
 BoundPortedPointsPair = Tuple[BoundPoint, PortedPoint]
 BoundPortedSegmentsPair = Tuple[BoundSegment, PortedSegment]
 BoundPortedSiteEventsPair = Tuple[BoundSiteEvent, PortedSiteEvent]
+BoundPortedSiteEventsListsPair = Tuple[List[BoundSiteEvent],
+                                       List[PortedSiteEvent]]
 BoundPortedEventsPair = Union[BoundPortedCircleEventsPair,
                               BoundPortedSiteEventsPair]
 BoundPortedSourceCategoriesPair = Tuple[BoundSourceCategory,
