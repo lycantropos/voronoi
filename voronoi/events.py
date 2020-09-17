@@ -12,6 +12,7 @@ from .enums import (ComparisonResult,
                     SourceCategory)
 from .point import Point
 from .utils import (compare_floats,
+                    deltas_to_orientation,
                     robust_cross_product,
                     to_orientation)
 
@@ -200,6 +201,49 @@ def point_point_horizontal_goes_through_right_arc_first(left_site: SiteEvent,
     distance_from_right = distance_to_point_arc(right_site, point)
     # undefined ulp range is equal to 3EPS + 3EPS <= 6ULP
     return distance_from_left < distance_from_right
+
+
+def point_segment_horizontal_goes_through_right_arc_first(
+        left_site: SiteEvent,
+        right_site: SiteEvent,
+        point: Point,
+        reverse_order: bool) -> bool:
+    site_point = left_site.start
+    segment_start, segment_end = right_site.start, right_site.end
+    if (to_orientation(segment_start, segment_end, point)
+            is not Orientation.RIGHT):
+        return not right_site.is_inverse
+    delta_x, delta_y = (float(point.x) - float(site_point.x),
+                        float(point.y) - float(site_point.y))
+    a, b = (float(segment_end.x) - float(segment_start.x),
+            float(segment_end.y) - float(segment_start.y))
+    if right_site.is_vertical:
+        if point.y < site_point.y and not reverse_order:
+            return False
+        elif point.y > site_point.y and reverse_order:
+            return True
+    else:
+        if (deltas_to_orientation(segment_end.x - segment_start.x,
+                                  segment_end.y - segment_start.y,
+                                  point.x - site_point.x,
+                                  point.y - site_point.y)
+                is Orientation.LEFT):
+            if not right_site.is_inverse:
+                if reverse_order:
+                    return True
+            elif not reverse_order:
+                return False
+        else:
+            fast_left_expr = a * (delta_y + delta_x) * (delta_y - delta_x)
+            fast_right_expr = 2. * b * delta_x * delta_y
+            if ((compare_floats(fast_left_expr, fast_right_expr, 4)
+                 is ComparisonResult.MORE)
+                    is not reverse_order):
+                return reverse_order
+    distance_from_left = distance_to_point_arc(left_site, point)
+    distance_from_right = distance_to_segment_arc(right_site, point)
+    # undefined ulp range is equal to 3EPS + 7EPS <= 10ULP.
+    return (distance_from_left < distance_from_right) is not reverse_order
 
 
 def segment_segment_horizontal_goes_through_right_arc_first(

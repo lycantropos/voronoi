@@ -32,15 +32,22 @@ def robust_cross_product(first_dx: int,
 def to_orientation(vertex: Point,
                    first_ray_point: Point,
                    second_ray_point: Point) -> Orientation:
-    cross_product = robust_cross_product(first_ray_point.x - vertex.x,
-                                         first_ray_point.y - vertex.y,
-                                         second_ray_point.x - vertex.x,
-                                         second_ray_point.y - vertex.y)
-    return (Orientation.LEFT
-            if cross_product > 0
-            else (Orientation.RIGHT
-                  if cross_product < 0
-                  else Orientation.COLLINEAR))
+    return deltas_to_orientation(first_ray_point.x - vertex.x,
+                                 first_ray_point.y - vertex.y,
+                                 second_ray_point.x - vertex.x,
+                                 second_ray_point.y - vertex.y)
+
+
+def deltas_to_orientation(first_dx: int,
+                          first_dy: int,
+                          second_dx: int,
+                          second_dy: int) -> Orientation:
+    return Orientation(to_sign(robust_cross_product(first_dx, first_dy,
+                                                    second_dx, second_dy)))
+
+
+def to_sign(value: float) -> int:
+    return 1 if value > 0 else (-1 if value < 0 else 0)
 
 
 def to_unique_just_seen(iterable: List[Domain]) -> List[Domain]:
