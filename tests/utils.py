@@ -18,6 +18,7 @@ from _voronoi import (BeachLineKey as BoundBeachLineKey,
                       Edge as BoundEdge,
                       GeometryCategory as BoundGeometryCategory,
                       Point as BoundPoint,
+                      RobustFloat as BoundRobustFloat,
                       Segment as BoundSegment,
                       SiteEvent as BoundSiteEvent,
                       SourceCategory as BoundSourceCategory,
@@ -36,6 +37,7 @@ from voronoi.faces import (Cell as PortedCell,
                            Edge as PortedEdge,
                            Vertex as PortedVertex)
 from voronoi.point import Point as PortedPoint
+from voronoi.robust_float import RobustFloat as PortedRobustFloat
 from voronoi.segment import Segment as PortedSegment
 
 Domain = TypeVar('Domain')
@@ -50,6 +52,7 @@ BoundDiagram = BoundDiagram
 BoundEdge = BoundEdge
 BoundGeometryCategory = BoundGeometryCategory
 BoundPoint = BoundPoint
+BoundRobustFloat = BoundRobustFloat
 BoundSegment = BoundSegment
 BoundSiteEvent = BoundSiteEvent
 BoundSourceCategory = BoundSourceCategory
@@ -63,6 +66,7 @@ PortedDiagram = PortedDiagram
 PortedEdge = PortedEdge
 PortedGeometryCategory = PortedGeometryCategory
 PortedPoint = PortedPoint
+PortedRobustFloat = PortedRobustFloat
 PortedSegment = PortedSegment
 PortedSiteEvent = PortedSiteEvent
 PortedSourceCategory = PortedSourceCategory
@@ -81,6 +85,7 @@ BoundPortedMaybeEdgesPair = Tuple[Optional[BoundEdge], Optional[PortedEdge]]
 BoundPortedGeometryCategoriesPair = Tuple[BoundGeometryCategory,
                                           PortedGeometryCategory]
 BoundPortedPointsPair = Tuple[BoundPoint, PortedPoint]
+BoundPortedRobustFloatsPair = Tuple[BoundRobustFloat, PortedRobustFloat]
 BoundPortedSegmentsPair = Tuple[BoundSegment, PortedSegment]
 BoundPortedSiteEventsPair = Tuple[BoundSiteEvent, PortedSiteEvent]
 BoundPortedSiteEventsListsPair = Tuple[List[BoundSiteEvent],
@@ -196,6 +201,12 @@ def are_bound_ported_points_equal(bound: BoundPoint, ported: PortedPoint
     return bound.x == ported.x and bound.y == ported.y
 
 
+def are_bound_ported_robust_floats_equal(bound: BoundRobustFloat,
+                                         ported: PortedRobustFloat) -> bool:
+    return (bound.value == ported.value
+            and bound.relative_error == ported.relative_error)
+
+
 def are_bound_ported_segments_equal(bound: BoundSegment, ported: PortedSegment
                                     ) -> bool:
     return (are_bound_ported_points_equal(bound.start, ported.start)
@@ -301,6 +312,13 @@ def to_bound_with_ported_edges_pair(starts_pair: BoundPortedMaybeVerticesPair,
 
 def to_bound_with_ported_points_pair(x: int, y: int) -> BoundPortedPointsPair:
     return BoundPoint(x, y), PortedPoint(x, y)
+
+
+def to_bound_with_ported_robust_floats_pair(value: int,
+                                            relative_error: int
+                                            ) -> BoundPortedRobustFloatsPair:
+    return (BoundRobustFloat(value, relative_error),
+            PortedRobustFloat(value, relative_error))
 
 
 def to_bound_with_ported_segments_pair(starts_pair: BoundPortedPointsPair,
