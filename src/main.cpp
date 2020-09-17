@@ -33,6 +33,7 @@ namespace py = pybind11;
 #define GEOMETRY_CATEGORY_NAME "GeometryCategory"
 #define ORIENTATION_NAME "Orientation"
 #define POINT_NAME "Point"
+#define ROBUST_FLOAT_NAME "RobustFloat"
 #define SEGMENT_NAME "Segment"
 #define SITE_EVENT_NAME "SiteEvent"
 #define SOURCE_CATEGORY_NAME "SourceCategory"
@@ -56,6 +57,7 @@ using CTypeTraits = boost::polygon::detail::voronoi_ctype_traits<coordinate_t>;
 using Edge = boost::polygon::voronoi_edge<double>;
 using GeometryCategory = boost::polygon::GeometryCategory;
 using Point = boost::polygon::detail::point_2d<coordinate_t>;
+using RobustFloat = boost::polygon::detail::robust_fpt<double>;
 using SiteEvent = boost::polygon::detail::site_event<coordinate_t>;
 using BeachLineKey = boost::polygon::detail::beach_line_node_key<SiteEvent>;
 using SourceCategory = boost::polygon::SourceCategory;
@@ -217,6 +219,12 @@ static std::ostream& operator<<(std::ostream& stream,
 static std::ostream& operator<<(std::ostream& stream, const Point& point) {
   return stream << C_STR(MODULE_NAME) "." POINT_NAME "(" << point.x() << ", "
                 << point.y() << ")";
+}
+
+static std::ostream& operator<<(std::ostream& stream,
+                                const RobustFloat& float_) {
+  return stream << C_STR(MODULE_NAME) "." ROBUST_FLOAT_NAME "(" << float_.fpv()
+                << ", " << float_.re() << ")";
 }
 
 static std::ostream& operator<<(std::ostream& stream, const SiteEvent& event) {
@@ -541,6 +549,24 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def("__repr__", repr<Point>)
       .def_property_readonly("x", [](const Point& self) { return self.x(); })
       .def_property_readonly("y", [](const Point& self) { return self.y(); });
+
+  py::class_<RobustFloat>(m, ROBUST_FLOAT_NAME)
+      .def(py::init<>())
+      .def(py::init<double>(), py::arg("value"))
+      .def(py::init<double, double>(), py::arg("value"),
+           py::arg("relative_error"))
+      .def(py::self + py::self)
+      .def(py::self - py::self)
+      .def(py::self * py::self)
+      .def(py::self / py::self)
+      .def(py::self += py::self)
+      .def(py::self -= py::self)
+      .def(py::self *= py::self)
+      .def(py::self /= py::self)
+      .def("__repr__", repr<RobustFloat>)
+      .def("sqrt", &RobustFloat::sqrt)
+      .def_property_readonly("value", &RobustFloat::fpv)
+      .def_property_readonly("relative_error", &RobustFloat::re);
 
   py::class_<Segment>(m, SEGMENT_NAME)
       .def(py::init<Point, Point>(), py::arg("start"), py::arg("end"))
