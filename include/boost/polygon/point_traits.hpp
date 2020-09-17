@@ -26,21 +26,6 @@ struct point_traits {
     return point.get(orient);
   }
 };
-
-template <typename PointType>
-struct point_mutable_traits {
-  typedef PointType point_type;
-  typedef typename point_type::coordinate_type coordinate_type;
-
-  static void set(point_type& point, orientation_2d orient,
-                  coordinate_type value) {
-    point.set(orient, value);
-  }
-
-  static point_type construct(coordinate_type x, coordinate_type y) {
-    return point_type(x, y);
-  }
-};
 }  // namespace polygon
 }  // namespace boost
 

@@ -109,23 +109,6 @@ struct lazy_disable_if : public lazy_disable_if_c<Cond::value, T> {};
 namespace boost {
 namespace polygon {
 
-enum GEOMETRY_CONCEPT_ID {
-  COORDINATE_CONCEPT,
-  INTERVAL_CONCEPT,
-  POINT_CONCEPT,
-  POINT_3D_CONCEPT,
-  RECTANGLE_CONCEPT,
-  POLYGON_90_CONCEPT,
-  POLYGON_90_WITH_HOLES_CONCEPT,
-  POLYGON_45_CONCEPT,
-  POLYGON_45_WITH_HOLES_CONCEPT,
-  POLYGON_CONCEPT,
-  POLYGON_WITH_HOLES_CONCEPT,
-  POLYGON_90_SET_CONCEPT,
-  POLYGON_45_SET_CONCEPT,
-  POLYGON_SET_CONCEPT
-};
-
 struct undefined_concept {};
 
 template <typename T>
@@ -133,34 +116,8 @@ struct geometry_concept {
   typedef undefined_concept type;
 };
 
-template <typename GCT, typename T>
-struct view_of {};
-
-template <typename T1, typename T2>
-view_of<T1, T2> view_as(const T2& obj) {
-  return view_of<T1, T2>(obj);
-}
-
 template <typename T>
 struct coordinate_traits {};
-
-// used to override long double with an infinite precision datatype
-template <typename T>
-struct high_precision_type {
-  typedef long double type;
-};
-
-template <typename T>
-T convert_high_precision_type(const typename high_precision_type<T>::type& v) {
-  return T(v);
-}
-
-// used to override std::sort with an alternative (parallel) algorithm
-template <typename iter_type>
-void polygon_sort(iter_type _b_, iter_type _e_);
-
-template <typename iter_type, typename pred_type>
-void polygon_sort(iter_type _b_, iter_type _e_, const pred_type& _pred_);
 
 template <>
 struct coordinate_traits<int> {
@@ -218,16 +175,6 @@ struct coordinate_traits<long double> {
   typedef long double unsigned_area_type;
   typedef long double coordinate_difference;
   typedef long double coordinate_distance;
-};
-
-template <typename T>
-struct scaling_policy {
-  template <typename T2>
-  static inline T round(T2 t2) {
-    return (T)std::floor(t2 + 0.5);
-  }
-
-  static inline T round(T t2) { return t2; }
 };
 
 struct coordinate_concept {};
@@ -352,65 +299,6 @@ struct gtl_different_type {
   typedef typename gtl_not<typename gtl_same_type<T, T2>::type>::type type;
 };
 
-struct manhattan_domain {};
-struct forty_five_domain {};
-struct general_domain {};
-
-template <typename T>
-struct geometry_domain {
-  typedef general_domain type;
-};
-
-template <typename domain_type, typename coordinate_type>
-struct area_type_by_domain {
-  typedef typename coordinate_traits<coordinate_type>::area_type type;
-};
-template <typename coordinate_type>
-struct area_type_by_domain<manhattan_domain, coordinate_type> {
-  typedef typename coordinate_traits<coordinate_type>::manhattan_area_type type;
-};
-
-struct y_c_edist : gtl_yes {};
-
-template <typename coordinate_type_1, typename coordinate_type_2>
-typename enable_if<
-    typename gtl_and_3<y_c_edist,
-                       typename gtl_same_type<
-                           typename geometry_concept<coordinate_type_1>::type,
-                           coordinate_concept>::type,
-                       typename gtl_same_type<
-                           typename geometry_concept<coordinate_type_1>::type,
-                           coordinate_concept>::type>::type,
-    typename coordinate_traits<coordinate_type_1>::coordinate_difference>::type
-euclidean_distance(const coordinate_type_1& lvalue,
-                   const coordinate_type_2& rvalue) {
-  typedef
-      typename coordinate_traits<coordinate_type_1>::coordinate_difference Unit;
-  return (lvalue < rvalue) ? (Unit)rvalue - (Unit)lvalue
-                           : (Unit)lvalue - (Unit)rvalue;
-}
-
-// predicated_swap swaps a and b if pred is true
-
-// predicated_swap is guarenteed to behave the same as
-// if(pred){
-//   T tmp = a;
-//   a = b;
-//   b = tmp;
-// }
-// but will not generate a branch instruction.
-// predicated_swap always creates a temp copy of a, but does not
-// create more than one temp copy of an input.
-// predicated_swap can be used to optimize away branch instructions in C++
-template <class T>
-inline bool predicated_swap(const bool& pred, T& a, T& b) {
-  const T tmp = a;
-  const T* input[2] = {&b, &tmp};
-  a = *input[!pred];
-  b = *input[pred];
-  return pred;
-}
-
 enum direction_1d_enum {
   LOW = 0,
   HIGH = 1,
@@ -425,16 +313,8 @@ enum direction_1d_enum {
 };
 enum orientation_2d_enum { HORIZONTAL = 0, VERTICAL = 1 };
 enum direction_2d_enum { WEST = 0, EAST = 1, SOUTH = 2, NORTH = 3 };
-enum orientation_3d_enum { PROXIMAL = 2 };
-enum direction_3d_enum { DOWN = 4, UP = 5 };
-enum winding_direction {
-  clockwise_winding = 0,
-  counterclockwise_winding = 1,
-  unknown_winding = 2
-};
 
 class direction_2d;
-class direction_3d;
 class orientation_2d;
 
 class direction_1d {
@@ -447,7 +327,6 @@ class direction_1d {
   inline direction_1d(const direction_1d& that) : val_(that.val_) {}
   inline direction_1d(const direction_1d_enum val) : val_(val) {}
   explicit inline direction_1d(const direction_2d& that);
-  explicit inline direction_1d(const direction_3d& that);
   inline direction_1d& operator=(const direction_1d& d) {
     val_ = d.val_;
     return *this;
@@ -553,86 +432,6 @@ orientation_2d::orientation_2d(const direction_2d& that)
 direction_2d orientation_2d::get_direction(direction_1d dir) const {
   return direction_2d(direction_2d_enum((val_ << 1) + dir.to_int()));
 }
-
-class orientation_3d {
- private:
-  unsigned int val_;
-  explicit inline orientation_3d(int o);
-
- public:
-  inline orientation_3d() : val_((int)HORIZONTAL) {}
-  inline orientation_3d(const orientation_3d& ori) : val_(ori.val_) {}
-  inline orientation_3d(orientation_2d ori) : val_(ori.to_int()) {}
-  inline orientation_3d(const orientation_3d_enum val) : val_(val) {}
-  explicit inline orientation_3d(const direction_2d& that);
-  explicit inline orientation_3d(const direction_3d& that);
-  inline ~orientation_3d() {}
-  inline orientation_3d& operator=(const orientation_3d& ori) {
-    val_ = ori.val_;
-    return *this;
-  }
-  inline bool operator==(orientation_3d that) const {
-    return (val_ == that.val_);
-  }
-  inline bool operator!=(orientation_3d that) const {
-    return (val_ != that.val_);
-  }
-  inline unsigned int to_int() const { return (val_); }
-  inline direction_3d get_direction(direction_1d dir) const;
-};
-
-class direction_3d {
- private:
-  int val_;
-
- public:
-  inline direction_3d() : val_(WEST) {}
-
-  inline direction_3d(direction_2d that) : val_(that.to_int()) {}
-  inline direction_3d(const direction_3d& that) : val_(that.val_) {}
-
-  inline direction_3d(const direction_2d_enum val) : val_(val) {}
-  inline direction_3d(const direction_3d_enum val) : val_(val) {}
-
-  inline direction_3d& operator=(direction_3d d) {
-    val_ = d.val_;
-    return *this;
-  }
-
-  inline ~direction_3d() {}
-
-  inline bool operator==(direction_3d d) const { return (val_ == d.val_); }
-  inline bool operator!=(direction_3d d) const { return !((*this) == d); }
-  inline bool operator<(direction_3d d) const { return (val_ < d.val_); }
-  inline bool operator<=(direction_3d d) const { return (val_ <= d.val_); }
-  inline bool operator>(direction_3d d) const { return (val_ > d.val_); }
-  inline bool operator>=(direction_3d d) const { return (val_ >= d.val_); }
-
-  // Casting to int
-  inline unsigned int to_int(void) const { return val_; }
-
-  inline direction_3d backward() const {
-    // flip the LSB, toggles 0 - 1   and 2 - 3 and 4 - 5
-    return direction_2d(direction_2d_enum(val_ ^ 1));
-  }
-
-  // N, E, U are positive, S, W, D are negative
-  inline bool is_positive() const { return (val_ & 1); }
-  inline bool is_negative() const { return !is_positive(); }
-  inline int get_sign() const { return ((is_positive()) << 1) - 1; }
-};
-
-direction_1d::direction_1d(const direction_3d& that)
-    : val_(that.to_int() & 1) {}
-orientation_3d::orientation_3d(const direction_3d& that)
-    : val_(that.to_int() >> 1) {}
-orientation_3d::orientation_3d(const direction_2d& that)
-    : val_(that.to_int() >> 1) {}
-
-direction_3d orientation_3d::get_direction(direction_1d dir) const {
-  return direction_3d(direction_3d_enum((val_ << 1) + dir.to_int()));
-}
-
 }  // namespace polygon
 }  // namespace boost
 #endif
