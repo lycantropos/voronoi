@@ -79,10 +79,6 @@ class extended_exponent_fpt {
   typedef _fpt fpt_type;
   typedef typename _traits::exp_type exp_type;
 
-  explicit extended_exponent_fpt(fpt_type val) {
-    val_ = std::frexp(val, &exp_);
-  }
-
   extended_exponent_fpt(fpt_type val, exp_type exp) {
     val_ = std::frexp(val, &exp_);
     exp_ += exp;
@@ -223,28 +219,6 @@ class extended_int {
     }
   }
 
-  extended_int(int64 that) {
-    if (that > 0) {
-      this->chunks_[0] = static_cast<uint32>(that);
-      this->chunks_[1] = that >> 32;
-      this->count_ = this->chunks_[1] ? 2 : 1;
-    } else if (that < 0) {
-      that = -that;
-      this->chunks_[0] = static_cast<uint32>(that);
-      this->chunks_[1] = that >> 32;
-      this->count_ = this->chunks_[1] ? -2 : -1;
-    } else {
-      this->count_ = 0;
-    }
-  }
-
-  extended_int(const std::vector<uint32>& chunks, bool plus = true) {
-    this->count_ = static_cast<int32>((std::min)(N, chunks.size()));
-    for (int i = 0; i < this->count_; ++i)
-      this->chunks_[i] = chunks[chunks.size() - i - 1];
-    if (!plus) this->count_ = -this->count_;
-  }
-
   template <std::size_t M>
   extended_int(const extended_int<M>& that) {
     this->count_ = that.count();
@@ -258,22 +232,6 @@ class extended_int {
     } else if (that < 0) {
       this->chunks_[0] = -that;
       this->count_ = -1;
-    } else {
-      this->count_ = 0;
-    }
-    return *this;
-  }
-
-  extended_int& operator=(int64 that) {
-    if (that > 0) {
-      this->chunks_[0] = static_cast<uint32>(that);
-      this->chunks_[1] = that >> 32;
-      this->count_ = this->chunks_[1] ? 2 : 1;
-    } else if (that < 0) {
-      that = -that;
-      this->chunks_[0] = static_cast<uint32>(that);
-      this->chunks_[1] = that >> 32;
-      this->count_ = this->chunks_[1] ? -2 : -1;
     } else {
       this->count_ = 0;
     }
