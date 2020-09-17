@@ -307,6 +307,13 @@ PYBIND11_MODULE(MODULE_NAME, m) {
              return comparator(self, other);
            })
       .def_property_readonly(
+          "comparison_site",
+          [](const BeachLineKey& self) {
+            static const Predicates::node_comparison_predicate<BeachLineKey>
+                comparator;
+            return comparator.get_comparison_site(self);
+          })
+      .def_property_readonly(
           "left_site",
           [](const BeachLineKey& self) { return self.left_site(); })
       .def_property_readonly("right_site", [](const BeachLineKey& self) {
