@@ -28,6 +28,7 @@ namespace py = pybind11;
 #define C_STR(a) C_STR_HELPER(a)
 #define BEACH_LINE_KEY "BeachLineKey"
 #define BEACH_LINE_VALUE "BeachLineValue"
+#define BIG_INT_NAME "BigInt"
 #define CIRCLE_EVENT_NAME "CircleEvent"
 #define COMPARISON_RESULT_NAME "ComparisonResult"
 #define GEOMETRY_CATEGORY_NAME "GeometryCategory"
@@ -55,6 +56,7 @@ using CircleEvent = boost::polygon::detail::circle_event<coordinate_t>;
 using UlpComparator = boost::polygon::detail::ulp_comparison<double>;
 using ComparisonResult = UlpComparator::Result;
 using CTypeTraits = boost::polygon::detail::voronoi_ctype_traits<coordinate_t>;
+using BigInt = CTypeTraits::big_int_type;
 using Edge = boost::polygon::voronoi_edge<double>;
 using GeometryCategory = boost::polygon::GeometryCategory;
 using Point = boost::polygon::detail::point_2d<coordinate_t>;
@@ -70,6 +72,10 @@ using EventComparisonPredicate =
     Predicates::event_comparison_predicate<SiteEvent, CircleEvent>;
 using Orientation = Predicates::orientation_test::Orientation;
 using Vertex = boost::polygon::voronoi_vertex<double>;
+
+static int to_sign(coordinate_t value) {
+  return value > 0 ? 1 : (value < 0 ? -1 : 0);
+}
 
 static std::string bool_repr(bool value) { return py::str(py::bool_(value)); }
 
@@ -205,6 +211,18 @@ static std::ostream& operator<<(std::ostream& stream, const Diagram& diagram) {
 }
 
 namespace detail {
+static std::ostream& operator<<(std::ostream& stream, const BigInt& int_) {
+  stream << C_STR(MODULE_NAME) "." BIG_INT_NAME "([";
+  std::size_t size = int_.size();
+  const auto& chunks = int_.chunks();
+  if (size != 0) {
+    stream << chunks[0];
+    for (std::size_t index = 1; index < size; ++index)
+      stream << ", " << chunks[index];
+  }
+  return stream << "], " << to_sign(int_.count()) << ")";
+}
+
 static bool operator==(const CircleEvent& left, const CircleEvent& right) {
   return left.x() == right.x() && left.y() == right.y() &&
          left.lower_x() == right.lower_x() &&
@@ -358,6 +376,39 @@ PYBIND11_MODULE(MODULE_NAME, m) {
           "edge", [](const BeachLineValue& self) { return self.edge(); })
       .def_property_readonly("circle_event", [](const BeachLineValue& self) {
         return self.circle_event();
+      });
+
+  py::class_<BigInt>(m, BIG_INT_NAME)
+      .def(py::init<coordinate_t>(), py::arg("value"))
+      .def(py::init<>(
+               [](const std::vector<std::uint32_t>& digits, std::int8_t sign) {
+                 auto result = std::make_unique<BigInt>();
+                 result->count_ = to_sign(sign) * digits.size();
+                 std::copy(digits.begin(), digits.end(), result->chunks_);
+                 return result;
+               }),
+           py::arg("digits"), py::arg("sign"))
+      .def(-py::self)
+      .def(py::self + py::self)
+      .def(py::self - py::self)
+      .def(py::self * py::self)
+      .def(py::self + coordinate_t())
+      .def(py::self - coordinate_t())
+      .def(py::self * coordinate_t())
+      .def("__repr__", repr<BigInt>)
+      .def_property_readonly(
+          "digits",
+          [](const BigInt& self) -> std::vector<std::uint32_t> {
+            std::size_t size = self.size();
+            std::vector<std::uint32_t> result;
+            const auto& chunks = self.chunks();
+            for (std::size_t index = 0; index < size; ++index)
+              result.push_back(chunks[index]);
+            return result;
+          })
+      .def_property_readonly("sign", [](const BigInt& self) {
+        const auto count = self.count();
+        return to_sign(count);
       });
 
   py::class_<Builder>(m, BUILDER_NAME)
