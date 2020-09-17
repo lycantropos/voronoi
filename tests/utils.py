@@ -19,6 +19,7 @@ from _voronoi import (BeachLineKey as BoundBeachLineKey,
                       Edge as BoundEdge,
                       GeometryCategory as BoundGeometryCategory,
                       Point as BoundPoint,
+                      RobustDifference as BoundRobustDifference,
                       RobustFloat as BoundRobustFloat,
                       Segment as BoundSegment,
                       SiteEvent as BoundSiteEvent,
@@ -38,6 +39,8 @@ from voronoi.faces import (Cell as PortedCell,
                            Edge as PortedEdge,
                            Vertex as PortedVertex)
 from voronoi.point import Point as PortedPoint
+from voronoi.robust_difference import (RobustDifference
+                                       as PortedRobustDifference)
 from voronoi.robust_float import RobustFloat as PortedRobustFloat
 from voronoi.segment import Segment as PortedSegment
 
@@ -53,6 +56,7 @@ BoundDiagram = BoundDiagram
 BoundEdge = BoundEdge
 BoundGeometryCategory = BoundGeometryCategory
 BoundPoint = BoundPoint
+BoundRobustDifference = BoundRobustDifference
 BoundRobustFloat = BoundRobustFloat
 BoundSegment = BoundSegment
 BoundSiteEvent = BoundSiteEvent
@@ -67,6 +71,7 @@ PortedDiagram = PortedDiagram
 PortedEdge = PortedEdge
 PortedGeometryCategory = PortedGeometryCategory
 PortedPoint = PortedPoint
+PortedRobustDifference = PortedRobustDifference
 PortedRobustFloat = PortedRobustFloat
 PortedSegment = PortedSegment
 PortedSiteEvent = PortedSiteEvent
@@ -86,6 +91,8 @@ BoundPortedMaybeEdgesPair = Tuple[Optional[BoundEdge], Optional[PortedEdge]]
 BoundPortedGeometryCategoriesPair = Tuple[BoundGeometryCategory,
                                           PortedGeometryCategory]
 BoundPortedPointsPair = Tuple[BoundPoint, PortedPoint]
+BoundPortedRobustDifferencesPair = Tuple[BoundRobustDifference,
+                                         PortedRobustDifference]
 BoundPortedRobustFloatsPair = Tuple[BoundRobustFloat, PortedRobustFloat]
 BoundPortedSegmentsPair = Tuple[BoundSegment, PortedSegment]
 BoundPortedSiteEventsPair = Tuple[BoundSiteEvent, PortedSiteEvent]
@@ -200,6 +207,14 @@ are_bound_ported_maybe_edges_equal = to_maybe_equals(
 def are_bound_ported_points_equal(bound: BoundPoint, ported: PortedPoint
                                   ) -> bool:
     return bound.x == ported.x and bound.y == ported.y
+
+
+def are_bound_ported_robust_differences_equal(bound: BoundRobustDifference,
+                                              ported: PortedRobustDifference
+                                              ) -> bool:
+    return (are_bound_ported_robust_floats_equal(bound.minuend, ported.minuend)
+            and are_bound_ported_robust_floats_equal(bound.subtrahend,
+                                                     ported.subtrahend))
 
 
 def are_bound_ported_robust_floats_equal(bound: BoundRobustFloat,
@@ -318,6 +333,16 @@ def to_bound_with_ported_edges_pair(starts_pair: BoundPortedMaybeVerticesPair,
 
 def to_bound_with_ported_points_pair(x: int, y: int) -> BoundPortedPointsPair:
     return BoundPoint(x, y), PortedPoint(x, y)
+
+
+def to_bound_with_ported_robust_differences_pair(
+        minuends_pair: BoundPortedRobustFloatsPair,
+        subtrahends_pair: BoundPortedRobustFloatsPair
+) -> BoundPortedRobustDifferencesPair:
+    bound_minuend, ported_minuend = minuends_pair
+    bound_subtrahend, ported_subtrahend = subtrahends_pair
+    return (BoundRobustDifference(bound_minuend, bound_subtrahend),
+            PortedRobustDifference(ported_minuend, ported_subtrahend))
 
 
 def to_bound_with_ported_robust_floats_pair(value: float,
