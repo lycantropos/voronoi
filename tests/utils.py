@@ -204,7 +204,7 @@ def are_bound_ported_points_equal(bound: BoundPoint, ported: PortedPoint
 
 def are_bound_ported_robust_floats_equal(bound: BoundRobustFloat,
                                          ported: PortedRobustFloat) -> bool:
-    return (bound.value == ported.value
+    return (are_floats_equivalent(bound.value, ported.value)
             and are_floats_equivalent(bound.relative_error,
                                       ported.relative_error))
 
