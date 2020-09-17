@@ -11,5 +11,7 @@ def test_basic(first_pair: BoundPortedRobustFloatsPair,
     first_bound, first_ported = first_pair
     second_bound, second_ported = second_pair
 
-    assert are_bound_ported_robust_floats_equal(first_bound + second_bound,
-                                                first_ported + second_ported)
+    bound_result = first_bound + second_bound
+    ported_result = first_ported + second_ported
+
+    assert are_bound_ported_robust_floats_equal(bound_result, ported_result)
