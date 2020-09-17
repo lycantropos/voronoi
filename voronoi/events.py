@@ -200,3 +200,17 @@ def point_point_horizontal_goes_through_right_arc_first(left_site: SiteEvent,
     distance_from_right = distance_to_point_arc(right_site, point)
     # undefined ulp range is equal to 3EPS + 3EPS <= 6ULP
     return distance_from_left < distance_from_right
+
+
+def segment_segment_horizontal_goes_through_right_arc_first(
+        left_site: SiteEvent,
+        right_site: SiteEvent,
+        point: Point) -> bool:
+    # handle temporary segment sites
+    if left_site.sorted_index == right_site.sorted_index:
+        return (to_orientation(left_site.start, left_site.end, point)
+                is Orientation.LEFT)
+    distance_from_left = distance_to_segment_arc(left_site, point)
+    distance_from_right = distance_to_segment_arc(right_site, point)
+    # undefined ulp range is equal to 7EPS + 7EPS <= 14ULP
+    return distance_from_left < distance_from_right
