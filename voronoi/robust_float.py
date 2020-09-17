@@ -29,6 +29,9 @@ class RobustFloat:
                           + ROUNDING_ERROR)
         return RobustFloat(value, relative_error)
 
+    def __bool__(self) -> bool:
+        return bool(self.value)
+
     def __imul__(self, other: 'RobustFloat') -> 'RobustFloat':
         self.value *= other.value
         self.relative_error += other.relative_error + ROUNDING_ERROR
