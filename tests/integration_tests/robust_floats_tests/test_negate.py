@@ -5,7 +5,7 @@ from tests.utils import (BoundPortedRobustFloatsPair,
 from . import strategies
 
 
-@given(strategies.non_negative_robust_floats_pairs)
+@given(strategies.robust_floats_pairs)
 def test_basic(pair: BoundPortedRobustFloatsPair) -> None:
     bound, ported = pair
 
