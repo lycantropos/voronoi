@@ -10,7 +10,8 @@ from typing import (Callable,
                     TypeVar,
                     Union)
 
-from _voronoi import (Builder as BoundBuilder,
+from _voronoi import (BeachLineKey as BoundBeachLineKey,
+                      Builder as BoundBuilder,
                       Cell as BoundCell,
                       CircleEvent as BoundCircleEvent,
                       Diagram as BoundDiagram,
@@ -24,6 +25,7 @@ from _voronoi import (Builder as BoundBuilder,
 from hypothesis import strategies
 from hypothesis.strategies import SearchStrategy
 
+from voronoi.beach_line_key import BeachLineKey as PortedBeachLineKey
 from voronoi.builder import Builder as PortedBuilder
 from voronoi.diagram import Diagram as PortedDiagram
 from voronoi.enums import (GeometryCategory as PortedGeometryCategory,
@@ -40,6 +42,7 @@ Domain = TypeVar('Domain')
 Range = TypeVar('Range')
 Strategy = SearchStrategy
 
+BoundBeachLineKey = BoundBeachLineKey
 BoundBuilder = BoundBuilder
 BoundCell = BoundCell
 BoundCircleEvent = BoundCircleEvent
@@ -52,6 +55,7 @@ BoundSiteEvent = BoundSiteEvent
 BoundSourceCategory = BoundSourceCategory
 BoundVertex = BoundVertex
 
+PortedBeachLineKey = PortedBeachLineKey
 PortedBuilder = PortedBuilder
 PortedCell = PortedCell
 PortedCircleEvent = PortedCircleEvent
@@ -64,6 +68,7 @@ PortedSiteEvent = PortedSiteEvent
 PortedSourceCategory = PortedSourceCategory
 PortedVertex = PortedVertex
 
+BoundPortedBeachLineKeysPair = Tuple[BoundBeachLineKey, PortedBeachLineKey]
 BoundPortedBuildersPair = Tuple[BoundBuilder, PortedBuilder]
 BoundPortedCellsPair = Tuple[BoundCell, PortedCell]
 BoundPortedCellsListsPair = Tuple[List[BoundCell], List[PortedCell]]
@@ -124,6 +129,14 @@ def to_sequences_equals(equals: Callable[[Domain, Range], bool]
         return len(left) == len(right) and all(map(equals, left, right))
 
     return sequences_equals
+
+
+def are_bound_ported_beach_line_keys_equal(bound: BoundBeachLineKey,
+                                           ported: PortedBeachLineKey) -> bool:
+    return (are_bound_ported_site_events_equal(bound.left_site,
+                                               ported.left_site)
+            and are_bound_ported_site_events_equal(bound.right_site,
+                                                   ported.right_site))
 
 
 def are_bound_ported_builders_equal(bound: BoundBuilder,
@@ -212,6 +225,16 @@ are_bound_ported_vertices_lists_equal = to_sequences_equals(
         are_bound_ported_vertices_equal)
 are_bound_ported_maybe_vertices_equal = to_maybe_equals(
         are_bound_ported_vertices_equal)
+
+
+def to_bound_with_ported_beach_line_keys_pair(
+        left_sites_pair: BoundPortedSiteEventsPair,
+        right_sites_pair: BoundPortedSiteEventsPair
+) -> BoundPortedBeachLineKeysPair:
+    bound_left_site, ported_left_site = left_sites_pair
+    bound_right_site, ported_right_site = right_sites_pair
+    return (BoundBeachLineKey(bound_left_site, bound_right_site),
+            PortedBeachLineKey(ported_left_site, ported_right_site))
 
 
 def to_bound_with_ported_builders_pair(index: int,
