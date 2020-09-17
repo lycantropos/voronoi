@@ -251,33 +251,6 @@ class extended_int {
 
   bool is_zero() const { return this->count_ == 0; }
 
-  bool operator==(const extended_int& that) const {
-    if (this->count_ != that.count()) return false;
-    for (std::size_t i = 0; i < this->size(); ++i)
-      if (this->chunks_[i] != that.chunks()[i]) return false;
-    return true;
-  }
-
-  bool operator!=(const extended_int& that) const { return !(*this == that); }
-
-  bool operator<(const extended_int& that) const {
-    if (this->count_ != that.count()) return this->count_ < that.count();
-    std::size_t i = this->size();
-    if (!i) return false;
-    do {
-      --i;
-      if (this->chunks_[i] != that.chunks()[i])
-        return (this->chunks_[i] < that.chunks()[i]) ^ (this->count_ < 0);
-    } while (i);
-    return false;
-  }
-
-  bool operator>(const extended_int& that) const { return that < *this; }
-
-  bool operator<=(const extended_int& that) const { return !(that < *this); }
-
-  bool operator>=(const extended_int& that) const { return !(*this < that); }
-
   extended_int operator-() const {
     extended_int ret_val = *this;
     ret_val.neg();
@@ -334,11 +307,6 @@ class extended_int {
   }
 
   extended_int operator*(int32 that) const {
-    extended_int temp(that);
-    return (*this) * temp;
-  }
-
-  extended_int operator*(int64 that) const {
     extended_int temp(that);
     return (*this) * temp;
   }
