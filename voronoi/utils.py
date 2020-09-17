@@ -45,7 +45,7 @@ def safe_divide_floats(dividend: float, divisor: float) -> float:
     try:
         return dividend / divisor
     except ZeroDivisionError:
-        return (copysign(inf, divisor)
+        return (copysign(inf, dividend * divisor)
                 if dividend and not isnan(dividend)
                 else nan)
 
