@@ -26,24 +26,22 @@ class BeachLineKey:
             # first node contains a new site
             return not horizontal_goes_through_right_arc_first(
                     other.left_site, other.right_site, point)
+        elif site.sorted_index == other_site.sorted_index:
+            # both nodes are new
+            # (inserted during same site event processing)
+            return self.to_comparison_y() < other.to_comparison_y()
+        elif site.sorted_index < other_site.sorted_index:
+            y, flag = self.to_comparison_y(False)
+            other_y, _ = other.to_comparison_y(True)
+            return (not site.is_segment and flag < 0
+                    if y == other_y
+                    else y < other_y)
         else:
-            # this checks were evaluated experimentally
-            if site.sorted_index == other_site.sorted_index:
-                # both nodes are new
-                # (inserted during same site event processing)
-                return self.to_comparison_y() < other.to_comparison_y()
-            elif site.sorted_index < other_site.sorted_index:
-                y, flag = self.to_comparison_y(False)
-                other_y, _ = other.to_comparison_y(True)
-                return (not site.is_segment and flag < 0
-                        if y == other_y
-                        else y < other_y)
-            else:
-                y, _ = self.to_comparison_y(True)
-                other_y, other_flag = other.to_comparison_y(False)
-                return (other_site.is_segment or other_flag > 0
-                        if y == other_y
-                        else y < other_y)
+            y, _ = self.to_comparison_y(True)
+            other_y, other_flag = other.to_comparison_y(False)
+            return (other_site.is_segment or other_flag > 0
+                    if y == other_y
+                    else y < other_y)
 
     @property
     def comparison_site(self) -> SiteEvent:
