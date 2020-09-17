@@ -312,6 +312,14 @@ PYBIND11_MODULE(MODULE_NAME, m) {
                  comparator;
              return comparator(self, other);
            })
+      .def(
+          "to_comparison_y",
+          [](const BeachLineKey& self, bool is_new_node) {
+            static const Predicates::node_comparison_predicate<BeachLineKey>
+                comparator;
+            return comparator.get_comparison_y(self, is_new_node);
+          },
+          py::arg("is_new_node") = true)
       .def_property_readonly(
           "comparison_site",
           [](const BeachLineKey& self) {
