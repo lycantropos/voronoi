@@ -1,5 +1,6 @@
 from enum import Enum
 from functools import partial
+from math import isnan
 from operator import is_
 from typing import (Callable,
                     List,
@@ -204,7 +205,8 @@ def are_bound_ported_points_equal(bound: BoundPoint, ported: PortedPoint
 def are_bound_ported_robust_floats_equal(bound: BoundRobustFloat,
                                          ported: PortedRobustFloat) -> bool:
     return (bound.value == ported.value
-            and bound.relative_error == ported.relative_error)
+            and are_floats_equivalent(bound.relative_error,
+                                      ported.relative_error))
 
 
 def are_bound_ported_segments_equal(bound: BoundSegment, ported: PortedSegment
@@ -236,6 +238,10 @@ are_bound_ported_vertices_lists_equal = to_sequences_equals(
         are_bound_ported_vertices_equal)
 are_bound_ported_maybe_vertices_equal = to_maybe_equals(
         are_bound_ported_vertices_equal)
+
+
+def are_floats_equivalent(left: float, right: float) -> bool:
+    return left == right or isnan(left) and isnan(right)
 
 
 def to_bound_with_ported_beach_line_keys_pair(
