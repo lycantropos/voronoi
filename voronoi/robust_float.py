@@ -14,6 +14,16 @@ class RobustFloat:
 
     __repr__ = generate_repr(__init__)
 
+    def __imul__(self, other: 'RobustFloat') -> 'RobustFloat':
+        self.value *= other.value
+        self.relative_error += other.relative_error + ROUNDING_ERROR
+        return self
+
+    def __itruediv__(self, other: 'RobustFloat') -> 'RobustFloat':
+        self.value /= other.value
+        self.relative_error += other.relative_error + ROUNDING_ERROR
+        return self
+
     def __add__(self, other: 'RobustFloat') -> 'RobustFloat':
         value = self.value + other.value
         relative_error = (max(self.relative_error, other.relative_error)
