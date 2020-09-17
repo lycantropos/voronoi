@@ -637,6 +637,16 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       py::arg("left_site"), py::arg("right_site"), py::arg("point"));
 
   m.def(
+      "point_segment_horizontal_goes_through_right_arc_first",
+      [](const SiteEvent& left_site, const SiteEvent& right_site,
+         const Point& point, bool reverse_order) {
+        static const Predicates::distance_predicate<SiteEvent> comparator;
+        return comparator.ps(left_site, right_site, point, reverse_order);
+      },
+      py::arg("left_site"), py::arg("right_site"), py::arg("point"),
+      py::arg("reverse_order"));
+
+  m.def(
       "segment_segment_horizontal_goes_through_right_arc_first",
       [](const SiteEvent& left_site, const SiteEvent& right_site,
          const Point& point) {
