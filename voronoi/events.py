@@ -185,6 +185,24 @@ def distance_to_segment_arc(site: SiteEvent, point: Point) -> float:
                                         point.x - start.x, point.y - start.y)
 
 
+def horizontal_goes_through_right_arc_first(left_site: SiteEvent,
+                                            right_site: SiteEvent,
+                                            point: Point) -> bool:
+    if left_site.is_segment:
+        if right_site.is_segment:
+            return segment_segment_horizontal_goes_through_right_arc_first(
+                    left_site, right_site, point)
+        else:
+            return point_segment_horizontal_goes_through_right_arc_first(
+                    right_site, left_site, point, True)
+    elif right_site.is_segment:
+        return point_segment_horizontal_goes_through_right_arc_first(
+                left_site, right_site, point, False)
+    else:
+        return point_point_horizontal_goes_through_right_arc_first(
+                left_site, right_site, point)
+
+
 def point_point_horizontal_goes_through_right_arc_first(left_site: SiteEvent,
                                                         right_site: SiteEvent,
                                                         point: Point) -> bool:
