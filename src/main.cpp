@@ -314,12 +314,14 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::init<SiteEvent, SiteEvent>(), py::arg("left_site"),
            py::arg("right_site"))
       .def("__repr__", repr<BeachLineKey>)
-      .def("__lt__",
-           [](const BeachLineKey& self, const BeachLineKey& other) {
-             static const Predicates::node_comparison_predicate<BeachLineKey>
-                 comparator;
-             return comparator(self, other);
-           })
+      .def(
+          "__lt__",
+          [](const BeachLineKey& self, const BeachLineKey& other) {
+            static const Predicates::node_comparison_predicate<BeachLineKey>
+                comparator;
+            return comparator(self, other);
+          },
+          py::is_operator())
       .def(
           "to_comparison_y",
           [](const BeachLineKey& self, bool is_new_node) {
@@ -406,16 +408,20 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            py::arg("center_x"), py::arg("center_y"), py::arg("lower_x"),
            py::arg("is_active") = true)
       .def(py::self == py::self)
-      .def("__lt__",
-           [](const CircleEvent& self, const CircleEvent& other) {
-             static const EventComparisonPredicate comparator;
-             return comparator(self, other);
-           })
-      .def("__lt__",
-           [](const CircleEvent& self, const SiteEvent& other) {
-             static const EventComparisonPredicate comparator;
-             return comparator(self, other);
-           })
+      .def(
+          "__lt__",
+          [](const CircleEvent& self, const CircleEvent& other) {
+            static const EventComparisonPredicate comparator;
+            return comparator(self, other);
+          },
+          py::is_operator())
+      .def(
+          "__lt__",
+          [](const CircleEvent& self, const SiteEvent& other) {
+            static const EventComparisonPredicate comparator;
+            return comparator(self, other);
+          },
+          py::is_operator())
       .def("__repr__", repr<CircleEvent>)
       .def("deactivate", &CircleEvent::deactivate)
       .def_property_readonly("center_x",
@@ -540,12 +546,14 @@ PYBIND11_MODULE(MODULE_NAME, m) {
   py::class_<Point>(m, POINT_NAME)
       .def(py::init<coordinate_t, coordinate_t>(), py::arg("x"), py::arg("y"))
       .def(py::self == py::self)
-      .def("__lt__",
-           [](const Point& self, const Point& other) {
-             static const Predicates::point_comparison_predicate<Point>
-                 comparator;
-             return comparator(self, other);
-           })
+      .def(
+          "__lt__",
+          [](const Point& self, const Point& other) {
+            static const Predicates::point_comparison_predicate<Point>
+                comparator;
+            return comparator(self, other);
+          },
+          py::is_operator())
       .def("__repr__", repr<Point>)
       .def_property_readonly("x", [](const Point& self) { return self.x(); })
       .def_property_readonly("y", [](const Point& self) { return self.y(); });
@@ -590,16 +598,20 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            py::arg("source_category") =
                SourceCategory::SOURCE_CATEGORY_SINGLE_POINT)
       .def(py::self == py::self)
-      .def("__lt__",
-           [](const SiteEvent& self, const CircleEvent& other) {
-             static const EventComparisonPredicate comparator;
-             return comparator(self, other);
-           })
-      .def("__lt__",
-           [](const SiteEvent& self, const SiteEvent& other) {
-             static const EventComparisonPredicate comparator;
-             return comparator(self, other);
-           })
+      .def(
+          "__lt__",
+          [](const SiteEvent& self, const CircleEvent& other) {
+            static const EventComparisonPredicate comparator;
+            return comparator(self, other);
+          },
+          py::is_operator())
+      .def(
+          "__lt__",
+          [](const SiteEvent& self, const SiteEvent& other) {
+            static const EventComparisonPredicate comparator;
+            return comparator(self, other);
+          },
+          py::is_operator())
       .def("__repr__", repr<SiteEvent>)
       .def_property_readonly(
           "comparison_point",
