@@ -26,8 +26,8 @@ namespace py = pybind11;
 #define MODULE_NAME _voronoi
 #define C_STR_HELPER(a) #a
 #define C_STR(a) C_STR_HELPER(a)
-#define BEACH_LINE_NODE_KEY "BeachLineNodeKey"
-#define BEACH_LINE_NODE_VALUE "BeachLineNodeValue"
+#define BEACH_LINE_KEY "BeachLineKey"
+#define BEACH_LINE_VALUE "BeachLineValue"
 #define CIRCLE_EVENT_NAME "CircleEvent"
 #define COMPARISON_RESULT_NAME "ComparisonResult"
 #define GEOMETRY_CATEGORY_NAME "GeometryCategory"
@@ -57,9 +57,9 @@ using Edge = boost::polygon::voronoi_edge<double>;
 using GeometryCategory = boost::polygon::GeometryCategory;
 using Point = boost::polygon::detail::point_2d<coordinate_t>;
 using SiteEvent = boost::polygon::detail::site_event<coordinate_t>;
-using BeachLineNodeKey = boost::polygon::detail::beach_line_node_key<SiteEvent>;
+using BeachLineKey = boost::polygon::detail::beach_line_node_key<SiteEvent>;
 using SourceCategory = boost::polygon::SourceCategory;
-using BeachLineNodeValue =
+using BeachLineValue =
     boost::polygon::detail::beach_line_node_data<Edge, CircleEvent>;
 using Predicates = boost::polygon::detail::voronoi_predicates<CTypeTraits>;
 using EventComparisonPredicate =
@@ -296,31 +296,30 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .value("REVERSE_SEGMENT", SourceCategory::SOURCE_CATEGORY_REVERSE_SEGMENT)
       .def("belongs", &boost::polygon::belongs);
 
-  py::class_<BeachLineNodeKey>(m, BEACH_LINE_NODE_KEY)
+  py::class_<BeachLineKey>(m, BEACH_LINE_KEY)
       .def(py::init<SiteEvent>(), py::arg("site"))
       .def(py::init<SiteEvent, SiteEvent>(), py::arg("left_site"),
            py::arg("right_site"))
-      .def(
-          "__lt__",
-          [](const BeachLineNodeKey& self, const BeachLineNodeKey& other) {
-            static const Predicates::node_comparison_predicate<BeachLineNodeKey>
-                comparator;
-            return comparator(self, other);
-          })
+      .def("__lt__",
+           [](const BeachLineKey& self, const BeachLineKey& other) {
+             static const Predicates::node_comparison_predicate<BeachLineKey>
+                 comparator;
+             return comparator(self, other);
+           })
       .def_property_readonly(
           "left_site",
-          [](const BeachLineNodeKey& self) { return self.left_site(); })
-      .def_property_readonly("right_site", [](const BeachLineNodeKey& self) {
+          [](const BeachLineKey& self) { return self.left_site(); })
+      .def_property_readonly("right_site", [](const BeachLineKey& self) {
         return self.right_site();
       });
 
-  py::class_<BeachLineNodeValue>(m, BEACH_LINE_NODE_VALUE)
+  py::class_<BeachLineValue>(m, BEACH_LINE_VALUE)
       .def(py::init<Edge*>(), py::arg("edge"))
       .def_property_readonly(
-          "edge", [](const BeachLineNodeValue& self) { return self.edge(); })
-      .def_property_readonly(
-          "circle_event",
-          [](const BeachLineNodeValue& self) { return self.circle_event(); });
+          "edge", [](const BeachLineValue& self) { return self.edge(); })
+      .def_property_readonly("circle_event", [](const BeachLineValue& self) {
+        return self.circle_event();
+      });
 
   py::class_<Builder>(m, BUILDER_NAME)
       .def(py::init([](std::size_t index,
