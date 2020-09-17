@@ -182,3 +182,21 @@ def distance_to_segment_arc(site: SiteEvent, point: Point) -> float:
             k = (k - b1) / (a1 * a1)
         return k * robust_cross_product(end.x - start.x, end.y - start.y,
                                         point.x - start.x, point.y - start.y)
+
+
+def point_point_horizontal_goes_through_right_arc_first(left_site: SiteEvent,
+                                                        right_site: SiteEvent,
+                                                        point: Point) -> bool:
+    left_point, right_point = left_site.start, right_site.start
+    if left_point.x > right_point.x:
+        if point.y <= left_point.y:
+            return False
+    elif left_point.x < right_point.x:
+        if point.y >= right_point.y:
+            return True
+    else:
+        return left_point.y + right_point.y < 2 * point.y
+    distance_from_left = distance_to_point_arc(left_site, point)
+    distance_from_right = distance_to_point_arc(right_site, point)
+    # undefined ulp range is equal to 3EPS + 3EPS <= 6ULP
+    return distance_from_left < distance_from_right
