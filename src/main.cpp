@@ -226,6 +226,11 @@ static std::ostream& operator<<(std::ostream& stream, const SiteEvent& event) {
                 << bool_repr(event.is_inverse()) << ", "
                 << event.source_category() << ")";
 }
+
+static std::ostream& operator<<(std::ostream& stream, const BeachLineKey& key) {
+  return stream << C_STR(MODULE_NAME) "." BEACH_LINE_KEY "(" << key.left_site() << ", "
+                << key.right_site() << ")";
+}
 }  // namespace detail
 
 template <>
@@ -300,6 +305,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::init<SiteEvent>(), py::arg("site"))
       .def(py::init<SiteEvent, SiteEvent>(), py::arg("left_site"),
            py::arg("right_site"))
+      .def("__repr__", repr<BeachLineKey>)
       .def("__lt__",
            [](const BeachLineKey& self, const BeachLineKey& other) {
              static const Predicates::node_comparison_predicate<BeachLineKey>
