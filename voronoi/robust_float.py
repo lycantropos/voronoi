@@ -58,7 +58,7 @@ class RobustFloat:
         return RobustFloat(value, relative_error)
 
     def __truediv__(self, other: 'RobustFloat') -> 'RobustFloat':
-        return RobustFloat(self.value / other.value,
+        return RobustFloat(safe_divide_floats(self.value, other.value),
                            self.relative_error + other.relative_error
                            + ROUNDING_ERROR)
 
