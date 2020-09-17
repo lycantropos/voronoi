@@ -1,7 +1,4 @@
-from math import (copysign,
-                  inf,
-                  nan,
-                  sqrt)
+from math import sqrt
 from typing import (Any,
                     TypeVar)
 
@@ -14,6 +11,7 @@ from .point import Point
 from .utils import (compare_floats,
                     deltas_to_orientation,
                     robust_cross_product,
+                    safe_divide_floats,
                     to_orientation)
 
 ULPS = 64
@@ -165,11 +163,7 @@ def distance_to_point_arc(site: SiteEvent, point: Point) -> float:
     dx = float(site.start.x) - float(point.x)
     dy = float(site.start.y) - float(point.y)
     # the relative error is at most 3EPS
-    numerator = dx * dx + dy * dy
-    try:
-        return numerator / (2.0 * dx)
-    except ZeroDivisionError:
-        return copysign(inf, dx) if numerator else nan
+    return safe_divide_floats(dx * dx + dy * dy, 2.0 * dx)
 
 
 def distance_to_segment_arc(site: SiteEvent, point: Point) -> float:

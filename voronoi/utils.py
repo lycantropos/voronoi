@@ -1,5 +1,8 @@
 import struct
 from itertools import groupby
+from math import (copysign,
+                  inf,
+                  nan)
 from typing import (List,
                     TypeVar)
 
@@ -22,11 +25,26 @@ def compare_floats(left: float, right: float, max_ulps: int
                   else ComparisonResult.MORE))
 
 
+def deltas_to_orientation(first_dx: int,
+                          first_dy: int,
+                          second_dx: int,
+                          second_dy: int) -> Orientation:
+    return Orientation(to_sign(robust_cross_product(first_dx, first_dy,
+                                                    second_dx, second_dy)))
+
+
 def robust_cross_product(first_dx: int,
                          first_dy: int,
                          second_dx: int,
                          second_dy: int) -> float:
     return float(first_dx * second_dy - second_dx * first_dy)
+
+
+def safe_divide_floats(dividend: float, divisor: float) -> float:
+    try:
+        return dividend / divisor
+    except ZeroDivisionError:
+        return copysign(inf, divisor) if dividend else nan
 
 
 def to_orientation(vertex: Point,
@@ -36,14 +54,6 @@ def to_orientation(vertex: Point,
                                  first_ray_point.y - vertex.y,
                                  second_ray_point.x - vertex.x,
                                  second_ray_point.y - vertex.y)
-
-
-def deltas_to_orientation(first_dx: int,
-                          first_dy: int,
-                          second_dx: int,
-                          second_dy: int) -> Orientation:
-    return Orientation(to_sign(robust_cross_product(first_dx, first_dy,
-                                                    second_dx, second_dy)))
 
 
 def to_sign(value: float) -> int:
