@@ -228,8 +228,8 @@ static std::ostream& operator<<(std::ostream& stream, const SiteEvent& event) {
 }
 
 static std::ostream& operator<<(std::ostream& stream, const BeachLineKey& key) {
-  return stream << C_STR(MODULE_NAME) "." BEACH_LINE_KEY "(" << key.left_site() << ", "
-                << key.right_site() << ")";
+  return stream << C_STR(MODULE_NAME) "." BEACH_LINE_KEY "(" << key.left_site()
+                << ", " << key.right_site() << ")";
 }
 }  // namespace detail
 
