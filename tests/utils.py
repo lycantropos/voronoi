@@ -128,8 +128,8 @@ def to_sequences_equals(equals: Callable[[Domain, Range], bool]
 def are_bound_ported_builders_equal(bound: BoundBuilder,
                                     ported: PortedBuilder) -> bool:
     return (bound.index == ported.index
-            and all(map(are_bound_ported_site_events_equal, bound.site_events,
-                        ported.site_events))
+            and are_bound_ported_site_events_lists_equal(bound.site_events,
+                                                         ported.site_events)
             and bound.site_event_index == ported.site_event_index)
 
 
@@ -196,6 +196,10 @@ def are_bound_ported_site_events_equal(bound: BoundSiteEvent,
             and bound.initial_index == ported.initial_index
             and bound.is_inverse is ported.is_inverse
             and bound.source_category == ported.source_category)
+
+
+are_bound_ported_site_events_lists_equal = to_sequences_equals(
+        are_bound_ported_site_events_equal)
 
 
 def are_bound_ported_vertices_equal(bound: BoundVertex, ported: PortedVertex
