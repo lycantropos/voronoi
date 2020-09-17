@@ -320,8 +320,8 @@ def to_bound_with_ported_points_pair(x: int, y: int) -> BoundPortedPointsPair:
     return BoundPoint(x, y), PortedPoint(x, y)
 
 
-def to_bound_with_ported_robust_floats_pair(value: int,
-                                            relative_error: int
+def to_bound_with_ported_robust_floats_pair(value: float,
+                                            relative_error: float
                                             ) -> BoundPortedRobustFloatsPair:
     return (BoundRobustFloat(value, relative_error),
             PortedRobustFloat(value, relative_error))

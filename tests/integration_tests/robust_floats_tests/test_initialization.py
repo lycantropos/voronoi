@@ -7,7 +7,7 @@ from . import strategies
 
 
 @given(strategies.doubles, strategies.doubles)
-def test_basic(value: int, relative_error: int) -> None:
+def test_basic(value: float, relative_error: float) -> None:
     bound, ported = (BoundRobustFloat(value, relative_error),
                      PortedRobustFloat(value, relative_error))
 
