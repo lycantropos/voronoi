@@ -563,6 +563,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::init<double>(), py::arg("value"))
       .def(py::init<double, double>(), py::arg("value"),
            py::arg("relative_error"))
+      .def(-py::self)
       .def(py::self + py::self)
       .def(py::self - py::self)
       .def(py::self * py::self)
