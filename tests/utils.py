@@ -4,7 +4,8 @@ from operator import is_
 from typing import (Callable,
                     List,
                     Optional,
-                    Sequence, Tuple,
+                    Sequence,
+                    Tuple,
                     Type,
                     TypeVar,
                     Union)
