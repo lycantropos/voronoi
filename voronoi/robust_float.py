@@ -2,6 +2,8 @@ from math import sqrt
 
 from reprit.base import generate_repr
 
+from .utils import safe_divide_floats
+
 ROUNDING_ERROR = 1
 
 
@@ -30,9 +32,12 @@ class RobustFloat:
                           + ROUNDING_ERROR
                           if (not self.value or not other.value
                               or (self.value > 0) is (other.value > 0))
-                          else abs((self.value * self.relative_error
-                                    - other.value * other.relative_error)
-                                   / value) + ROUNDING_ERROR)
+                          else
+                          safe_divide_floats(
+                                  abs(self.value * self.relative_error
+                                      - other.value * other.relative_error),
+                                  value)
+                          + ROUNDING_ERROR)
         return RobustFloat(value, relative_error)
 
     def __mul__(self, other: 'RobustFloat') -> 'RobustFloat':
@@ -46,9 +51,12 @@ class RobustFloat:
                           + ROUNDING_ERROR
                           if (not self.value or not other.value
                               or (self.value > 0) is not (other.value > 0))
-                          else abs((self.value * self.relative_error
-                                    + other.value * other.relative_error)
-                                   / value) + ROUNDING_ERROR)
+                          else
+                          safe_divide_floats(
+                                  abs(self.value * self.relative_error
+                                      + other.value * other.relative_error),
+                                  value)
+                          + ROUNDING_ERROR)
         return RobustFloat(value, relative_error)
 
     def __truediv__(self, other: 'RobustFloat') -> 'RobustFloat':
