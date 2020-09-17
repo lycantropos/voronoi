@@ -33,6 +33,7 @@ namespace py = pybind11;
 #define GEOMETRY_CATEGORY_NAME "GeometryCategory"
 #define ORIENTATION_NAME "Orientation"
 #define POINT_NAME "Point"
+#define ROBUST_DIFFERENCE_NAME "RobustDifference"
 #define ROBUST_FLOAT_NAME "RobustFloat"
 #define SEGMENT_NAME "Segment"
 #define SITE_EVENT_NAME "SiteEvent"
@@ -58,6 +59,7 @@ using Edge = boost::polygon::voronoi_edge<double>;
 using GeometryCategory = boost::polygon::GeometryCategory;
 using Point = boost::polygon::detail::point_2d<coordinate_t>;
 using RobustFloat = boost::polygon::detail::robust_fpt<double>;
+using RobustDifference = boost::polygon::detail::robust_dif<RobustFloat>;
 using SiteEvent = boost::polygon::detail::site_event<coordinate_t>;
 using BeachLineKey = boost::polygon::detail::beach_line_node_key<SiteEvent>;
 using SourceCategory = boost::polygon::SourceCategory;
@@ -225,6 +227,12 @@ static std::ostream& operator<<(std::ostream& stream,
                                 const RobustFloat& float_) {
   return stream << C_STR(MODULE_NAME) "." ROBUST_FLOAT_NAME "(" << float_.fpv()
                 << ", " << float_.re() << ")";
+}
+
+static std::ostream& operator<<(std::ostream& stream,
+                                const RobustDifference& difference) {
+  return stream << C_STR(MODULE_NAME) "." ROBUST_DIFFERENCE_NAME "("
+                << difference.pos() << ", " << difference.neg() << ")";
 }
 
 static std::ostream& operator<<(std::ostream& stream, const SiteEvent& event) {
@@ -580,6 +588,30 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def("sqrt", &RobustFloat::sqrt)
       .def_property_readonly("value", &RobustFloat::fpv)
       .def_property_readonly("relative_error", &RobustFloat::re);
+
+  py::class_<RobustDifference>(m, ROBUST_DIFFERENCE_NAME)
+      .def(py::init<>())
+      .def(py::init<RobustFloat, RobustFloat>(), py::arg("minuend"),
+           py::arg("subtrahend"))
+      .def(-py::self)
+      .def(py::self + RobustFloat())
+      .def(py::self - RobustFloat())
+      .def(py::self * RobustFloat())
+      .def(py::self / RobustFloat())
+      .def(py::self += RobustFloat())
+      .def(py::self -= RobustFloat())
+      .def(py::self *= RobustFloat())
+      .def(py::self /= RobustFloat())
+      .def(py::self + RobustDifference())
+      .def(py::self - RobustDifference())
+      .def(py::self * RobustDifference())
+      .def(py::self += RobustDifference())
+      .def(py::self -= RobustDifference())
+      .def(py::self *= RobustDifference())
+      .def("__repr__", repr<RobustDifference>)
+      .def("evaluate", &RobustDifference::dif)
+      .def_property_readonly("minuend", &RobustDifference::pos)
+      .def_property_readonly("subtrahend", &RobustDifference::neg);
 
   py::class_<Segment>(m, SEGMENT_NAME)
       .def(py::init<Point, Point>(), py::arg("start"), py::arg("end"))
