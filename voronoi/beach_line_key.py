@@ -2,7 +2,8 @@ from typing import Tuple
 
 from reprit.base import generate_repr
 
-from .events import SiteEvent
+from .events import (SiteEvent,
+                     horizontal_goes_through_right_arc_first)
 
 
 class BeachLineKey:
@@ -13,6 +14,36 @@ class BeachLineKey:
         self.right_site = right_site
 
     __repr__ = generate_repr(__init__)
+
+    def __lt__(self, other: 'BeachLineKey') -> bool:
+        site, other_site = self.comparison_site, other.comparison_site
+        point, other_point = site.comparison_point, other_site.comparison_point
+        if point.x < other_point.x:
+            # second node contains a new site
+            return horizontal_goes_through_right_arc_first(
+                    self.left_site, self.right_site, other_point)
+        elif point.x > other_point.x:
+            # first node contains a new site
+            return not horizontal_goes_through_right_arc_first(
+                    other.left_site, other.right_site, point)
+        else:
+            # this checks were evaluated experimentally
+            if site.sorted_index == other_site.sorted_index:
+                # both nodes are new
+                # (inserted during same site event processing)
+                return self.to_comparison_y() < other.to_comparison_y()
+            elif site.sorted_index < other_site.sorted_index:
+                y, flag = self.to_comparison_y(False)
+                other_y, _ = other.to_comparison_y(True)
+                return (not site.is_segment and flag < 0
+                        if y == other_y
+                        else y < other_y)
+            else:
+                y, _ = self.to_comparison_y(True)
+                other_y, other_flag = other.to_comparison_y(False)
+                return (other_site.is_segment or other_flag > 0
+                        if y == other_y
+                        else y < other_y)
 
     @property
     def comparison_site(self) -> SiteEvent:
