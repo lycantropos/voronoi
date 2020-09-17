@@ -60,9 +60,9 @@ class RobustDifference:
             self.minuend += other.subtrahend
             self.subtrahend += other.minuend
         elif other < 0:
-            self.subtrahend += other
-        else:
             self.minuend -= other
+        else:
+            self.subtrahend += other
         return self
 
     def __itruediv__(self, other: RobustFloat) -> 'RobustDifference':
