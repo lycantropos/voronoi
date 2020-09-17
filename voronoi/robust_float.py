@@ -33,10 +33,9 @@ class RobustFloat:
                           if (not self.value or not other.value
                               or (self.value > 0) is (other.value > 0))
                           else
-                          safe_divide_floats(
-                                  abs(self.value * self.relative_error
-                                      - other.value * other.relative_error),
-                                  value)
+                          abs(safe_divide_floats(
+                                  self.value * self.relative_error
+                                  - other.value * other.relative_error, value))
                           + ROUNDING_ERROR)
         return RobustFloat(value, relative_error)
 
@@ -52,10 +51,9 @@ class RobustFloat:
                           if (not self.value or not other.value
                               or (self.value > 0) is not (other.value > 0))
                           else
-                          safe_divide_floats(
-                                  abs(self.value * self.relative_error
-                                      + other.value * other.relative_error),
-                                  value)
+                          abs(safe_divide_floats(
+                                  self.value * self.relative_error
+                                  + other.value * other.relative_error, value))
                           + ROUNDING_ERROR)
         return RobustFloat(value, relative_error)
 
