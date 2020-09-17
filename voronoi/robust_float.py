@@ -22,7 +22,7 @@ class RobustFloat:
         return self
 
     def __itruediv__(self, other: 'RobustFloat') -> 'RobustFloat':
-        self.value /= other.value
+        self.value = safe_divide_floats(self.value, other.value)
         self.relative_error += other.relative_error + ROUNDING_ERROR
         return self
 
