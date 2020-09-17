@@ -572,6 +572,10 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::self -= py::self)
       .def(py::self *= py::self)
       .def(py::self /= py::self)
+      .def("__bool__",
+           [](const RobustFloat& self) {
+             return !boost::polygon::detail::is_zero(self);
+           })
       .def("__repr__", repr<RobustFloat>)
       .def("sqrt", &RobustFloat::sqrt)
       .def_property_readonly("value", &RobustFloat::fpv)
