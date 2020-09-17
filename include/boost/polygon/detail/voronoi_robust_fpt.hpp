@@ -233,10 +233,6 @@ class robust_dif {
  public:
   robust_dif() : positive_sum_(0), negative_sum_(0) {}
 
-  explicit robust_dif(const T& value)
-      : positive_sum_((value > 0) ? value : 0),
-        negative_sum_((value < 0) ? -value : 0) {}
-
   robust_dif(const T& pos, const T& neg)
       : positive_sum_(pos), negative_sum_(neg) {}
 
