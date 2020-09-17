@@ -41,6 +41,9 @@ namespace py = pybind11;
 #define DIAGRAM_NAME "Diagram"
 #define EDGE_NAME "Edge"
 #define VERTEX_NAME "Vertex"
+#ifndef VERSION_INFO
+#define VERSION_INFO "dev"
+#endif
 
 using coordinate_t = boost::polygon::detail::int32;
 using Builder = boost::polygon::default_voronoi_builder;
@@ -655,9 +658,5 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       },
       py::arg("left_site"), py::arg("right_site"), py::arg("point"));
 
-#ifdef VERSION_INFO
   m.attr("__version__") = VERSION_INFO;
-#else
-  m.attr("__version__") = "dev";
-#endif
 }
