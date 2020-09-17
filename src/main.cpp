@@ -300,6 +300,13 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::init<SiteEvent>(), py::arg("site"))
       .def(py::init<SiteEvent, SiteEvent>(), py::arg("left_site"),
            py::arg("right_site"))
+      .def(
+          "__lt__",
+          [](const BeachLineNodeKey& self, const BeachLineNodeKey& other) {
+            static const Predicates::node_comparison_predicate<BeachLineNodeKey>
+                comparator;
+            return comparator(self, other);
+          })
       .def_property_readonly(
           "left_site",
           [](const BeachLineNodeKey& self) { return self.left_site(); })
