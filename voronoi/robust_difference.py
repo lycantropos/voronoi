@@ -39,10 +39,11 @@ class RobustDifference:
     def __imul__(self, other: Union[RobustFloat, 'RobustDifference']
                  ) -> 'RobustDifference':
         if isinstance(other, RobustDifference):
-            self.minuend = (self.minuend * other.minuend
-                            + self.subtrahend * other.subtrahend)
-            self.subtrahend = (self.minuend * other.subtrahend
-                               + self.subtrahend * other.minuend)
+            self.minuend, self.subtrahend = (
+                self.minuend * other.minuend
+                + self.subtrahend * other.subtrahend,
+                self.minuend * other.subtrahend
+                + self.subtrahend * other.minuend)
         elif other < 0:
             other = -other
             self.minuend *= other
