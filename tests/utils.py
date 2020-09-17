@@ -94,6 +94,8 @@ BoundPortedPointsPair = Tuple[BoundPoint, PortedPoint]
 BoundPortedRobustDifferencesPair = Tuple[BoundRobustDifference,
                                          PortedRobustDifference]
 BoundPortedRobustFloatsPair = Tuple[BoundRobustFloat, PortedRobustFloat]
+BoundPortedRobustDifferencesOrFloatsPair = Union[
+    BoundPortedRobustDifferencesPair, BoundPortedRobustFloatsPair]
 BoundPortedSegmentsPair = Tuple[BoundSegment, PortedSegment]
 BoundPortedSiteEventsPair = Tuple[BoundSiteEvent, PortedSiteEvent]
 BoundPortedSiteEventsListsPair = Tuple[List[BoundSiteEvent],
