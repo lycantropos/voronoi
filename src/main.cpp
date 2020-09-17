@@ -636,6 +636,15 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       },
       py::arg("left_site"), py::arg("right_site"), py::arg("point"));
 
+  m.def(
+      "segment_segment_horizontal_goes_through_right_arc_first",
+      [](const SiteEvent& left_site, const SiteEvent& right_site,
+         const Point& point) {
+        static const Predicates::distance_predicate<SiteEvent> comparator;
+        return comparator.ss(left_site, right_site, point);
+      },
+      py::arg("left_site"), py::arg("right_site"), py::arg("point"));
+
 #ifdef VERSION_INFO
   m.attr("__version__") = VERSION_INFO;
 #else
