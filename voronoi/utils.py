@@ -2,6 +2,7 @@ import struct
 from itertools import groupby
 from math import (copysign,
                   inf,
+                  isnan,
                   nan)
 from typing import (List,
                     TypeVar)
@@ -44,7 +45,9 @@ def safe_divide_floats(dividend: float, divisor: float) -> float:
     try:
         return dividend / divisor
     except ZeroDivisionError:
-        return copysign(inf, divisor) if dividend else nan
+        return (copysign(inf, divisor)
+                if dividend and not isnan(dividend)
+                else nan)
 
 
 def to_orientation(vertex: Point,
