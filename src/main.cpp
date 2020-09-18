@@ -28,6 +28,7 @@ namespace py = pybind11;
 #define C_STR(a) C_STR_HELPER(a)
 #define BEACH_LINE_KEY "BeachLineKey"
 #define BEACH_LINE_VALUE "BeachLineValue"
+#define BIG_FLOAT_NAME "BigFloat"
 #define BIG_INT_NAME "BigInt"
 #define CIRCLE_EVENT_NAME "CircleEvent"
 #define COMPARISON_RESULT_NAME "ComparisonResult"
@@ -56,6 +57,7 @@ using CircleEvent = boost::polygon::detail::circle_event<coordinate_t>;
 using UlpComparator = boost::polygon::detail::ulp_comparison<double>;
 using ComparisonResult = UlpComparator::Result;
 using CTypeTraits = boost::polygon::detail::voronoi_ctype_traits<coordinate_t>;
+using BigFloat = CTypeTraits::efpt_type;
 using BigInt = CTypeTraits::big_int_type;
 using Edge = boost::polygon::voronoi_edge<double>;
 using GeometryCategory = boost::polygon::GeometryCategory;
@@ -211,6 +213,11 @@ static std::ostream& operator<<(std::ostream& stream, const Diagram& diagram) {
 }
 
 namespace detail {
+static std::ostream& operator<<(std::ostream& stream, const BigFloat& float_) {
+  return stream << C_STR(MODULE_NAME) "." BIG_FLOAT_NAME "(" << float_.val_
+                << ", " << float_.exp_ << ")";
+}
+
 static std::ostream& operator<<(std::ostream& stream, const BigInt& int_) {
   stream << C_STR(MODULE_NAME) "." BIG_INT_NAME "(" << to_sign(int_.count())
          << ", [";
@@ -378,6 +385,26 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_property_readonly("circle_event", [](const BeachLineValue& self) {
         return self.circle_event();
       });
+
+  py::class_<BigFloat>(m, BIG_FLOAT_NAME)
+      .def(py::init<double, int>(), py::arg("mantissa"), py::arg("exponent"))
+      .def(-py::self)
+      .def(py::self + py::self)
+      .def(py::self - py::self)
+      .def(py::self * py::self)
+      .def(py::self / py::self)
+      .def(py::self += py::self)
+      .def(py::self -= py::self)
+      .def(py::self *= py::self)
+      .def(py::self /= py::self)
+      .def("__bool__",
+           [](const BigFloat& self) {
+             return !boost::polygon::detail::is_zero(self);
+           })
+      .def("__float__", &BigFloat::d)
+      .def("__repr__", repr<BigFloat>)
+      .def_readonly("mantissa", &BigFloat::val_)
+      .def_readonly("exponent", &BigFloat::exp_);
 
   py::class_<BigInt>(m, BIG_INT_NAME)
       .def(py::init<coordinate_t>(), py::arg("value"))
