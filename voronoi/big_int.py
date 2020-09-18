@@ -8,10 +8,6 @@ from voronoi.utils import to_sign
 MAX_DIGITS_COUNT = 64
 
 
-def _to_uint32(value: int) -> int:
-    return ctypes.c_uint32(value).value
-
-
 class BigInt:
     __slots__ = 'digits', 'sign'
 
@@ -168,3 +164,7 @@ class BigInt:
             self.sign = 1
         else:
             self.digits.pop()
+
+
+def _to_uint32(value: int) -> int:
+    return ctypes.c_uint32(value).value
