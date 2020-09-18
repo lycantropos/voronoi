@@ -886,5 +886,15 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       },
       py::arg("left_site"), py::arg("right_site"), py::arg("point"));
 
+  m.def(
+      "segment_segment_segment_circle_exists",
+      [](const SiteEvent& first_site, const SiteEvent& second_site,
+         const SiteEvent& third_site) {
+        static const Predicates::circle_existence_predicate<SiteEvent>
+            predicate;
+        return predicate.sss(first_site, second_site, third_site);
+      },
+      py::arg("first_site"), py::arg("second_site"), py::arg("third_site"));
+
   m.attr("__version__") = VERSION_INFO;
 }
