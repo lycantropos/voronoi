@@ -168,3 +168,10 @@ def segment_segment_horizontal_goes_through_right_arc_first(
     distance_from_right = distance_to_segment_arc(right_site, point)
     # undefined ulp range is equal to 7EPS + 7EPS <= 14ULP
     return distance_from_left < distance_from_right
+
+
+def segment_segment_segment_circle_exists(first_site: SiteEvent,
+                                          second_site: SiteEvent,
+                                          third_site: SiteEvent) -> bool:
+    return (first_site.sorted_index != second_site.sorted_index
+            != third_site.sorted_index)
