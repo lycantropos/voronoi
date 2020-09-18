@@ -1,4 +1,7 @@
 import ctypes
+from math import (copysign,
+                  inf,
+                  ldexp)
 from typing import (List,
                     Tuple)
 
@@ -27,6 +30,13 @@ class BigInt:
 
     def __bool__(self) -> bool:
         return bool(self.sign)
+
+    def __float__(self) -> float:
+        mantissa, exponent = self.frexp()
+        try:
+            return ldexp(mantissa, exponent)
+        except OverflowError:
+            return copysign(inf, mantissa)
 
     def __mul__(self, other: 'BigInt') -> 'BigInt':
         result = BigInt([], 0)
