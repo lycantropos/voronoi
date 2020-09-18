@@ -834,12 +834,27 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       },
       py::arg("left_site"), py::arg("right_site"), py::arg("point"));
 
-  m.def("point_point_point_circle_exists", [](const SiteEvent& first_site,
-                                              const SiteEvent& second_site,
-                                              const SiteEvent& third_site) {
-    static const Predicates::circle_existence_predicate<SiteEvent> predicate;
-    return predicate.ppp(first_site, second_site, third_site);
-  });
+  m.def(
+      "point_point_point_circle_exists",
+      [](const SiteEvent& first_site, const SiteEvent& second_site,
+         const SiteEvent& third_site) {
+        static const Predicates::circle_existence_predicate<SiteEvent>
+            predicate;
+        return predicate.ppp(first_site, second_site, third_site);
+      },
+      py::arg("first_site"), py::arg("second_site"), py::arg("third_site"));
+
+  m.def(
+      "point_point_segment_circle_exists",
+      [](const SiteEvent& first_site, const SiteEvent& second_site,
+         const SiteEvent& third_site, int segment_index) {
+        static const Predicates::circle_existence_predicate<SiteEvent>
+            predicate;
+        return predicate.pps(first_site, second_site, third_site,
+                             segment_index);
+      },
+      py::arg("first_site"), py::arg("second_site"), py::arg("third_site"),
+      py::arg("segment_index"));
 
   m.def(
       "point_segment_horizontal_goes_through_right_arc_first",
