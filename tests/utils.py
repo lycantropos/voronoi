@@ -91,6 +91,10 @@ BoundPortedBigFloatsPair = Tuple[BoundBigFloat, PortedBigFloat]
 BoundPortedBigIntsPair = Tuple[BoundBigInt, PortedBigInt]
 BoundPortedBigIntsPairsPair = Tuple[Tuple[BoundBigInt, BoundBigInt],
                                     Tuple[PortedBigInt, PortedBigInt]]
+BoundPortedBigIntsTripletsPair = Tuple[Tuple[BoundBigInt, BoundBigInt,
+                                             BoundBigInt],
+                                       Tuple[PortedBigInt, PortedBigInt,
+                                             PortedBigInt]]
 BoundPortedBuildersPair = Tuple[BoundBuilder, PortedBuilder]
 BoundPortedCellsPair = Tuple[BoundCell, PortedCell]
 BoundPortedCellsListsPair = Tuple[List[BoundCell], List[PortedCell]]
@@ -434,3 +438,13 @@ def to_maybe_pairs(strategy: Strategy[Tuple[Domain, Range]]
 
 def to_pairs(strategy: Strategy[Domain]) -> Strategy[Tuple[Domain, Domain]]:
     return strategies.tuples(strategy, strategy)
+
+
+def to_quadruplets(strategy: Strategy[Domain]
+                   ) -> Strategy[Tuple[Domain, Domain, Domain, Domain]]:
+    return strategies.tuples(strategy, strategy, strategy, strategy)
+
+
+def to_triplets(strategy: Strategy[Domain]
+                ) -> Strategy[Tuple[Domain, Domain, Domain]]:
+    return strategies.tuples(strategy, strategy, strategy)
