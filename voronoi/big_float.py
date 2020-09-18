@@ -2,7 +2,8 @@ import ctypes
 from math import (copysign,
                   frexp,
                   inf,
-                  ldexp)
+                  ldexp,
+                  sqrt)
 
 from reprit.base import generate_repr
 
@@ -72,6 +73,13 @@ class BigFloat:
     def __truediv__(self, other: 'BigFloat') -> 'BigFloat':
         return BigFloat(safe_divide_floats(self.mantissa, other.mantissa),
                         _to_int32(self.exponent - other.exponent))
+
+    def sqrt(self) -> 'BigFloat':
+        mantissa, exponent = self.mantissa, self.exponent
+        if exponent % 2:
+            mantissa *= 2.
+            exponent -= 1
+        return BigFloat(sqrt(mantissa), exponent // 2)
 
 
 def _to_int32(value: int) -> int:
