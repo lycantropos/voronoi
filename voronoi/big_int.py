@@ -51,6 +51,16 @@ class BigInt:
         result._subtract(self, other)
         return result
 
+    @classmethod
+    def from_int(cls, value: int) -> 'BigInt':
+        if value > 0:
+            sign, digits = 1, [_to_uint32(value)]
+        elif value < 0:
+            sign, digits = -1, [_to_uint32(-value)]
+        else:
+            sign, digits = 0, []
+        return cls(sign, digits)
+
     def frexp(self) -> Tuple[float, int]:
         mantissa, exponent = 0., 0
         size = len(self.digits)
