@@ -5,8 +5,8 @@ from hypothesis import given
 from tests.utils import (BoundPortedPointsPair,
                          BoundPortedSiteEventsPair,
                          equivalence)
-from voronoi.predicates import \
-    segment_segment_horizontal_goes_through_right_arc_first as ported
+from voronoi.predicates import (
+    segment_segment_horizontal_goes_through_right_arc_first as ported)
 from . import strategies
 
 
