@@ -405,6 +405,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            })
       .def("__float__", &BigFloat::d)
       .def("__repr__", repr<BigFloat>)
+      .def("sqrt", &BigFloat::sqrt)
       .def_readonly("mantissa", &BigFloat::val_)
       .def_readonly("exponent", &BigFloat::exp_);
 
