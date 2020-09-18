@@ -7,7 +7,7 @@ from typing import (List,
 
 from reprit.base import generate_repr
 
-from voronoi.utils import to_sign
+from .utils import to_sign
 
 MAX_DIGITS_COUNT = 64
 

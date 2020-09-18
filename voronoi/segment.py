@@ -1,6 +1,6 @@
 from reprit.base import generate_repr
 
-from voronoi.point import Point
+from .point import Point
 
 
 class Segment:
