@@ -867,6 +867,17 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       py::arg("reverse_order"));
 
   m.def(
+      "point_segment_segment_circle_exists",
+      [](const SiteEvent& first_site, const SiteEvent& second_site,
+         const SiteEvent& third_site, int point_index) {
+        static const Predicates::circle_existence_predicate<SiteEvent>
+            predicate;
+        return predicate.pss(first_site, second_site, third_site, point_index);
+      },
+      py::arg("first_site"), py::arg("second_site"), py::arg("third_site"),
+      py::arg("point_index"));
+
+  m.def(
       "segment_segment_horizontal_goes_through_right_arc_first",
       [](const SiteEvent& left_site, const SiteEvent& right_site,
          const Point& point) {
