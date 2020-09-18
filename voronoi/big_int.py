@@ -23,13 +23,13 @@ class BigInt:
 
     __repr__ = generate_repr(__init__)
 
-    def __bool__(self) -> bool:
-        return bool(self.sign)
-
     def __add__(self, other: 'BigInt') -> 'BigInt':
         result = BigInt([], 0)
         result._add(self, other)
         return result
+
+    def __bool__(self) -> bool:
+        return bool(self.sign)
 
     def __mul__(self, other: 'BigInt') -> 'BigInt':
         result = BigInt([], 0)
