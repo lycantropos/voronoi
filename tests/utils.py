@@ -12,6 +12,7 @@ from typing import (Callable,
                     Union)
 
 from _voronoi import (BeachLineKey as BoundBeachLineKey,
+                      BigFloat as BoundBigFloat,
                       BigInt as BoundBigInt,
                       Builder as BoundBuilder,
                       Cell as BoundCell,
@@ -30,6 +31,7 @@ from hypothesis import strategies
 from hypothesis.strategies import SearchStrategy
 
 from voronoi.beach_line_key import BeachLineKey as PortedBeachLineKey
+from voronoi.big_float import BigFloat as PortedBigFloat
 from voronoi.big_int import BigInt as PortedBigInt
 from voronoi.builder import Builder as PortedBuilder
 from voronoi.diagram import Diagram as PortedDiagram
@@ -51,6 +53,8 @@ Range = TypeVar('Range')
 Strategy = SearchStrategy
 
 BoundBeachLineKey = BoundBeachLineKey
+BoundBigFloat = BoundBigFloat
+BoundBigInt = BoundBigInt
 BoundBuilder = BoundBuilder
 BoundCell = BoundCell
 BoundCircleEvent = BoundCircleEvent
@@ -66,6 +70,7 @@ BoundSourceCategory = BoundSourceCategory
 BoundVertex = BoundVertex
 
 PortedBeachLineKey = PortedBeachLineKey
+PortedBigFloat = PortedBigFloat
 PortedBigInt = PortedBigInt
 PortedBuilder = PortedBuilder
 PortedCell = PortedCell
@@ -82,6 +87,7 @@ PortedSourceCategory = PortedSourceCategory
 PortedVertex = PortedVertex
 
 BoundPortedBeachLineKeysPair = Tuple[BoundBeachLineKey, PortedBeachLineKey]
+BoundPortedBigFloatsPair = Tuple[BoundBigFloat, PortedBigFloat]
 BoundPortedBigIntsPair = Tuple[BoundBigInt, PortedBigInt]
 BoundPortedBuildersPair = Tuple[BoundBuilder, PortedBuilder]
 BoundPortedCellsPair = Tuple[BoundCell, PortedCell]
@@ -156,6 +162,12 @@ def are_bound_ported_beach_line_keys_equal(bound: BoundBeachLineKey,
                                                ported.left_site)
             and are_bound_ported_site_events_equal(bound.right_site,
                                                    ported.right_site))
+
+
+def are_bound_ported_big_floats_equal(bound: BoundBigFloat,
+                                      ported: PortedBigFloat) -> bool:
+    return (are_floats_equivalent(bound.mantissa, ported.mantissa)
+            and bound.exponent == ported.exponent)
 
 
 def are_bound_ported_big_ints_equal(bound: BoundBigInt,
@@ -278,6 +290,12 @@ def to_bound_with_ported_beach_line_keys_pair(
     bound_right_site, ported_right_site = right_sites_pair
     return (BoundBeachLineKey(bound_left_site, bound_right_site),
             PortedBeachLineKey(ported_left_site, ported_right_site))
+
+
+def to_bound_with_ported_big_floats_pair(mantissa: float,
+                                         exponent: int) -> None:
+    return (BoundBigFloat(mantissa, exponent),
+            PortedBigFloat(mantissa, exponent))
 
 
 def to_bound_with_ported_big_ints_pair(sign: int, digits: List[int]) -> None:
