@@ -12,6 +12,7 @@ from typing import (Callable,
                     Union)
 
 from _voronoi import (BeachLineKey as BoundBeachLineKey,
+                      BigInt as BoundBigInt,
                       Builder as BoundBuilder,
                       Cell as BoundCell,
                       CircleEvent as BoundCircleEvent,
@@ -29,6 +30,7 @@ from hypothesis import strategies
 from hypothesis.strategies import SearchStrategy
 
 from voronoi.beach_line_key import BeachLineKey as PortedBeachLineKey
+from voronoi.big_int import BigInt as PortedBigInt
 from voronoi.builder import Builder as PortedBuilder
 from voronoi.diagram import Diagram as PortedDiagram
 from voronoi.enums import (GeometryCategory as PortedGeometryCategory,
@@ -64,6 +66,7 @@ BoundSourceCategory = BoundSourceCategory
 BoundVertex = BoundVertex
 
 PortedBeachLineKey = PortedBeachLineKey
+PortedBigInt = PortedBigInt
 PortedBuilder = PortedBuilder
 PortedCell = PortedCell
 PortedCircleEvent = PortedCircleEvent
@@ -79,6 +82,7 @@ PortedSourceCategory = PortedSourceCategory
 PortedVertex = PortedVertex
 
 BoundPortedBeachLineKeysPair = Tuple[BoundBeachLineKey, PortedBeachLineKey]
+BoundPortedBigIntsPair = Tuple[BoundBigInt, PortedBigInt]
 BoundPortedBuildersPair = Tuple[BoundBuilder, PortedBuilder]
 BoundPortedCellsPair = Tuple[BoundCell, PortedCell]
 BoundPortedCellsListsPair = Tuple[List[BoundCell], List[PortedCell]]
@@ -152,6 +156,11 @@ def are_bound_ported_beach_line_keys_equal(bound: BoundBeachLineKey,
                                                ported.left_site)
             and are_bound_ported_site_events_equal(bound.right_site,
                                                    ported.right_site))
+
+
+def are_bound_ported_big_ints_equal(bound: BoundBigInt,
+                                    ported: PortedBigInt) -> bool:
+    return bound.digits == ported.digits and bound.sign == ported.sign
 
 
 def are_bound_ported_builders_equal(bound: BoundBuilder,
@@ -269,6 +278,10 @@ def to_bound_with_ported_beach_line_keys_pair(
     bound_right_site, ported_right_site = right_sites_pair
     return (BoundBeachLineKey(bound_left_site, bound_right_site),
             PortedBeachLineKey(ported_left_site, ported_right_site))
+
+
+def to_bound_with_ported_big_ints_pair(digits: List[int], sign: int) -> None:
+    return BoundBigInt(digits, sign), PortedBigInt(digits, sign)
 
 
 def to_bound_with_ported_builders_pair(index: int,

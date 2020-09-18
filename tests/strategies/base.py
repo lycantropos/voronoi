@@ -4,6 +4,7 @@ from decimal import Decimal
 from hypothesis import strategies
 
 integers_32 = strategies.integers(-2 ** 31, 2 ** 31 - 1)
+unsigned_integers_32 = strategies.integers(0, 2 ** 32 - 1)
 integers_64 = strategies.integers(-2 ** 63, 2 ** 63 - 1)
 
 
