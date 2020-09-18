@@ -401,6 +401,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            })
       .def("__float__", &BigInt::d)
       .def("__repr__", repr<BigInt>)
+      .def("frexp", &BigInt::p)
       .def_property_readonly(
           "digits",
           [](const BigInt& self) -> std::vector<std::uint32_t> {
