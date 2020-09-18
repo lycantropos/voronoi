@@ -7,6 +7,7 @@ from typing import (List,
 
 from reprit.base import generate_repr
 
+from .big_float import BigFloat
 from .utils import to_sign
 
 MAX_DIGITS_COUNT = 64
@@ -205,6 +206,15 @@ class BigInt:
             self.sign = 1
         else:
             self.digits.pop()
+
+
+def robust_product_with_sqrt(left: BigInt, right: BigInt) -> BigFloat:
+    return to_big_float(left) * to_big_float(right).sqrt()
+
+
+def to_big_float(value: BigInt) -> BigFloat:
+    mantissa, exponent = value.frexp()
+    return BigFloat(mantissa, exponent)
 
 
 def _to_uint32(value: int) -> int:
