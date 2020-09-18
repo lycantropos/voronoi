@@ -836,7 +836,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       py::arg("left"), py::arg("right"));
 
   m.def(
-      "robust_sum_of_products_with_sqrt_triples",
+      "robust_sum_of_products_with_sqrt_triplets",
       [](std::array<BigInt, 3>& left, std::array<BigInt, 3>& right) {
         RobustSumExpression expression;
         return expression.eval3(left.data(), right.data());
