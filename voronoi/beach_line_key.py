@@ -2,8 +2,8 @@ from typing import Tuple
 
 from reprit.base import generate_repr
 
-from .events import (SiteEvent,
-                     horizontal_goes_through_right_arc_first)
+from .events import SiteEvent
+from .predicates import horizontal_goes_through_right_arc_first
 
 
 class BeachLineKey:

@@ -3,7 +3,7 @@ from hypothesis import given
 
 from tests.utils import (BoundPortedPointsPair,
                          BoundPortedSiteEventsPair)
-from voronoi.events import distance_to_segment_arc as ported
+from voronoi.predicates import distance_to_segment_arc as ported
 from . import strategies
 
 

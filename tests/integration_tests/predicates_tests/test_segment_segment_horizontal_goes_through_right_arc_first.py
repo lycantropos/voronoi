@@ -1,12 +1,12 @@
-from _voronoi import (point_point_horizontal_goes_through_right_arc_first
+from _voronoi import (segment_segment_horizontal_goes_through_right_arc_first
                       as bound)
 from hypothesis import given
 
 from tests.utils import (BoundPortedPointsPair,
                          BoundPortedSiteEventsPair,
                          equivalence)
-from voronoi.events import (point_point_horizontal_goes_through_right_arc_first
-                            as ported)
+from voronoi.predicates import \
+    segment_segment_horizontal_goes_through_right_arc_first as ported
 from . import strategies
 
 
