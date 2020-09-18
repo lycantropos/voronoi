@@ -71,6 +71,13 @@ def point_point_horizontal_goes_through_right_arc_first(left_site: SiteEvent,
     return distance_from_left < distance_from_right
 
 
+def point_point_point_circle_exists(first_site: SiteEvent,
+                                    second_site: SiteEvent,
+                                    third_site: SiteEvent) -> bool:
+    return to_orientation(first_site.start, second_site.start,
+                          third_site.start) is Orientation.RIGHT
+
+
 def point_segment_horizontal_goes_through_right_arc_first(
         left_site: SiteEvent,
         right_site: SiteEvent,
