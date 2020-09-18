@@ -225,19 +225,6 @@ class extended_int {
     std::memcpy(this->chunks_, that.chunks(), that.size() * sizeof(uint32));
   }
 
-  extended_int& operator=(int32 that) {
-    if (that > 0) {
-      this->chunks_[0] = that;
-      this->count_ = 1;
-    } else if (that < 0) {
-      this->chunks_[0] = -that;
-      this->count_ = -1;
-    } else {
-      this->count_ = 0;
-    }
-    return *this;
-  }
-
   template <std::size_t M>
   extended_int& operator=(const extended_int<M>& that) {
     this->count_ = that.count();
@@ -304,11 +291,6 @@ class extended_int {
       dif(e1.chunks(), e1.size(), e2.chunks(), e2.size());
     }
     if (e1.count() < 0) this->count_ = -this->count_;
-  }
-
-  extended_int operator*(int32 that) const {
-    extended_int temp(that);
-    return (*this) * temp;
   }
 
   extended_int operator*(const extended_int& that) const {
