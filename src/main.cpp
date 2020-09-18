@@ -64,6 +64,8 @@ using GeometryCategory = boost::polygon::GeometryCategory;
 using Point = boost::polygon::detail::point_2d<coordinate_t>;
 using RobustFloat = boost::polygon::detail::robust_fpt<double>;
 using RobustDifference = boost::polygon::detail::robust_dif<RobustFloat>;
+using RobustSumExpression = boost::polygon::detail::robust_sqrt_expr<
+    BigInt, BigFloat, boost::polygon::detail::type_converter_efpt>;
 using SiteEvent = boost::polygon::detail::site_event<coordinate_t>;
 using BeachLineKey = boost::polygon::detail::beach_line_node_key<SiteEvent>;
 using SourceCategory = boost::polygon::SourceCategory;
@@ -815,6 +817,38 @@ PYBIND11_MODULE(MODULE_NAME, m) {
         return comparator.find_distance_to_segment_arc(site, point);
       },
       py::arg("site"), py::arg("point"));
+
+  m.def(
+      "robust_product_with_sqrt",
+      [](BigInt& left, BigInt& right) {
+        RobustSumExpression expression;
+        return expression.eval1(&left, &right);
+      },
+      py::arg("left"), py::arg("right"));
+
+  m.def(
+      "robust_sum_of_products_with_sqrt_pairs",
+      [](std::array<BigInt, 2>& left, std::array<BigInt, 2>& right) {
+        RobustSumExpression expression;
+        return expression.eval2(left.data(), right.data());
+      },
+      py::arg("left"), py::arg("right"));
+
+  m.def(
+      "robust_sum_of_products_with_sqrt_triples",
+      [](std::array<BigInt, 3>& left, std::array<BigInt, 3>& right) {
+        RobustSumExpression expression;
+        return expression.eval3(left.data(), right.data());
+      },
+      py::arg("left"), py::arg("right"));
+
+  m.def(
+      "robust_sum_of_products_with_sqrt_quadruples",
+      [](std::array<BigInt, 4>& left, std::array<BigInt, 4>& right) {
+        RobustSumExpression expression;
+        return expression.eval4(left.data(), right.data());
+      },
+      py::arg("left"), py::arg("right"));
 
   m.def(
       "horizontal_goes_through_right_arc_first",
