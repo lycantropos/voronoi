@@ -53,20 +53,20 @@ class BigInt:
 
     def frexp(self) -> Tuple[float, int]:
         mantissa, exponent = 0., 0
-        sz = len(self.digits)
-        if not sz:
+        size = len(self.digits)
+        if not size:
             return mantissa, exponent
         else:
-            if sz == 1:
+            if size == 1:
                 mantissa = float(self.digits[0])
-            elif sz == 2:
+            elif size == 2:
                 mantissa = (float(self.digits[1]) * float(0x100000000)
                             + float(self.digits[0]))
             else:
-                for i in range(1, 4):
+                for index in range(1, 4):
                     mantissa *= float(0x100000000)
-                    mantissa += float(self.digits[sz - i])
-                exponent = (sz - 3) << 5
+                    mantissa += float(self.digits[size - index])
+                exponent = (size - 3) << 5
         if self.sign < 0:
             mantissa = -mantissa
         return mantissa, exponent
