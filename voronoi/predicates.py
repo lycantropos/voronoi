@@ -143,6 +143,19 @@ def point_segment_horizontal_goes_through_right_arc_first(
     return (distance_from_left < distance_from_right) is not reverse_order
 
 
+def point_segment_segment_circle_exists(first_site: SiteEvent,
+                                        second_site: SiteEvent,
+                                        third_site: SiteEvent,
+                                        point_index: int) -> bool:
+    return (second_site.sorted_index != third_site.sorted_index
+            and (point_index != 2
+                 or (second_site.is_inverse or not third_site.is_inverse)
+                 and (second_site.is_inverse is not third_site.is_inverse
+                      or to_orientation(second_site.start, first_site.start,
+                                        third_site.end)
+                      is Orientation.RIGHT)))
+
+
 def segment_segment_horizontal_goes_through_right_arc_first(
         left_site: SiteEvent,
         right_site: SiteEvent,
