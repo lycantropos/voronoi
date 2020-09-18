@@ -399,6 +399,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            [](const BigInt& self) {
              return !boost::polygon::detail::is_zero(self);
            })
+      .def("__float__", &BigInt::d)
       .def("__repr__", repr<BigInt>)
       .def_property_readonly(
           "digits",
