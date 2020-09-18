@@ -89,6 +89,8 @@ PortedVertex = PortedVertex
 BoundPortedBeachLineKeysPair = Tuple[BoundBeachLineKey, PortedBeachLineKey]
 BoundPortedBigFloatsPair = Tuple[BoundBigFloat, PortedBigFloat]
 BoundPortedBigIntsPair = Tuple[BoundBigInt, PortedBigInt]
+BoundPortedBigIntsPairsPair = Tuple[Tuple[BoundBigInt, BoundBigInt],
+                                    Tuple[PortedBigInt, PortedBigInt]]
 BoundPortedBuildersPair = Tuple[BoundBuilder, PortedBuilder]
 BoundPortedCellsPair = Tuple[BoundCell, PortedCell]
 BoundPortedCellsListsPair = Tuple[List[BoundCell], List[PortedCell]]
