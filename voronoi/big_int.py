@@ -31,6 +31,11 @@ class BigInt:
         result._add(self, other)
         return result
 
+    def __mul__(self, other: 'BigInt') -> 'BigInt':
+        result = BigInt([], 0)
+        result._multiply(self, other)
+        return result
+
     def __neg__(self) -> 'BigInt':
         return BigInt(self.digits[:], -self.sign)
 
@@ -73,6 +78,35 @@ class BigInt:
             cursor >>= 32
         if cursor and len(self.digits) < MAX_DIGITS_COUNT:
             self.digits.append(cursor)
+
+    def _multiply(self, left: 'BigInt', right: 'BigInt') -> None:
+        if not left.sign or not right.sign:
+            return
+        self._multiply_digits(left.digits, right.digits)
+        if left.sign != right.sign:
+            self.sign = -self.sign
+
+    def _multiply_digits(self,
+                         left_digits: List[int],
+                         right_digits: List[int]) -> None:
+        current_digit = 0
+        self.sign = 1
+        left_size, right_size = len(left_digits), len(right_digits)
+        for shift in range(min(MAX_DIGITS_COUNT, left_size + right_size - 1)):
+            next_digit = 0
+            for left_index in range(shift + 1):
+                if left_index >= left_size:
+                    break
+                right_index = shift - left_index
+                if right_index >= right_size:
+                    continue
+                step = left_digits[left_index] * right_digits[right_index]
+                current_digit += _to_uint32(step)
+                next_digit += step >> 32
+            self.digits.append(_to_uint32(current_digit))
+            current_digit = next_digit + (current_digit >> 32)
+        if current_digit and len(self.digits) < MAX_DIGITS_COUNT:
+            self.digits.append(_to_uint32(current_digit))
 
     def _subtract(self, left: 'BigInt', right: 'BigInt') -> None:
         if not left.sign:
