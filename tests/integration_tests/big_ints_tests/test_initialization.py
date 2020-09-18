@@ -8,8 +8,8 @@ from tests.utils import (BoundBigInt,
 from . import strategies
 
 
-@given(strategies.digits, strategies.signs)
-def test_basic(digits: List[int], sign: int) -> None:
+@given(strategies.signs, strategies.digits)
+def test_basic(sign: int, digits: List[int]) -> None:
     bound, ported = BoundBigInt(sign, digits), PortedBigInt(sign, digits)
 
     assert are_bound_ported_big_ints_equal(bound, ported)
