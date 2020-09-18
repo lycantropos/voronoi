@@ -166,7 +166,7 @@ def are_bound_ported_beach_line_keys_equal(bound: BoundBeachLineKey,
 
 def are_bound_ported_big_floats_equal(bound: BoundBigFloat,
                                       ported: PortedBigFloat) -> bool:
-    return (are_floats_equivalent(bound.mantissa, ported.mantissa)
+    return (bound.mantissa == ported.mantissa
             and bound.exponent == ported.exponent)
 
 
