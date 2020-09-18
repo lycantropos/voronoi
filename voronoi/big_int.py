@@ -46,7 +46,7 @@ class BigInt:
         elif not right.sign:
             self.sign, self.digits = left.sign, left.digits[:]
             return
-        elif (left.sign > 0) is (left.sign > 0):
+        elif left.sign == right.sign:
             self._add_digits(left.digits, right.digits)
         else:
             self._subtract_digits(left.digits, len(left.digits), right.digits,
@@ -74,19 +74,19 @@ class BigInt:
         if cursor and len(self.digits) < MAX_DIGITS_COUNT:
             self.digits.append(cursor)
 
-    def _subtract(self, e1: 'BigInt', e2: 'BigInt') -> None:
-        if not e1.sign:
-            self.sign, self.digits = -e2.sign, e2.digits[:]
+    def _subtract(self, left: 'BigInt', right: 'BigInt') -> None:
+        if not left.sign:
+            self.sign, self.digits = -right.sign, right.digits[:]
             return
-        elif not e2.sign:
-            self.sign, self.digits = e1.sign, e1.digits[:]
+        elif not right.sign:
+            self.sign, self.digits = left.sign, left.digits[:]
             return
-        elif (e1.sign > 0) is (e2.sign > 0):
-            self._subtract_digits(e1.digits, len(e1.digits), e2.digits,
-                                  len(e2.digits))
+        elif left.sign == right.sign:
+            self._subtract_digits(left.digits, len(left.digits), right.digits,
+                                  len(right.digits))
         else:
-            self._add_digits(e1.digits, e2.digits)
-        if e1.sign < 0:
+            self._add_digits(left.digits, right.digits)
+        if left.sign < 0:
             self.sign = -self.sign
 
     def _subtract_digits(self,
