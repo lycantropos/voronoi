@@ -280,8 +280,8 @@ def to_bound_with_ported_beach_line_keys_pair(
             PortedBeachLineKey(ported_left_site, ported_right_site))
 
 
-def to_bound_with_ported_big_ints_pair(digits: List[int], sign: int) -> None:
-    return BoundBigInt(digits, sign), PortedBigInt(digits, sign)
+def to_bound_with_ported_big_ints_pair(sign: int, digits: List[int]) -> None:
+    return BoundBigInt(sign, digits), PortedBigInt(sign, digits)
 
 
 def to_bound_with_ported_builders_pair(index: int,

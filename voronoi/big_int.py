@@ -15,7 +15,7 @@ MAX_DIGITS_COUNT = 64
 class BigInt:
     __slots__ = 'digits', 'sign'
 
-    def __init__(self, digits: List[int], sign: int) -> None:
+    def __init__(self, sign: int, digits: List[int]) -> None:
         if not (sign and digits):
             sign, digits = 0, []
         self.digits = digits
@@ -24,7 +24,7 @@ class BigInt:
     __repr__ = generate_repr(__init__)
 
     def __add__(self, other: 'BigInt') -> 'BigInt':
-        result = BigInt([], 0)
+        result = BigInt(0, [])
         result._add(self, other)
         return result
 
@@ -39,15 +39,15 @@ class BigInt:
             return copysign(inf, mantissa)
 
     def __mul__(self, other: 'BigInt') -> 'BigInt':
-        result = BigInt([], 0)
+        result = BigInt(0, [])
         result._multiply(self, other)
         return result
 
     def __neg__(self) -> 'BigInt':
-        return BigInt(self.digits[:], -self.sign)
+        return BigInt(-self.sign, self.digits[:])
 
     def __sub__(self, other: 'BigInt') -> 'BigInt':
-        result = BigInt([], 0)
+        result = BigInt(0, [])
         result._subtract(self, other)
         return result
 

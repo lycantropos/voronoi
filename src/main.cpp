@@ -212,7 +212,7 @@ static std::ostream& operator<<(std::ostream& stream, const Diagram& diagram) {
 
 namespace detail {
 static std::ostream& operator<<(std::ostream& stream, const BigInt& int_) {
-  stream << C_STR(MODULE_NAME) "." BIG_INT_NAME "([";
+  stream << C_STR(MODULE_NAME) "." BIG_INT_NAME "(" << to_sign(int_.count()) << "[";
   std::size_t size = int_.size();
   const auto& chunks = int_.chunks();
   if (size != 0) {
@@ -220,7 +220,7 @@ static std::ostream& operator<<(std::ostream& stream, const BigInt& int_) {
     for (std::size_t index = 1; index < size; ++index)
       stream << ", " << chunks[index];
   }
-  return stream << "], " << to_sign(int_.count()) << ")";
+  return stream << "])";
 }
 
 static bool operator==(const CircleEvent& left, const CircleEvent& right) {
@@ -381,13 +381,13 @@ PYBIND11_MODULE(MODULE_NAME, m) {
   py::class_<BigInt>(m, BIG_INT_NAME)
       .def(py::init<coordinate_t>(), py::arg("value"))
       .def(py::init<>(
-               [](const std::vector<std::uint32_t>& digits, std::int8_t sign) {
+               [](std::int8_t sign, const std::vector<std::uint32_t>& digits) {
                  auto result = std::make_unique<BigInt>();
                  result->count_ = to_sign(sign) * digits.size();
                  std::copy(digits.begin(), digits.end(), result->chunks_);
                  return result;
                }),
-           py::arg("digits"), py::arg("sign"))
+           py::arg("sign"), py::arg("digits"))
       .def(-py::self)
       .def(py::self + py::self)
       .def(py::self - py::self)
