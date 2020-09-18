@@ -395,6 +395,10 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::self + coordinate_t())
       .def(py::self - coordinate_t())
       .def(py::self * coordinate_t())
+      .def("__bool__",
+           [](const BigInt& self) {
+             return !boost::polygon::detail::is_zero(self);
+           })
       .def("__repr__", repr<BigInt>)
       .def_property_readonly(
           "digits",
