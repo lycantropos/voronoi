@@ -227,6 +227,27 @@ def robust_sum_of_products_with_sqrt_pairs(left: Tuple[BigInt, BigInt],
                   / (a - b)))
 
 
+def robust_sum_of_products_with_sqrt_triplets(
+        left: Tuple[BigInt, BigInt, BigInt],
+        right: Tuple[BigInt, BigInt, BigInt]) -> BigFloat:
+    first_left, second_left, third_left = left
+    first_right, second_right, third_right = right
+    a = robust_sum_of_products_with_sqrt_pairs((first_left, second_left),
+                                               (first_right, second_right))
+    b = robust_product_with_sqrt(third_left, third_right)
+    return (a + b
+            if (a.mantissa >= 0 and b.mantissa >= 0
+                or a.mantissa <= 0 and b.mantissa <= 0)
+            else
+            robust_sum_of_products_with_sqrt_pairs(
+                    (first_left * first_left * first_right
+                     + second_left * second_left * second_right
+                     - third_left * third_left * third_right,
+                     first_left * second_left * BigInt.from_int(2)),
+                    (BigInt.from_int(1), first_right * second_right))
+            / (a - b))
+
+
 def to_big_float(value: BigInt) -> BigFloat:
     mantissa, exponent = value.frexp()
     return BigFloat(mantissa, exponent)
