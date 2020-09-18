@@ -212,7 +212,8 @@ static std::ostream& operator<<(std::ostream& stream, const Diagram& diagram) {
 
 namespace detail {
 static std::ostream& operator<<(std::ostream& stream, const BigInt& int_) {
-  stream << C_STR(MODULE_NAME) "." BIG_INT_NAME "(" << to_sign(int_.count()) << "[";
+  stream << C_STR(MODULE_NAME) "." BIG_INT_NAME "(" << to_sign(int_.count())
+         << ", [";
   std::size_t size = int_.size();
   const auto& chunks = int_.chunks();
   if (size != 0) {
