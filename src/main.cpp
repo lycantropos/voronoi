@@ -320,6 +320,7 @@ static bool operator==(const Segment& left, const Segment& right) {
 
 PYBIND11_MODULE(MODULE_NAME, m) {
   m.doc() = R"pbdoc(Python binding of boost/polygon library.)pbdoc";
+  m.attr("__version__") = VERSION_INFO;
 
   py::enum_<ComparisonResult>(m, COMPARISON_RESULT_NAME)
       .value("LESS", ComparisonResult::LESS)
@@ -930,6 +931,4 @@ PYBIND11_MODULE(MODULE_NAME, m) {
         return predicate.sss(first_site, second_site, third_site);
       },
       py::arg("first_site"), py::arg("second_site"), py::arg("third_site"));
-
-  m.attr("__version__") = VERSION_INFO;
 }
