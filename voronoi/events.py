@@ -165,7 +165,7 @@ def to_point_point_point_circle_event(first_site: SiteEvent,
                                       recompute_center_y: bool = True,
                                       recompute_lower_x: bool = True
                                       ) -> CircleEvent:
-    center_x = center_y = lower_x = 0
+    center_x = center_y = lower_x = 0.
     first_delta_x = BigInt.from_int64(first_site.start.x - second_site.start.x)
     first_delta_y = BigInt.from_int64(first_site.start.y - second_site.start.y)
     second_delta_x = BigInt.from_int64(second_site.start.x
