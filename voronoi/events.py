@@ -17,9 +17,9 @@ class CircleEvent:
     __slots__ = 'center_x', 'center_y', 'lower_x', 'is_active'
 
     def __init__(self,
-                 center_x: int,
-                 center_y: int,
-                 lower_x: int,
+                 center_x: float,
+                 center_y: float,
+                 lower_x: float,
                  is_active: bool = True) -> None:
         self.center_x = center_x
         self.center_y = center_y
@@ -45,23 +45,23 @@ class CircleEvent:
                       else NotImplemented))
 
     @property
-    def lower_y(self) -> int:
+    def lower_y(self) -> float:
         return self.center_y
 
     @property
-    def x(self) -> int:
+    def x(self) -> float:
         return self.center_x
 
     @x.setter
-    def x(self, value: int) -> None:
+    def x(self, value: float) -> None:
         self.center_x = value
 
     @property
-    def y(self) -> int:
+    def y(self) -> float:
         return self.center_y
 
     @y.setter
-    def y(self, value: int) -> None:
+    def y(self, value: float) -> None:
         self.center_y = value
 
     def deactivate(self) -> 'CircleEvent':
