@@ -967,4 +967,22 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       py::arg("segment_index"), py::arg("recompute_center_x") = true,
       py::arg("recompute_center_y") = true,
       py::arg("recompute_lower_x") = true);
+
+  m.def(
+      "to_point_segment_segment_circle_event",
+      [](const SiteEvent& first_site, const SiteEvent& second_site,
+         const SiteEvent& third_site, int point_index, bool recompute_center_x,
+         bool recompute_center_y, bool recompute_lower_x) {
+        static Predicates::mp_circle_formation_functor<SiteEvent, CircleEvent>
+            functor;
+        auto result = std::make_unique<CircleEvent>(0., 0., 0.);
+        functor.pss(first_site, second_site, third_site, point_index,
+                    *result.get(), recompute_center_x, recompute_center_y,
+                    recompute_lower_x);
+        return result;
+      },
+      py::arg("first_site"), py::arg("second_site"), py::arg("third_site"),
+      py::arg("point_index"), py::arg("recompute_center_x") = true,
+      py::arg("recompute_center_y") = true,
+      py::arg("recompute_lower_x") = true);
 }
