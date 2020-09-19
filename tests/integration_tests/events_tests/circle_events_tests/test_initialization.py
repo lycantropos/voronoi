@@ -6,11 +6,11 @@ from tests.utils import (BoundCircleEvent,
 from . import strategies
 
 
-@given(strategies.coordinates, strategies.coordinates, strategies.coordinates,
+@given(strategies.doubles, strategies.doubles, strategies.doubles,
        strategies.booleans)
-def test_basic(center_x: int,
-               center_y: int,
-               lower_x: int,
+def test_basic(center_x: float,
+               center_y: float,
+               lower_x: float,
                is_active: bool) -> None:
     bound, ported = (BoundCircleEvent(center_x, center_y, lower_x, is_active),
                      PortedCircleEvent(center_x, center_y, lower_x, is_active))

@@ -206,9 +206,9 @@ are_bound_ported_maybe_cells_equal = to_maybe_equals(
 
 def are_bound_ported_circle_events_equal(bound: BoundCircleEvent,
                                          ported: PortedCircleEvent) -> bool:
-    return (bound.center_x == ported.center_x
-            and bound.center_y == ported.center_y
-            and bound.lower_x == ported.lower_x
+    return (are_floats_equivalent(bound.center_x, ported.center_x)
+            and are_floats_equivalent(bound.center_y, ported.center_y)
+            and are_floats_equivalent(bound.lower_x, ported.lower_x)
             and bound.is_active is ported.is_active)
 
 
@@ -335,9 +335,9 @@ def to_bound_with_ported_cells_pair(source_index: int,
                        ported_incident_edge))
 
 
-def to_bound_with_ported_circle_events_pair(center_x: int,
-                                            center_y: int,
-                                            lower_x: int,
+def to_bound_with_ported_circle_events_pair(center_x: float,
+                                            center_y: float,
+                                            lower_x: float,
                                             is_active: bool
                                             ) -> BoundPortedCircleEventsPair:
     return (BoundCircleEvent(center_x, center_y, lower_x, is_active),
