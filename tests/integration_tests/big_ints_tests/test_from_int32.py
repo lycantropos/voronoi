@@ -1,5 +1,3 @@
-from typing import List
-
 from hypothesis import given
 
 from tests.utils import (BoundBigInt,
