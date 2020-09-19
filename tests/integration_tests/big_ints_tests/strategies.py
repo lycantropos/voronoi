@@ -3,7 +3,7 @@ from hypothesis import strategies
 from tests.strategies import (integers_32,
                               unsigned_integers_32)
 from tests.utils import to_bound_with_ported_big_ints_pair, to_pairs, \
-    to_triplets, transpose_pairs
+    to_quadruplets, to_triplets, transpose_pairs
 from voronoi.big_int import MAX_DIGITS_COUNT
 
 integers_32 = integers_32
@@ -21,3 +21,7 @@ non_negative_big_ints_pairs_pairs = (to_pairs(non_negative_big_ints_pairs)
 big_ints_pairs_triplets = to_triplets(big_ints_pairs).map(transpose_pairs)
 non_negative_big_ints_pairs_triplets = (
     to_triplets(non_negative_big_ints_pairs).map(transpose_pairs))
+big_ints_pairs_quadruplets = (to_quadruplets(big_ints_pairs)
+                              .map(transpose_pairs))
+non_negative_big_ints_pairs_quadruplets = (
+    to_quadruplets(non_negative_big_ints_pairs).map(transpose_pairs))

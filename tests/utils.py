@@ -91,6 +91,10 @@ BoundPortedBigFloatsPair = Tuple[BoundBigFloat, PortedBigFloat]
 BoundPortedBigIntsPair = Tuple[BoundBigInt, PortedBigInt]
 BoundPortedBigIntsPairsPair = Tuple[Tuple[BoundBigInt, BoundBigInt],
                                     Tuple[PortedBigInt, PortedBigInt]]
+BoundPortedBigIntsQuadrupletsPair = Tuple[Tuple[BoundBigInt, BoundBigInt,
+                                                BoundBigInt, BoundBigInt],
+                                          Tuple[PortedBigInt, PortedBigInt,
+                                                PortedBigInt, PortedBigInt]]
 BoundPortedBigIntsTripletsPair = Tuple[Tuple[BoundBigInt, BoundBigInt,
                                              BoundBigInt],
                                        Tuple[PortedBigInt, PortedBigInt,
