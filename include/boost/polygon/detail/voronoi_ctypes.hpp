@@ -219,6 +219,21 @@ class extended_int {
     }
   }
 
+  extended_int(int64 that) {
+    if (that > 0) {
+      this->chunks_[0] = static_cast<uint32>(that);
+      this->chunks_[1] = that >> 32;
+      this->count_ = this->chunks_[1] ? 2 : 1;
+    } else if (that < 0) {
+      that = -that;
+      this->chunks_[0] = static_cast<uint32>(that);
+      this->chunks_[1] = that >> 32;
+      this->count_ = this->chunks_[1] ? -2 : -1;
+    } else {
+      this->count_ = 0;
+    }
+  }
+
   template <std::size_t M>
   extended_int(const extended_int<M>& that) {
     this->count_ = that.count();
