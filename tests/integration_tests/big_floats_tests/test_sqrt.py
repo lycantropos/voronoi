@@ -9,4 +9,7 @@ from . import strategies
 def test_basic(pair: BoundPortedBigFloatsPair) -> None:
     bound, ported = pair
 
-    assert are_bound_ported_big_floats_equal(bound.sqrt(), ported.sqrt())
+    bound_result = bound.sqrt()
+    ported_result = ported.sqrt()
+
+    assert are_bound_ported_big_floats_equal(bound_result, ported_result)
