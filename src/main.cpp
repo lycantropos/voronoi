@@ -844,7 +844,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       py::arg("left"), py::arg("right"));
 
   m.def(
-      "robust_sum_of_products_with_sqrt_quadruples",
+      "robust_sum_of_products_with_sqrt_quadruplets",
       [](std::array<BigInt, 4>& left, std::array<BigInt, 4>& right) {
         RobustSumExpression expression;
         return expression.eval4(left.data(), right.data());
