@@ -176,8 +176,12 @@ def are_bound_ported_beach_line_keys_equal(bound: BoundBeachLineKey,
 
 def are_bound_ported_big_floats_equal(bound: BoundBigFloat,
                                       ported: PortedBigFloat) -> bool:
-    return (are_floats_equivalent(bound.mantissa, ported.mantissa)
-            and bound.exponent == ported.exponent)
+    return (bound.mantissa == ported.mantissa
+            and bound.exponent == ported.exponent
+            # we are not comparing exponents in this case
+            # because ``sqrt`` of negative number returns ``-nan(ind)``on MSVC
+            # and ``nan`` on other compilers
+            or isnan(bound.mantissa) and isnan(ported.mantissa))
 
 
 def are_bound_ported_big_ints_equal(bound: BoundBigInt,
