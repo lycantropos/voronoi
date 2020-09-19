@@ -53,7 +53,7 @@ using coordinate_t = boost::polygon::detail::int32;
 using Builder = boost::polygon::default_voronoi_builder;
 using Diagram = boost::polygon::voronoi_diagram<double>;
 using Cell = boost::polygon::voronoi_cell<double>;
-using CircleEvent = boost::polygon::detail::circle_event<coordinate_t>;
+using CircleEvent = boost::polygon::detail::circle_event<double>;
 using UlpComparator = boost::polygon::detail::ulp_comparison<double>;
 using ComparisonResult = UlpComparator::Result;
 using CTypeTraits = boost::polygon::detail::voronoi_ctype_traits<coordinate_t>;
@@ -497,8 +497,8 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_property_readonly("source_category", &Cell::source_category);
 
   py::class_<CircleEvent>(m, CIRCLE_EVENT_NAME)
-      .def(py::init([](coordinate_t center_x, coordinate_t center_y,
-                       coordinate_t lower_x, bool is_active) {
+      .def(py::init([](double center_x, double center_y, double lower_x,
+                       bool is_active) {
              CircleEvent result{center_x, center_y, lower_x};
              return (is_active ? result : result.deactivate());
            }),
@@ -939,7 +939,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
          bool recompute_center_y, bool recompute_lower_x) {
         static Predicates::mp_circle_formation_functor<SiteEvent, CircleEvent>
             functor;
-        auto result = std::make_unique<CircleEvent>();
+        auto result = std::make_unique<CircleEvent>(0., 0., 0.);
         functor.ppp(first_site, second_site, third_site, *result.get(),
                     recompute_center_x, recompute_center_y, recompute_lower_x);
         return result;
