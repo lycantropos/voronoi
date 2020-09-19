@@ -3,7 +3,8 @@ from itertools import groupby
 from math import (copysign,
                   inf,
                   isnan,
-                  nan)
+                  nan,
+                  sqrt)
 from typing import (List,
                     TypeVar)
 
@@ -48,6 +49,13 @@ def safe_divide_floats(dividend: float, divisor: float) -> float:
         return (copysign(inf, dividend * divisor)
                 if dividend and not isnan(dividend)
                 else nan)
+
+
+def safe_sqrt(value: float) -> float:
+    try:
+        return sqrt(value)
+    except ValueError:
+        return nan
 
 
 def to_orientation(vertex: Point,

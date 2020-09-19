@@ -2,12 +2,12 @@ import ctypes
 from math import (copysign,
                   frexp,
                   inf,
-                  ldexp,
-                  sqrt)
+                  ldexp)
 
 from reprit.base import generate_repr
 
-from .utils import safe_divide_floats
+from .utils import (safe_divide_floats,
+                    safe_sqrt)
 
 MAX_EXPONENTS_DIFFERENCE = 54
 
@@ -79,7 +79,7 @@ class BigFloat:
         if exponent % 2:
             mantissa *= 2.
             exponent -= 1
-        return BigFloat(sqrt(mantissa), exponent // 2)
+        return BigFloat(safe_sqrt(mantissa), exponent // 2)
 
 
 def _to_int32(value: int) -> int:
