@@ -785,7 +785,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
 
   m.def(
       "compare_floats",
-      [](double left, double right, std::uint64_t max_ulps) {
+      [](double left, double right, unsigned int max_ulps) {
         static const UlpComparator comparator;
         return comparator(left, right, max_ulps);
       },
