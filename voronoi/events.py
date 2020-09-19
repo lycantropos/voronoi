@@ -1,13 +1,16 @@
+from math import sqrt
 from typing import (Any,
                     TypeVar)
 
 from reprit.base import generate_repr
 
+from .big_int import BigInt
 from .enums import (ComparisonResult,
                     Orientation,
                     SourceCategory)
 from .point import Point
 from .utils import (compare_floats,
+                    safe_divide_floats,
                     to_orientation)
 
 ULPS = 64
@@ -153,3 +156,60 @@ Event = TypeVar('Event', CircleEvent, SiteEvent)
 
 def are_vertical_endpoints(start: Point, end: Point) -> bool:
     return start.x == end.x
+
+
+def to_point_point_point_circle_event(first_site: SiteEvent,
+                                      second_site: SiteEvent,
+                                      third_site: SiteEvent,
+                                      recompute_center_x: bool = True,
+                                      recompute_center_y: bool = True,
+                                      recompute_lower_x: bool = True
+                                      ) -> CircleEvent:
+    center_x = center_y = lower_x = 0
+    first_delta_x = BigInt.from_int64(first_site.start.x - second_site.start.x)
+    first_delta_y = BigInt.from_int64(first_site.start.y - second_site.start.y)
+    second_delta_x = BigInt.from_int64(second_site.start.x
+                                       - third_site.start.x)
+    second_delta_y = BigInt.from_int64(second_site.start.y
+                                       - third_site.start.y)
+    inverted_denominator = safe_divide_floats(
+            0.5, float(first_delta_x * second_delta_y
+                       - second_delta_x * first_delta_y))
+    first_sum_x = BigInt.from_int64(first_site.start.x + second_site.start.x)
+    first_sum_y = BigInt.from_int64(first_site.start.y + second_site.start.y)
+    first_numerator = first_delta_x * first_sum_x + first_delta_y * first_sum_y
+    second_sum_x = BigInt.from_int64(second_site.start.x + third_site.start.x)
+    second_sum_y = BigInt.from_int64(second_site.start.y + third_site.start.y)
+    second_numerator = (second_delta_x * second_sum_x
+                        + second_delta_y * second_sum_y)
+    if recompute_center_x or recompute_lower_x:
+        center_x_numerator = (first_numerator * second_delta_y
+                              - second_numerator * first_delta_y)
+        center_x = float(center_x_numerator) * inverted_denominator
+        if recompute_lower_x:
+            third_delta_x = BigInt.from_int32(first_site.start.x
+                                              - third_site.start.x)
+            third_delta_y = BigInt.from_int32(first_site.start.y
+                                              - third_site.start.y)
+            squared_radius = ((first_delta_x * first_delta_x
+                               + first_delta_y * first_delta_y)
+                              * (second_delta_x * second_delta_x
+                                 + second_delta_y * second_delta_y)
+                              * (third_delta_x * third_delta_x
+                                 + third_delta_y * third_delta_y))
+            radius = sqrt(float(squared_radius))
+            # if ``center_x >= 0`` then ``lower_x = center_x + r``,
+            # else ``lower_x = (center_x * center_x - r * r) / (center_x - r)``
+            # to guarantee epsilon relative error
+            lower_x = (
+                float(center_x_numerator * center_x_numerator - squared_radius)
+                * inverted_denominator / (float(center_x_numerator) + radius)
+                if center_x < 0
+                else (center_x - radius * inverted_denominator
+                      if inverted_denominator < 0
+                      else center_x + radius * inverted_denominator))
+    if recompute_center_y:
+        center_y = (float(second_numerator * first_delta_x
+                          - first_numerator * second_delta_x)
+                    * inverted_denominator)
+    return CircleEvent(center_x, center_y, lower_x)
