@@ -411,7 +411,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_readonly("exponent", &BigFloat::exp_);
 
   py::class_<BigInt>(m, BIG_INT_NAME)
-      .def(py::init<std::int64_t>(), py::arg("value"))
+      .def(py::init<boost::polygon::detail::int64>(), py::arg("value"))
       .def(py::init<>(
                [](std::int8_t sign, const std::vector<std::uint32_t>& digits) {
                  auto result = std::make_unique<BigInt>();
