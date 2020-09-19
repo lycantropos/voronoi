@@ -53,11 +53,28 @@ class BigInt:
         return result
 
     @classmethod
-    def from_int(cls, value: int) -> 'BigInt':
+    def from_int32(cls, value: int) -> 'BigInt':
         if value > 0:
             sign, digits = 1, [_to_uint32(value)]
         elif value < 0:
             sign, digits = -1, [_to_uint32(-value)]
+        else:
+            sign, digits = 0, []
+        return cls(sign, digits)
+
+    @classmethod
+    def from_int64(cls, value: int) -> 'BigInt':
+        if value > 0:
+            sign, digits = 1, [_to_uint32(value)]
+            value >>= 32
+            if value:
+                digits.append(value)
+        elif value < 0:
+            value = -value
+            sign, digits = -1, [_to_uint32(value)]
+            value >>= 32
+            if value:
+                digits.append(value)
         else:
             sign, digits = 0, []
         return cls(sign, digits)
@@ -245,9 +262,9 @@ def robust_sum_of_products_with_sqrt_quadruplets(
                      + second_left * second_left * second_right
                      - third_left * third_left * third_right
                      - fourth_left * fourth_left * fourth_right,
-                     first_left * second_left * BigInt.from_int(2),
-                     third_left * fourth_left * BigInt.from_int(-2)),
-                    (BigInt.from_int(1),
+                     first_left * second_left * BigInt.from_int32(2),
+                     third_left * fourth_left * BigInt.from_int32(-2)),
+                    (BigInt.from_int32(1),
                      first_right * second_right,
                      third_right * fourth_right))
             / (a - b))
@@ -269,8 +286,8 @@ def robust_sum_of_products_with_sqrt_triplets(
                     (first_left * first_left * first_right
                      + second_left * second_left * second_right
                      - third_left * third_left * third_right,
-                     first_left * second_left * BigInt.from_int(2)),
-                    (BigInt.from_int(1), first_right * second_right))
+                     first_left * second_left * BigInt.from_int32(2)),
+                    (BigInt.from_int32(1), first_right * second_right))
             / (a - b))
 
 
