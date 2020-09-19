@@ -202,8 +202,10 @@ def to_point_point_point_circle_event(first_site: SiteEvent,
             # else ``lower_x = (center_x * center_x - r * r) / (center_x - r)``
             # to guarantee epsilon relative error
             lower_x = (
-                float(center_x_numerator * center_x_numerator - squared_radius)
-                * inverted_denominator / (float(center_x_numerator) + radius)
+                safe_divide_floats(
+                        float(center_x_numerator * center_x_numerator
+                              - squared_radius) * inverted_denominator,
+                        float(center_x_numerator) + radius)
                 if center_x < 0
                 else (center_x - radius * inverted_denominator
                       if inverted_denominator < 0
