@@ -232,6 +232,22 @@ class extended_int {
     return *this;
   }
 
+  extended_int& operator=(int64 that) {
+    if (that > 0) {
+      this->chunks_[0] = static_cast<uint32>(that);
+      this->chunks_[1] = that >> 32;
+      this->count_ = this->chunks_[1] ? 2 : 1;
+    } else if (that < 0) {
+      that = -that;
+      this->chunks_[0] = static_cast<uint32>(that);
+      this->chunks_[1] = that >> 32;
+      this->count_ = this->chunks_[1] ? -2 : -1;
+    } else {
+      this->count_ = 0;
+    }
+    return *this;
+  }
+
   bool is_pos() const { return this->count_ > 0; }
 
   bool is_neg() const { return this->count_ < 0; }
