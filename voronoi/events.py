@@ -174,37 +174,31 @@ def to_point_point_point_circle_event(first_site: SiteEvent,
                                       recompute_lower_x: bool = True
                                       ) -> CircleEvent:
     center_x = center_y = lower_x = 0.
-    first_delta_x = BigInt.from_int64(first_site.start.x - second_site.start.x)
-    first_delta_y = BigInt.from_int64(first_site.start.y - second_site.start.y)
-    second_delta_x = BigInt.from_int64(second_site.start.x
-                                       - third_site.start.x)
-    second_delta_y = BigInt.from_int64(second_site.start.y
-                                       - third_site.start.y)
-    inverted_denominator = safe_divide_floats(
-            0.5, float(first_delta_x * second_delta_y
-                       - second_delta_x * first_delta_y))
-    first_sum_x = BigInt.from_int64(first_site.start.x + second_site.start.x)
-    first_sum_y = BigInt.from_int64(first_site.start.y + second_site.start.y)
-    first_numerator = first_delta_x * first_sum_x + first_delta_y * first_sum_y
-    second_sum_x = BigInt.from_int64(second_site.start.x + third_site.start.x)
-    second_sum_y = BigInt.from_int64(second_site.start.y + third_site.start.y)
-    second_numerator = (second_delta_x * second_sum_x
-                        + second_delta_y * second_sum_y)
+    first_dx = BigInt.from_int64(first_site.start.x - second_site.start.x)
+    first_dy = BigInt.from_int64(first_site.start.y - second_site.start.y)
+    second_dx = BigInt.from_int64(second_site.start.x - third_site.start.x)
+    second_dy = BigInt.from_int64(second_site.start.y - third_site.start.y)
+    inverted_denominator = safe_divide_floats(0.5,
+                                              float(first_dx * second_dy
+                                                    - second_dx * first_dy))
+    first_sx = BigInt.from_int64(first_site.start.x + second_site.start.x)
+    first_sy = BigInt.from_int64(first_site.start.y + second_site.start.y)
+    second_sx = BigInt.from_int64(second_site.start.x + third_site.start.x)
+    second_sy = BigInt.from_int64(second_site.start.y + third_site.start.y)
+    first_numerator = first_dx * first_sx + first_dy * first_sy
+    second_numerator = second_dx * second_sx + second_dy * second_sy
     if recompute_center_x or recompute_lower_x:
-        center_x_numerator = (first_numerator * second_delta_y
-                              - second_numerator * first_delta_y)
+        center_x_numerator = (first_numerator * second_dy
+                              - second_numerator * first_dy)
         center_x = float(center_x_numerator) * inverted_denominator
         if recompute_lower_x:
-            third_delta_x = BigInt.from_int32(first_site.start.x
-                                              - third_site.start.x)
-            third_delta_y = BigInt.from_int32(first_site.start.y
-                                              - third_site.start.y)
-            squared_radius = ((first_delta_x * first_delta_x
-                               + first_delta_y * first_delta_y)
-                              * (second_delta_x * second_delta_x
-                                 + second_delta_y * second_delta_y)
-                              * (third_delta_x * third_delta_x
-                                 + third_delta_y * third_delta_y))
+            third_dx = BigInt.from_int32(first_site.start.x
+                                         - third_site.start.x)
+            third_dy = BigInt.from_int32(first_site.start.y
+                                         - third_site.start.y)
+            squared_radius = ((first_dx * first_dx + first_dy * first_dy)
+                              * (second_dx * second_dx + second_dy * second_dy)
+                              * (third_dx * third_dx + third_dy * third_dy))
             radius = sqrt(float(squared_radius))
             # if ``center_x >= 0`` then ``lower_x = center_x + r``,
             # else ``lower_x = (center_x * center_x - r * r) / (center_x - r)``
@@ -219,8 +213,8 @@ def to_point_point_point_circle_event(first_site: SiteEvent,
                       if inverted_denominator < 0
                       else center_x + radius * inverted_denominator))
     if recompute_center_y:
-        center_y = (float(second_numerator * first_delta_x
-                          - first_numerator * second_delta_x)
+        center_y = (float(second_numerator * first_dx
+                          - first_numerator * second_dx)
                     * inverted_denominator)
     return CircleEvent(center_x, center_y, lower_x)
 
