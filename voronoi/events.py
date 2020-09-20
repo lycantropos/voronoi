@@ -228,32 +228,30 @@ def to_point_point_segment_circle_event(first_site: SiteEvent,
                                         recompute_lower_x: bool = True
                                         ) -> CircleEvent:
     center_x = center_y = lower_x = 0.
-    segment_delta_x = BigInt.from_int64(third_site.end.x - third_site.start.x)
-    segment_delta_y = BigInt.from_int64(third_site.end.y - third_site.start.y)
-    segment_length = (segment_delta_x * segment_delta_x
-                      + segment_delta_y * segment_delta_y)
+    segment_dx = BigInt.from_int64(third_site.end.x - third_site.start.x)
+    segment_dy = BigInt.from_int64(third_site.end.y - third_site.start.y)
+    segment_length = segment_dx * segment_dx + segment_dy * segment_dy
     perpendicular_x = BigInt.from_int64(second_site.start.y
                                         - first_site.start.y)
     perpendicular_y = BigInt.from_int64(first_site.start.x
                                         - second_site.start.x)
-    points_sum_x = BigInt.from_int64(first_site.start.x + second_site.start.x)
-    points_sum_y = BigInt.from_int64(first_site.start.y + second_site.start.y)
-    signed_perpendicular_area = (perpendicular_x * segment_delta_y
-                                 - segment_delta_x * perpendicular_y)
-    signed_perpendicular_projection_length = (
-            perpendicular_x * segment_delta_x
-            + perpendicular_y * segment_delta_y)
+    points_sx = BigInt.from_int64(first_site.start.x + second_site.start.x)
+    points_sy = BigInt.from_int64(first_site.start.y + second_site.start.y)
+    signed_perpendicular_area = (perpendicular_x * segment_dy
+                                 - segment_dx * perpendicular_y)
+    signed_perpendicular_projection_length = (perpendicular_x * segment_dx
+                                              + perpendicular_y * segment_dy)
     # signed area of parallelogram built on
     signed_first_point_area = (
-            segment_delta_y * BigInt.from_int64(first_site.start.x
-                                                - third_site.end.x)
-            - segment_delta_x * BigInt.from_int64(first_site.start.y
-                                                  - third_site.end.y))
+            segment_dy * BigInt.from_int64(first_site.start.x
+                                           - third_site.end.x)
+            - segment_dx * BigInt.from_int64(first_site.start.y
+                                             - third_site.end.y))
     signed_second_point_area = (
-            segment_delta_y * BigInt.from_int64(second_site.start.x
-                                                - third_site.end.x)
-            - segment_delta_x * BigInt.from_int64(second_site.start.y
-                                                  - third_site.end.y))
+            segment_dy * BigInt.from_int64(second_site.start.x
+                                           - third_site.end.x)
+            - segment_dx * BigInt.from_int64(second_site.start.y
+                                             - third_site.end.y))
     signed_points_area = signed_first_point_area + signed_second_point_area
     squared_perpendicular_area = (signed_perpendicular_area
                                   * signed_perpendicular_area)
@@ -261,7 +259,7 @@ def to_point_point_segment_circle_event(first_site: SiteEvent,
         squared_points_area = signed_points_area * signed_points_area
         numerator = squared_perpendicular_area - squared_points_area
         determinant = signed_perpendicular_area * signed_points_area
-        coefficients = (determinant * points_sum_x * BigInt.from_int32(2)
+        coefficients = (determinant * points_sx * BigInt.from_int32(2)
                         + numerator * perpendicular_x,
                         signed_perpendicular_area
                         * (squared_points_area * BigInt.from_int32(2)
@@ -270,7 +268,7 @@ def to_point_point_segment_circle_event(first_site: SiteEvent,
         if recompute_center_x:
             center_x = 0.25 * float(coefficients[0]) * inverted_denominator
         if recompute_center_y:
-            center_y = (0.25 * float((determinant * points_sum_y
+            center_y = (0.25 * float((determinant * points_sy
                                       * BigInt.from_int32(2))
                                      + numerator * perpendicular_y)
                         * inverted_denominator)
@@ -294,13 +292,12 @@ def to_point_point_segment_circle_event(first_site: SiteEvent,
                 signed_perpendicular_projection_length)
         squared_inverted_denominator *= squared_inverted_denominator
         if recompute_center_x or recompute_lower_x:
-            coefficients = (
-                points_sum_x * squared_perpendicular_projection_length
-                + (signed_perpendicular_area
-                   * signed_points_area * perpendicular_x),
-                -perpendicular_x
-                if segment_index == 2
-                else perpendicular_x)
+            coefficients = (points_sx * squared_perpendicular_projection_length
+                            + (signed_perpendicular_area * signed_points_area
+                               * perpendicular_x),
+                            -perpendicular_x
+                            if segment_index == 2
+                            else perpendicular_x)
             if recompute_center_x:
                 center_x = (0.5
                             * float(pairs_sum_expression(coefficients,
@@ -324,7 +321,7 @@ def to_point_point_segment_circle_event(first_site: SiteEvent,
         if recompute_center_y:
             center_y = (0.5
                         * float(pairs_sum_expression(
-                            (points_sum_y
+                            (points_sy
                              * squared_perpendicular_projection_length
                              + (signed_perpendicular_area * signed_points_area
                                 * perpendicular_y),
