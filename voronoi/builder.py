@@ -3,9 +3,11 @@ from typing import (List,
 
 from reprit.base import generate_repr
 
+from .diagram import Diagram
 from .enums import SourceCategory
 from .events import SiteEvent
-from .point import Point
+from .point import (Point,
+                    are_vertical_endpoints)
 from .utils import to_unique_just_seen
 
 

@@ -1,11 +1,9 @@
-from math import isnan
-
-from _voronoi import distance_to_point_arc as bound
+from _voronoi import distance_to_segment_arc as bound
 from hypothesis import given
 
 from tests.utils import (BoundPortedPointsPair,
                          BoundPortedSiteEventsPair)
-from voronoi.predicates import distance_to_point_arc as ported
+from voronoi.beach_line_key import distance_to_segment_arc as ported
 from . import strategies
 
 
@@ -15,8 +13,5 @@ def test_basic(events_pair: BoundPortedSiteEventsPair,
     bound_event, ported_event = events_pair
     bound_point, ported_point = points_pair
 
-    bound_result = bound(bound_event, bound_point)
-    ported_result = ported(ported_event, ported_point)
-
-    assert (bound_result == ported_result
-            or isnan(bound_result) and isnan(ported_result))
+    assert (bound(bound_event, bound_point)
+            == ported(ported_event, ported_point))

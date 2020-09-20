@@ -4,8 +4,8 @@ from hypothesis import given
 from tests.utils import (BoundPortedCircleEventsPair,
                          BoundPortedSiteEventsPair,
                          are_bound_ported_circle_events_equal)
-from voronoi.events import (compute_segment_segment_segment_circle_event
-                            as ported)
+from voronoi.events.computers import (
+    compute_segment_segment_segment_circle_event as ported)
 from . import strategies
 
 

@@ -19,3 +19,7 @@ class Point:
         return ((self.x, self.y) < (other.x, other.y)
                 if isinstance(other, Point)
                 else NotImplemented)
+
+
+def are_vertical_endpoints(start: Point, end: Point) -> bool:
+    return start.x == end.x

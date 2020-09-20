@@ -3,7 +3,7 @@ from hypothesis import given
 
 from tests.utils import (BoundPortedSiteEventsPair,
                          equivalence)
-from voronoi.predicates import point_point_point_circle_exists as ported
+from voronoi.events.predicates import point_point_point_circle_exists as ported
 from . import strategies
 
 
