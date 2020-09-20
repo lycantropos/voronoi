@@ -12,6 +12,7 @@ from typing import (Callable,
                     Union)
 
 from _voronoi import (BeachLineKey as BoundBeachLineKey,
+                      BeachLineValue as BoundBeachLineValue,
                       BigFloat as BoundBigFloat,
                       BigInt as BoundBigInt,
                       Builder as BoundBuilder,
@@ -31,6 +32,7 @@ from hypothesis import strategies
 from hypothesis.strategies import SearchStrategy
 
 from voronoi.beach_line_key import BeachLineKey as PortedBeachLineKey
+from voronoi.beach_line_value import BeachLineValue as PortedBeachLineValue
 from voronoi.big_float import BigFloat as PortedBigFloat
 from voronoi.big_int import BigInt as PortedBigInt
 from voronoi.builder import Builder as PortedBuilder
@@ -53,6 +55,7 @@ Range = TypeVar('Range')
 Strategy = SearchStrategy
 
 BoundBeachLineKey = BoundBeachLineKey
+BoundBeachLineValue = BoundBeachLineValue
 BoundBigFloat = BoundBigFloat
 BoundBigInt = BoundBigInt
 BoundBuilder = BoundBuilder
@@ -70,6 +73,7 @@ BoundSourceCategory = BoundSourceCategory
 BoundVertex = BoundVertex
 
 PortedBeachLineKey = PortedBeachLineKey
+PortedBeachLineValue = PortedBeachLineValue
 PortedBigFloat = PortedBigFloat
 PortedBigInt = PortedBigInt
 PortedBuilder = PortedBuilder
@@ -104,6 +108,8 @@ BoundPortedCellsPair = Tuple[BoundCell, PortedCell]
 BoundPortedCellsListsPair = Tuple[List[BoundCell], List[PortedCell]]
 BoundPortedMaybeCellsPair = Tuple[Optional[BoundCell], Optional[PortedCell]]
 BoundPortedCircleEventsPair = Tuple[BoundCircleEvent, PortedCircleEvent]
+BoundPortedMaybeCircleEventsPair = Tuple[Optional[BoundCircleEvent],
+                                         Optional[PortedCircleEvent]]
 BoundPortedDiagramsPair = Tuple[BoundDiagram, PortedDiagram]
 BoundPortedEdgesPair = Tuple[BoundEdge, PortedEdge]
 BoundPortedEdgesListsPair = Tuple[List[BoundEdge], List[PortedEdge]]
@@ -174,6 +180,14 @@ def are_bound_ported_beach_line_keys_equal(bound: BoundBeachLineKey,
                                                    ported.right_site))
 
 
+def are_bound_ported_beach_line_values_equal(bound: BoundBeachLineValue,
+                                             ported: PortedBeachLineValue
+                                             ) -> bool:
+    return (are_bound_ported_maybe_edges_equal(bound.edge, ported.edge)
+            and are_bound_ported_maybe_circle_events_equal(
+                    bound.circle_event, ported.circle_event))
+
+
 def are_bound_ported_big_floats_equal(bound: BoundBigFloat,
                                       ported: PortedBigFloat) -> bool:
     return (bound.mantissa == ported.mantissa
@@ -214,6 +228,10 @@ def are_bound_ported_circle_events_equal(bound: BoundCircleEvent,
             and are_floats_equivalent(bound.center_y, ported.center_y)
             and are_floats_equivalent(bound.lower_x, ported.lower_x)
             and bound.is_active is ported.is_active)
+
+
+are_bound_ported_maybe_circle_events_equal = to_maybe_equals(
+        are_bound_ported_circle_events_equal)
 
 
 def are_bound_ported_diagrams_equal(bound: BoundDiagram, ported: PortedDiagram
