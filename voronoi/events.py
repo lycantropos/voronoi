@@ -488,6 +488,96 @@ def compute_point_segment_segment_circle_event(circle_event: CircleEvent,
                                                      recompute_lower_x)
 
 
+def compute_segment_segment_segment_circle_event(circle_event: CircleEvent,
+                                                 first_site: SiteEvent,
+                                                 second_site: SiteEvent,
+                                                 third_site: SiteEvent
+                                                 ) -> None:
+    first_dx = RobustFloat(float(first_site.end.x) - float(first_site.start.x))
+    first_dy = RobustFloat(float(first_site.end.y) - float(first_site.start.y))
+    first_signed_area = RobustFloat(robust_cross_product(first_site.start.x,
+                                                         first_site.start.y,
+                                                         first_site.end.x,
+                                                         first_site.end.y),
+                                    1.)
+    second_dx = RobustFloat(float(second_site.end.x)
+                            - float(second_site.start.x))
+    second_dy = RobustFloat(float(second_site.end.y)
+                            - float(second_site.start.y))
+    second_signed_area = RobustFloat(
+            robust_cross_product(second_site.start.x, second_site.start.y,
+                                 second_site.end.x, second_site.end.y),
+            1.)
+    third_dx = RobustFloat(float(third_site.end.x) - float(third_site.start.x))
+    third_dy = RobustFloat(float(third_site.end.y) - float(third_site.start.y))
+    third_signed_area = RobustFloat(
+            robust_cross_product(third_site.start.x, third_site.start.y,
+                                 third_site.end.x, third_site.end.y),
+            1.)
+    first_length = (first_dx * first_dx + first_dy * first_dy).sqrt()
+    second_length = (second_dx * second_dx + second_dy * second_dy).sqrt()
+    third_length = (third_dx * third_dx + third_dy * third_dy).sqrt()
+    first_second_signed_area = RobustFloat(
+            robust_cross_product(first_site.end.x - first_site.start.x,
+                                 first_site.end.y - first_site.start.y,
+                                 second_site.end.x - second_site.start.x,
+                                 second_site.end.y - second_site.start.y),
+            1.)
+    second_third_signed_area = RobustFloat(
+            robust_cross_product(second_site.end.x - second_site.start.x,
+                                 second_site.end.y - second_site.start.y,
+                                 third_site.end.x - third_site.start.x,
+                                 third_site.end.y - third_site.start.y),
+            1.)
+    third_first_signed_area = RobustFloat(
+            robust_cross_product(third_site.end.x - third_site.start.x,
+                                 third_site.end.y - third_site.start.y,
+                                 first_site.end.x - first_site.start.x,
+                                 first_site.end.y - first_site.start.y),
+            1.)
+    denominator = RobustDifference.zero()
+    denominator += first_second_signed_area * third_length
+    denominator += second_third_signed_area * first_length
+    denominator += third_first_signed_area * second_length
+    r = RobustDifference.zero()
+    r -= first_second_signed_area * third_signed_area
+    r -= second_third_signed_area * first_signed_area
+    r -= third_first_signed_area * second_signed_area
+    center_x = RobustDifference.zero()
+    center_x += first_dx * second_signed_area * third_length
+    center_x -= second_dx * first_signed_area * third_length
+    center_x += second_dx * third_signed_area * first_length
+    center_x -= third_dx * second_signed_area * first_length
+    center_x += third_dx * first_signed_area * second_length
+    center_x -= first_dx * third_signed_area * second_length
+    center_y = RobustDifference.zero()
+    center_y += first_dy * second_signed_area * third_length
+    center_y -= second_dy * first_signed_area * third_length
+    center_y += second_dy * third_signed_area * first_length
+    center_y -= third_dy * second_signed_area * first_length
+    center_y += third_dy * first_signed_area * second_length
+    center_y -= first_dy * third_signed_area * second_length
+    lower_x = center_x + r
+    denominator = denominator.evaluate()
+    center_x = center_x.evaluate() / denominator
+    center_y = center_y.evaluate() / denominator
+    lower_x = lower_x.evaluate() / denominator
+    recompute_center_x = center_x.relative_error > ULPS
+    recompute_center_y = center_y.relative_error > ULPS
+    recompute_lower_x = lower_x.relative_error > ULPS
+    circle_event.center_x = center_x.value
+    circle_event.center_y = center_y.value
+    circle_event.lower_x = lower_x.value
+    circle_event.is_active = True
+    if recompute_center_x or recompute_center_y or recompute_lower_x:
+        recompute_segment_segment_segment_circle_event(circle_event,
+                                                       first_site, second_site,
+                                                       third_site,
+                                                       recompute_center_x,
+                                                       recompute_center_y,
+                                                       recompute_lower_x)
+
+
 def recompute_point_point_point_circle_event(circle_event: CircleEvent,
                                              first_site: SiteEvent,
                                              second_site: SiteEvent,
