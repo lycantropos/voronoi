@@ -521,6 +521,13 @@ PYBIND11_MODULE(MODULE_NAME, m) {
           py::is_operator())
       .def("__repr__", repr<CircleEvent>)
       .def("deactivate", &CircleEvent::deactivate)
+      .def("lies_outside_vertical_segment",
+           [](const CircleEvent& self, const SiteEvent& site) {
+             static Predicates::circle_formation_predicate<SiteEvent,
+                                                           CircleEvent>
+                 predicate;
+             return predicate.lies_outside_vertical_segment(self, site);
+           })
       .def_property_readonly("center_x",
                              [](const CircleEvent& self) { return self.x(); })
       .def_property_readonly("center_y",
