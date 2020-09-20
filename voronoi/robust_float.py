@@ -19,6 +19,9 @@ class RobustFloat:
 
     __repr__ = generate_repr(__init__)
 
+    def __abs__(self) -> 'RobustFloat':
+        return RobustFloat(abs(self.value), self.relative_error)
+
     def __add__(self, other: 'RobustFloat') -> 'RobustFloat':
         value = self.value + other.value
         relative_error = (max(self.relative_error, other.relative_error)
