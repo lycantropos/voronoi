@@ -24,6 +24,9 @@ class BigInt:
 
     __repr__ = generate_repr(__init__)
 
+    def __abs__(self) -> 'BigInt':
+        return BigInt(abs(self.sign), self.digits)
+
     def __add__(self, other: 'BigInt') -> 'BigInt':
         result = BigInt(0, [])
         result._add(self, other)
@@ -31,6 +34,14 @@ class BigInt:
 
     def __bool__(self) -> bool:
         return bool(self.sign)
+
+    def __int__(self) -> int:
+        result = 0
+        multiplier = 1
+        for digit in self.digits:
+            result += multiplier * digit
+            multiplier <<= 32
+        return self.sign * result
 
     def __float__(self) -> float:
         mantissa, exponent = self.frexp()
@@ -310,6 +321,51 @@ def to_first_point_segment_segment_quadruplets_expression(
              (left[0] * left[1] - left[2] * left[3]) * BigInt.from_int32(2)),
             (BigInt.from_int32(1), right[3]))
             / (lh - rh))
+
+
+def to_second_point_segment_segment_quadruplets_expression(
+        left: Tuple[BigInt, BigInt, BigInt, BigInt],
+        right: Tuple[BigInt, BigInt, BigInt, BigInt]) -> BigFloat:
+    if left[3]:
+        rh = (robust_product_with_sqrt(left[2], right[3])
+              * robust_sum_of_products_with_sqrt_pairs(
+                        (BigInt.from_int32(1), right[2]),
+                        (right[0] * right[1], BigInt.from_int32(1))).sqrt())
+        common_right_coefficients = (right[0], right[1], BigInt.from_int32(1))
+        lh = robust_sum_of_products_with_sqrt_triplets(
+                (left[0], left[1], left[3]), common_right_coefficients)
+        return (lh + rh
+                if (lh.mantissa >= 0 and rh.mantissa >= 0
+                    or lh.mantissa <= 0 and rh.mantissa <= 0)
+                else
+                to_first_point_segment_segment_quadruplets_expression(
+                        (left[3] * left[0] * BigInt.from_int32(2),
+                         left[3] * left[1] * BigInt.from_int32(2),
+                         left[0] * left[0] * right[0]
+                         + left[1] * left[1] * right[1] + left[3] * left[3]
+                         - left[2] * left[2] * right[2] * right[3],
+                         left[0] * left[1] * BigInt.from_int32(2)
+                         - left[2] * left[2] * right[3]),
+                        common_right_coefficients + (right[0] * right[1],))
+                / (lh - rh))
+    else:
+        lh = robust_sum_of_products_with_sqrt_pairs(left[:2], right[:2])
+        rh = (robust_product_with_sqrt(left[2], right[3])
+              * robust_sum_of_products_with_sqrt_pairs(
+                        (BigInt.from_int32(1), right[2]),
+                        (right[0] * right[1], BigInt.from_int32(1))).sqrt())
+        return (lh + rh
+                if (lh.mantissa >= 0 and rh.mantissa >= 0
+                    or lh.mantissa <= 0 and rh.mantissa <= 0)
+                else
+                robust_sum_of_products_with_sqrt_pairs(
+                        (left[0] * left[0] * right[0]
+                         + left[1] * left[1] * right[1]
+                         - left[2] * left[2] * right[3] * right[2],
+                         left[0] * left[1] * BigInt.from_int32(2)
+                         - left[2] * left[2] * right[3]),
+                        (BigInt.from_int32(1), right[0] * right[1]))
+                / (lh - rh))
 
 
 def _to_uint32(value: int) -> int:
