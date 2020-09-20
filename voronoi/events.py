@@ -482,3 +482,68 @@ def to_point_segment_segment_circle_event(first_site: SiteEvent,
                         + (squared_second_dx + squared_second_dy,))),
                         denominator)
     return CircleEvent(center_x, center_y, lower_x)
+
+
+def to_segment_segment_segment_circle_event(first_site: SiteEvent,
+                                            second_site: SiteEvent,
+                                            third_site: SiteEvent,
+                                            recompute_center_x: bool = True,
+                                            recompute_center_y: bool = True,
+                                            recompute_lower_x: bool = True
+                                            ) -> CircleEvent:
+    center_x = center_y = lower_x = 0.
+    first_dx = BigInt.from_int64(first_site.end.x - first_site.start.x)
+    first_dy = BigInt.from_int64(first_site.end.y - first_site.start.y)
+    second_dx = BigInt.from_int64(second_site.end.x - second_site.start.x)
+    second_dy = BigInt.from_int64(second_site.end.y - second_site.start.y)
+    third_dx = BigInt.from_int64(third_site.end.x - third_site.start.x)
+    third_dy = BigInt.from_int64(third_site.end.y - third_site.start.y)
+    segments_lengths = (first_dx * first_dx + first_dy * first_dy,
+                        second_dx * second_dx + second_dy * second_dy,
+                        third_dx * third_dx + third_dy * third_dy)
+    denominator = float(triplets_sum_expression(
+            (second_dx * third_dy - third_dx * second_dy,
+             third_dx * first_dy - first_dx * third_dy,
+             first_dx * second_dy - second_dx * first_dy),
+            segments_lengths))
+    first_signed_area = BigInt.from_int64(
+            first_site.start.x * first_site.end.y
+            - first_site.start.y * first_site.end.x)
+    second_signed_area = BigInt.from_int64(
+            second_site.start.x * second_site.end.y
+            - second_site.start.y * second_site.end.x)
+    third_signed_area = BigInt.from_int64(
+            third_site.start.x * third_site.end.y
+            - third_site.start.y * third_site.end.x)
+    if recompute_center_y:
+        center_y = safe_divide_floats(
+                float(triplets_sum_expression(
+                        (second_dy * third_signed_area
+                         - third_dy * second_signed_area,
+                         third_dy * first_signed_area
+                         - first_dy * third_signed_area,
+                         first_dy * second_signed_area
+                         - second_dy * first_signed_area),
+                        segments_lengths)),
+                denominator)
+    if recompute_center_x or recompute_lower_x:
+        common_left_coefficients = (second_dx * third_signed_area
+                                    - third_dx * second_signed_area,
+                                    third_dx * first_signed_area
+                                    - first_dx * third_signed_area,
+                                    first_dx * second_signed_area
+                                    - second_dx * first_signed_area)
+        if recompute_center_x:
+            center_x = safe_divide_floats(
+                    float(triplets_sum_expression(common_left_coefficients,
+                                                  segments_lengths)),
+                    denominator)
+        if recompute_lower_x:
+            lower_x = safe_divide_floats(float(quadruplets_sum_expression(
+                    common_left_coefficients
+                    + (common_left_coefficients[0] * first_dy
+                       + common_left_coefficients[1] * second_dy
+                       + common_left_coefficients[2] * third_dy,),
+                    segments_lengths + (BigInt.from_int32(1),))),
+                    denominator)
+    return CircleEvent(center_x, center_y, lower_x)
