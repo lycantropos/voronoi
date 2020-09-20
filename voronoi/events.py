@@ -477,6 +477,7 @@ def recompute_point_segment_segment_circle_event(
             circle_event.center_x = circle_event.lower_x = (float(ix)
                                                             / denominator)
             circle_event.center_y = float(iy) / denominator
+            circle_event.is_active = True
     else:
         denominator = 2. * float(squared_second_dx + squared_second_dy)
         dx = (second_dy * BigInt.from_int64(first_site.start.x - second_end.x)
