@@ -110,10 +110,10 @@ def point_segment_horizontal_goes_through_right_arc_first(
     if (to_orientation(segment_start, segment_end, point)
             is not Orientation.RIGHT):
         return not right_site.is_inverse
-    delta_x, delta_y = (float(point.x) - float(site_point.x),
-                        float(point.y) - float(site_point.y))
-    a, b = (float(segment_end.x) - float(segment_start.x),
-            float(segment_end.y) - float(segment_start.y))
+    points_dx, points_dy = (float(point.x) - float(site_point.x),
+                            float(point.y) - float(site_point.y))
+    segment_dx, segment_dy = (float(segment_end.x) - float(segment_start.x),
+                              float(segment_end.y) - float(segment_start.y))
     if right_site.is_vertical:
         if point.y < site_point.y and not reverse_order:
             return False
@@ -131,8 +131,9 @@ def point_segment_horizontal_goes_through_right_arc_first(
             elif not reverse_order:
                 return False
         else:
-            fast_left_expr = a * (delta_y + delta_x) * (delta_y - delta_x)
-            fast_right_expr = 2. * b * delta_x * delta_y
+            fast_left_expr = (segment_dx * (points_dy + points_dx)
+                              * (points_dy - points_dx))
+            fast_right_expr = 2. * segment_dy * points_dx * points_dy
             if ((compare_floats(fast_left_expr, fast_right_expr, 4)
                  is ComparisonResult.MORE)
                     is not reverse_order):
