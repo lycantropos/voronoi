@@ -803,6 +803,19 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       py::arg("third_site"));
 
   m.def(
+      "compute_point_point_segment_circle_event",
+      [](CircleEvent& circle_event, const SiteEvent& first_site,
+         const SiteEvent& second_site, const SiteEvent& third_site,
+         int segment_index) {
+        static Predicates::lazy_circle_formation_functor<SiteEvent, CircleEvent>
+            functor;
+        functor.pps(first_site, second_site, third_site, segment_index,
+                    circle_event);
+      },
+      py::arg("circle_event"), py::arg("first_site"), py::arg("second_site"),
+      py::arg("third_site"), py::arg("segment_index"));
+
+  m.def(
       "distance_to_point_arc",
       [](const SiteEvent& site, const Point& point) {
         static const Predicates::distance_predicate<SiteEvent> comparator;
