@@ -799,6 +799,17 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       py::arg("left"), py::arg("right"), py::arg("max_ulps"));
 
   m.def(
+      "compute_circle_event",
+      [](CircleEvent& circle_event, const SiteEvent& first_site,
+         const SiteEvent& second_site, const SiteEvent& third_site) {
+        static Predicates::circle_formation_predicate<SiteEvent, CircleEvent>
+            predicate;
+        return predicate(first_site, second_site, third_site, circle_event);
+      },
+      py::arg("circle_event"), py::arg("first_site"), py::arg("second_site"),
+      py::arg("third_site"));
+
+  m.def(
       "compute_point_point_point_circle_event",
       [](CircleEvent& circle_event, const SiteEvent& first_site,
          const SiteEvent& second_site, const SiteEvent& third_site) {
