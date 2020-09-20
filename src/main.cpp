@@ -496,7 +496,8 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_property_readonly("source_index", &Cell::source_index)
       .def_property_readonly("source_category", &Cell::source_category);
 
-  py::class_<CircleEvent>(m, CIRCLE_EVENT_NAME)
+  py::class_<CircleEvent, std::unique_ptr<CircleEvent, py::nodelete>>(
+      m, CIRCLE_EVENT_NAME)
       .def(py::init([](double center_x, double center_y, double lower_x,
                        bool is_active) {
              CircleEvent result{center_x, center_y, lower_x};
