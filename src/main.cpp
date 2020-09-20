@@ -493,7 +493,18 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def("process_site_event", &Builder::process_site_event<Diagram>,
            py::arg("diagram"))
       .def_property_readonly("site_event_index", get_builder_site_event_index)
-      .def_readonly("beach_line", &Builder::beach_line_)
+      .def_property_readonly(
+          "beach_line",
+          [](Builder& self) {
+            std::vector<std::pair<BeachLineKey, BeachLineValue>> result;
+            for (auto& item : self.beach_line_) {
+              auto& value = item.second;
+              result.push_back(
+                  {item.first, BeachLineValue{static_cast<Edge*>(value.edge())}
+                                   .circle_event(value.circle_event())});
+            }
+            return result;
+          })
       .def_readonly("index", &Builder::index_)
       .def_readonly("site_events", &Builder::site_events_);
 
