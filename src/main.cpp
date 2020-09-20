@@ -985,4 +985,20 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       py::arg("point_index"), py::arg("recompute_center_x") = true,
       py::arg("recompute_center_y") = true,
       py::arg("recompute_lower_x") = true);
+
+  m.def("to_first_point_segment_segment_quadruplets_expression",
+        [](std::array<BigInt, 4> left, std::array<BigInt, 4> right) {
+          static Predicates::mp_circle_formation_functor<SiteEvent, CircleEvent>
+              functor;
+          return functor.sqrt_expr_evaluator_pss3<BigInt, BigFloat>(
+              left.data(), right.data());
+        });
+
+  m.def("to_second_point_segment_segment_quadruplets_expression",
+        [](std::array<BigInt, 4> left, std::array<BigInt, 4> right) {
+          static Predicates::mp_circle_formation_functor<SiteEvent, CircleEvent>
+              functor;
+          return functor.sqrt_expr_evaluator_pss4<BigInt, BigFloat>(
+              left.data(), right.data());
+        });
 }
