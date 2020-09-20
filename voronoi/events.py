@@ -312,6 +312,182 @@ def compute_point_point_segment_circle_event(circle_event: CircleEvent,
                                                    recompute_lower_x)
 
 
+def compute_point_segment_segment_circle_event(circle_event: CircleEvent,
+                                               first_site: SiteEvent,
+                                               second_site: SiteEvent,
+                                               third_site: SiteEvent,
+                                               point_index: int) -> None:
+    first_segment_start = second_site.start
+    first_segment_end = second_site.end
+    second_segment_start = third_site.start
+    second_segment_end = third_site.end
+    first_segment_dx = (float(first_segment_end.x)
+                        - float(first_segment_start.x))
+    first_segment_dy = (float(first_segment_end.y)
+                        - float(first_segment_start.y))
+    second_segment_dx = (float(second_segment_end.x)
+                         - float(second_segment_start.x))
+    second_segment_dy = (float(second_segment_end.y)
+                         - float(second_segment_start.y))
+    segments_signed_area = RobustFloat(
+            robust_cross_product(
+                    first_segment_start.y - first_segment_end.y,
+                    first_segment_start.x - first_segment_end.x,
+                    second_segment_end.y - second_segment_start.y,
+                    second_segment_end.x - second_segment_start.x),
+            1.)
+    first_segment_squared_length = (first_segment_dx * first_segment_dx
+                                    + first_segment_dy * first_segment_dy)
+    if segments_signed_area:
+        first_segment_length = RobustFloat(sqrt(first_segment_squared_length),
+                                           2.)
+        second_segment_length = RobustFloat(
+                sqrt(second_segment_dx * second_segment_dx
+                     + second_segment_dy * second_segment_dy),
+                2.)
+        a = RobustFloat(
+                robust_cross_product(
+                        first_segment_start.x - first_segment_end.x,
+                        first_segment_start.y - first_segment_end.y,
+                        second_segment_start.y - second_segment_end.y,
+                        second_segment_end.x - second_segment_start.x),
+                1.)
+        if a < 0:
+            a = ((segments_signed_area * segments_signed_area)
+                 / (first_segment_length * second_segment_length - a))
+        else:
+            a += first_segment_length * second_segment_length
+        first_signed_area = RobustFloat(
+                robust_cross_product(
+                        first_segment_start.y - first_segment_end.y,
+                        first_segment_start.x - first_segment_end.x,
+                        first_segment_start.y - first_site.start.y,
+                        first_segment_start.x - first_site.start.x),
+                1.)
+        second_signed_area = RobustFloat(
+                robust_cross_product(
+                        second_segment_end.x - second_segment_start.x,
+                        second_segment_end.y - second_segment_start.y,
+                        second_segment_end.x - first_site.start.x,
+                        second_segment_end.y - first_site.start.y),
+                1.)
+        determinant = (RobustFloat(2.) * a * first_signed_area
+                       * second_signed_area)
+        first_segment_signed_area = RobustFloat(
+                robust_cross_product(
+                        first_segment_start.y - first_segment_end.y,
+                        first_segment_start.x - first_segment_end.x,
+                        first_segment_start.y, first_segment_start.x),
+                1.)
+        second_segment_signed_area = RobustFloat(
+                robust_cross_product(
+                        second_segment_end.x - second_segment_start.x,
+                        second_segment_end.y - second_segment_start.y,
+                        second_segment_end.x, second_segment_end.y),
+                1.)
+        inverted_segments_signed_area = RobustFloat(1.) / segments_signed_area
+        t = RobustDifference.zero()
+        b = RobustDifference.zero()
+        ix = RobustDifference.zero()
+        ix += (RobustFloat(second_segment_dx) * first_segment_signed_area
+               * inverted_segments_signed_area)
+        ix -= (RobustFloat(first_segment_dx) * second_segment_signed_area
+               * inverted_segments_signed_area)
+        iy = RobustDifference.zero()
+        iy -= (RobustFloat(first_segment_dy) * second_segment_signed_area
+               * inverted_segments_signed_area)
+        iy += (RobustFloat(second_segment_dy) * first_segment_signed_area
+               * inverted_segments_signed_area)
+        b -= ix * (RobustFloat(first_segment_dx) * second_segment_length)
+        b += ix * (RobustFloat(second_segment_dx) * first_segment_length)
+        b -= iy * (RobustFloat(first_segment_dy) * second_segment_length)
+        b += iy * (RobustFloat(second_segment_dy) * first_segment_length)
+        b -= (first_segment_length
+              * RobustFloat(robust_cross_product(
+                        second_segment_end.x - second_segment_start.x,
+                        second_segment_end.y - second_segment_start.y,
+                        -first_site.start.y,
+                        first_site.start.x),
+                        1.))
+        b -= (second_segment_length
+              * RobustFloat(robust_cross_product(
+                        first_segment_start.x - first_segment_end.x,
+                        first_segment_start.y - first_segment_end.y,
+                        -first_site.start.y,
+                        first_site.start.x),
+                        1.))
+        t -= b
+        t += determinant.sqrt() if point_index == 2 else -determinant.sqrt()
+        t /= a * a
+        center_x = copy(ix)
+        center_x -= t * (RobustFloat(first_segment_dx) * second_segment_length)
+        center_x += t * (RobustFloat(second_segment_dx) * first_segment_length)
+        center_y = copy(iy)
+        center_y -= t * (RobustFloat(first_segment_dy) * second_segment_length)
+        center_y += t * (RobustFloat(second_segment_dy) * first_segment_length)
+        lower_x = copy(center_x)
+        lower_x += abs(t) * abs(segments_signed_area)
+    else:
+        a = RobustFloat(first_segment_squared_length, 2.)
+        c = RobustFloat(
+                robust_cross_product(
+                        first_segment_start.y - first_segment_end.y,
+                        first_segment_start.x - first_segment_end.x,
+                        second_segment_start.y - first_segment_end.y,
+                        second_segment_start.x - first_segment_end.x),
+                1.)
+        determinant = RobustFloat(
+                robust_cross_product(
+                        first_segment_start.x - first_segment_end.x,
+                        first_segment_start.y - first_segment_end.y,
+                        first_site.start.x - first_segment_end.x,
+                        first_site.start.y - first_segment_end.y)
+                * robust_cross_product(
+                        first_segment_start.y - first_segment_end.y,
+                        first_segment_start.x - first_segment_end.x,
+                        first_site.start.y - second_segment_start.y,
+                        first_site.start.x - second_segment_start.x),
+                3.)
+        t = RobustDifference.zero()
+        t += (RobustFloat(first_segment_dx)
+              * RobustFloat(0.5 * (float(first_segment_end.x)
+                                   + float(second_segment_start.x))
+                            - float(first_site.start.x)))
+        t += (RobustFloat(first_segment_dy)
+              * RobustFloat(0.5 * (float(first_segment_end.y)
+                                   + float(second_segment_start.y))
+                            - float(first_site.start.y)))
+        t += determinant.sqrt() if point_index == 2 else -determinant.sqrt()
+        t /= a
+        center_x = RobustDifference.zero()
+        center_x += RobustFloat(0.5 * (float(first_segment_end.x)
+                                       + float(second_segment_start.x)))
+        center_x -= t * RobustFloat(first_segment_dx)
+        center_y = RobustDifference.zero()
+        center_y += RobustFloat(0.5 * (float(first_segment_end.y)
+                                       + float(second_segment_start.y)))
+        center_y -= t * RobustFloat(first_segment_dy)
+        lower_x = copy(center_x)
+        lower_x += RobustFloat(0.5) * abs(c) / a.sqrt()
+    center_x = center_x.evaluate()
+    center_y = center_y.evaluate()
+    lower_x = lower_x.evaluate()
+    recompute_center_x = center_x.relative_error > ULPS
+    recompute_center_y = center_y.relative_error > ULPS
+    recompute_lower_x = lower_x.relative_error > ULPS
+    circle_event.center_x = center_x.value
+    circle_event.center_y = center_y.value
+    circle_event.lower_x = lower_x.value
+    circle_event.is_active = True
+    if recompute_center_x or recompute_center_y or recompute_lower_x:
+        recompute_point_segment_segment_circle_event(circle_event, first_site,
+                                                     second_site, third_site,
+                                                     point_index,
+                                                     recompute_center_x,
+                                                     recompute_center_y,
+                                                     recompute_lower_x)
+
+
 def recompute_point_point_point_circle_event(circle_event: CircleEvent,
                                              first_site: SiteEvent,
                                              second_site: SiteEvent,
