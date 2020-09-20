@@ -932,6 +932,14 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       },
       py::arg("first_site"), py::arg("second_site"), py::arg("third_site"));
 
+  m.def("to_first_point_segment_segment_quadruplets_expression",
+        [](std::array<BigInt, 4> left, std::array<BigInt, 4> right) {
+          static Predicates::mp_circle_formation_functor<SiteEvent, CircleEvent>
+              functor;
+          return functor.sqrt_expr_evaluator_pss3<BigInt, BigFloat>(
+              left.data(), right.data());
+        });
+
   m.def(
       "to_point_point_point_circle_event",
       [](const SiteEvent& first_site, const SiteEvent& second_site,
@@ -986,14 +994,6 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       py::arg("recompute_center_y") = true,
       py::arg("recompute_lower_x") = true);
 
-  m.def("to_first_point_segment_segment_quadruplets_expression",
-        [](std::array<BigInt, 4> left, std::array<BigInt, 4> right) {
-          static Predicates::mp_circle_formation_functor<SiteEvent, CircleEvent>
-              functor;
-          return functor.sqrt_expr_evaluator_pss3<BigInt, BigFloat>(
-              left.data(), right.data());
-        });
-
   m.def("to_second_point_segment_segment_quadruplets_expression",
         [](std::array<BigInt, 4> left, std::array<BigInt, 4> right) {
           static Predicates::mp_circle_formation_functor<SiteEvent, CircleEvent>
@@ -1001,4 +1001,21 @@ PYBIND11_MODULE(MODULE_NAME, m) {
           return functor.sqrt_expr_evaluator_pss4<BigInt, BigFloat>(
               left.data(), right.data());
         });
+
+  m.def(
+      "to_segment_segment_segment_circle_event",
+      [](const SiteEvent& first_site, const SiteEvent& second_site,
+         const SiteEvent& third_site, bool recompute_center_x,
+         bool recompute_center_y, bool recompute_lower_x) {
+        static Predicates::mp_circle_formation_functor<SiteEvent, CircleEvent>
+            functor;
+        auto result = std::make_unique<CircleEvent>(0., 0., 0.);
+        functor.sss(first_site, second_site, third_site, *result.get(),
+                    recompute_center_x, recompute_center_y, recompute_lower_x);
+        return result;
+      },
+      py::arg("first_site"), py::arg("second_site"), py::arg("third_site"),
+      py::arg("recompute_center_x") = true,
+      py::arg("recompute_center_y") = true,
+      py::arg("recompute_lower_x") = true);
 }
