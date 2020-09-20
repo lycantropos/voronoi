@@ -26,8 +26,8 @@ namespace py = pybind11;
 #define MODULE_NAME _voronoi
 #define C_STR_HELPER(a) #a
 #define C_STR(a) C_STR_HELPER(a)
-#define BEACH_LINE_KEY "BeachLineKey"
-#define BEACH_LINE_VALUE "BeachLineValue"
+#define BEACH_LINE_KEY_NAME "BeachLineKey"
+#define BEACH_LINE_VALUE_NAME "BeachLineValue"
 #define BIG_FLOAT_NAME "BigFloat"
 #define BIG_INT_NAME "BigInt"
 #define CIRCLE_EVENT_NAME "CircleEvent"
@@ -272,8 +272,8 @@ static std::ostream& operator<<(std::ostream& stream, const SiteEvent& event) {
 }
 
 static std::ostream& operator<<(std::ostream& stream, const BeachLineKey& key) {
-  return stream << C_STR(MODULE_NAME) "." BEACH_LINE_KEY "(" << key.left_site()
-                << ", " << key.right_site() << ")";
+  return stream << C_STR(MODULE_NAME) "." BEACH_LINE_KEY_NAME "("
+                << key.left_site() << ", " << key.right_site() << ")";
 }
 }  // namespace detail
 
@@ -346,7 +346,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .value("REVERSE_SEGMENT", SourceCategory::SOURCE_CATEGORY_REVERSE_SEGMENT)
       .def("belongs", &boost::polygon::belongs);
 
-  py::class_<BeachLineKey>(m, BEACH_LINE_KEY)
+  py::class_<BeachLineKey>(m, BEACH_LINE_KEY_NAME)
       .def(py::init<SiteEvent>(), py::arg("site"))
       .def(py::init<SiteEvent, SiteEvent>(), py::arg("left_site"),
            py::arg("right_site"))
@@ -381,7 +381,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
         return self.right_site();
       });
 
-  py::class_<BeachLineValue>(m, BEACH_LINE_VALUE)
+  py::class_<BeachLineValue>(m, BEACH_LINE_VALUE_NAME)
       .def(py::init([](Edge* edge, CircleEvent* circle_event) {
              return BeachLineValue{edge}.circle_event(circle_event);
            }),
