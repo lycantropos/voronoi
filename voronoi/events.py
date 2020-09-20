@@ -226,6 +226,91 @@ def compute_point_point_point_circle_event(circle_event: CircleEvent,
                                                  recompute_lower_x)
 
 
+def compute_point_point_segment_circle_event(circle_event: CircleEvent,
+                                             first_site: SiteEvent,
+                                             second_site: SiteEvent,
+                                             third_site: SiteEvent,
+                                             segment_index: int) -> None:
+    segment_dx = float(third_site.end.x) - float(third_site.start.x)
+    segment_dy = float(third_site.end.y) - float(third_site.start.y)
+    points_dx = float(second_site.start.y) - float(first_site.start.y)
+    points_dy = float(second_site.start.x) - float(first_site.start.x)
+    theta = RobustFloat(
+            robust_cross_product(third_site.end.y - third_site.start.y,
+                                 third_site.start.x - third_site.end.x,
+                                 second_site.start.x - first_site.start.x,
+                                 second_site.start.y - first_site.start.y),
+            1.)
+    first_signed_area = RobustFloat(
+            robust_cross_product(third_site.start.y - third_site.end.y,
+                                 third_site.start.x - third_site.end.x,
+                                 third_site.end.y - first_site.start.y,
+                                 third_site.end.x - first_site.start.x),
+            1.)
+    second_signed_area = RobustFloat(
+            robust_cross_product(third_site.start.y - third_site.end.y,
+                                 third_site.start.x - third_site.end.x,
+                                 third_site.end.y - second_site.start.y,
+                                 third_site.end.x - second_site.start.x),
+            1.)
+    denominator = RobustFloat(
+            robust_cross_product(first_site.start.y - second_site.start.y,
+                                 first_site.start.x - second_site.start.x,
+                                 third_site.end.y - third_site.start.y,
+                                 third_site.end.x - third_site.start.x),
+            1.)
+    inverted_segment_length = RobustFloat(
+            safe_divide_floats(1., sqrt(segment_dy * segment_dy
+                                        + segment_dx * segment_dx)),
+            3.)
+    t = RobustDifference.zero()
+    if denominator:
+        squared_denominator = denominator * denominator
+        determinant = ((theta * theta + squared_denominator)
+                       * first_signed_area * second_signed_area).sqrt()
+        t += (-determinant
+              if segment_index == 2
+              else determinant) / squared_denominator
+        t += (theta * (first_signed_area + second_signed_area)
+              / (RobustFloat(2.) * squared_denominator))
+    else:
+        t += theta / (RobustFloat(8.) * first_signed_area)
+        t -= first_signed_area / (RobustFloat(2.) * theta)
+    center_x = RobustDifference.zero()
+    center_x += RobustFloat(0.5 * (float(first_site.start.x)
+                                   + float(second_site.start.x)))
+    center_x += t * RobustFloat(points_dx)
+    center_y = RobustDifference.zero()
+    center_y += RobustFloat(0.5 * (float(first_site.start.y)
+                                   + float(second_site.start.y)))
+    center_y -= t * RobustFloat(points_dy)
+    r = RobustDifference.zero()
+    r -= RobustFloat(segment_dy) * RobustFloat(third_site.start.x)
+    r += RobustFloat(segment_dx) * RobustFloat(third_site.start.y)
+    r += center_x * RobustFloat(segment_dy)
+    r -= center_y * RobustFloat(segment_dx)
+    r = abs(r)
+    lower_x = RobustDifference(center_x.minuend, center_x.subtrahend)
+    lower_x += r * inverted_segment_length
+    center_x = center_x.evaluate()
+    center_y = center_y.evaluate()
+    lower_x = lower_x.evaluate()
+    circle_event.center_x = center_x.value
+    circle_event.center_y = center_y.value
+    circle_event.lower_x = lower_x.value
+    circle_event.is_active = True
+    recompute_center_x = center_x.relative_error > ULPS
+    recompute_center_y = center_y.relative_error > ULPS
+    recompute_lower_x = lower_x.relative_error > ULPS
+    if recompute_center_x or recompute_center_y or recompute_lower_x:
+        recompute_point_point_segment_circle_event(circle_event, first_site,
+                                                   second_site, third_site,
+                                                   segment_index,
+                                                   recompute_center_x,
+                                                   recompute_center_y,
+                                                   recompute_lower_x)
+
+
 def recompute_point_point_point_circle_event(circle_event: CircleEvent,
                                              first_site: SiteEvent,
                                              second_site: SiteEvent,
