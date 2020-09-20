@@ -14,6 +14,11 @@ class RobustDifference:
 
     __repr__ = generate_repr(__init__)
 
+    def __abs__(self) -> 'RobustDifference':
+        return (self
+                if self.minuend.value < self.subtrahend.value
+                else -self)
+
     def __add__(self, other: Union[RobustFloat, 'RobustDifference']
                 ) -> 'RobustDifference':
         if isinstance(other, RobustDifference):
@@ -92,6 +97,15 @@ class RobustDifference:
 
     def __neg__(self) -> 'RobustDifference':
         return RobustDifference(self.subtrahend, self.minuend)
+
+    def __rmul__(self, other: RobustFloat) -> 'RobustDifference':
+        if other < 0:
+            other = -other
+            return RobustDifference(other * self.subtrahend,
+                                    other * self.minuend)
+        else:
+            return RobustDifference(other * self.minuend,
+                                    other * self.subtrahend)
 
     def __sub__(self, other: Union[RobustFloat, 'RobustDifference']
                 ) -> 'RobustDifference':
