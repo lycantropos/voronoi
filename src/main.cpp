@@ -275,6 +275,15 @@ static std::ostream& operator<<(std::ostream& stream, const BeachLineKey& key) {
   return stream << C_STR(MODULE_NAME) "." BEACH_LINE_KEY_NAME "("
                 << key.left_site() << ", " << key.right_site() << ")";
 }
+
+static std::ostream& operator<<(std::ostream& stream,
+                                const BeachLineValue& value) {
+  stream << C_STR(MODULE_NAME) "." BEACH_LINE_VALUE_NAME "(";
+  write_pointer(stream, value.edge());
+  stream << ", ";
+  write_pointer(stream, value.circle_event());
+  return stream << ")";
+}
 }  // namespace detail
 
 template <>
@@ -386,6 +395,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
              return BeachLineValue{edge}.circle_event(circle_event);
            }),
            py::arg("edge"), py::arg("circle_event") = nullptr)
+      .def("__repr__", repr<BeachLineValue>)
       .def_property_readonly(
           "edge", [](const BeachLineValue& self) { return self.edge(); })
       .def_property_readonly("circle_event", [](const BeachLineValue& self) {
