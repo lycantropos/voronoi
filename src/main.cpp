@@ -791,19 +791,6 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       },
       py::arg("left"), py::arg("right"), py::arg("max_ulps"));
 
-  m.def("robust_cross_product", &Predicates::robust_cross_product,
-        py::arg("first_dx"), py::arg("first_dy"), py::arg("second_dx"),
-        py::arg("second_dy"));
-
-  m.def(
-      "to_orientation",
-      [](const Point& vertex, const Point& first_ray_point,
-         const Point& second_ray_point) {
-        return Predicates::ot::eval(vertex, first_ray_point, second_ray_point);
-      },
-      py::arg("vertex"), py::arg("first_ray_point"),
-      py::arg("second_ray_point"));
-
   m.def(
       "distance_to_point_arc",
       [](const SiteEvent& site, const Point& point) {
@@ -819,38 +806,6 @@ PYBIND11_MODULE(MODULE_NAME, m) {
         return comparator.find_distance_to_segment_arc(site, point);
       },
       py::arg("site"), py::arg("point"));
-
-  m.def(
-      "robust_product_with_sqrt",
-      [](BigInt& left, BigInt& right) {
-        RobustSumExpression expression;
-        return expression.eval1(&left, &right);
-      },
-      py::arg("left"), py::arg("right"));
-
-  m.def(
-      "robust_sum_of_products_with_sqrt_pairs",
-      [](std::array<BigInt, 2>& left, std::array<BigInt, 2>& right) {
-        RobustSumExpression expression;
-        return expression.eval2(left.data(), right.data());
-      },
-      py::arg("left"), py::arg("right"));
-
-  m.def(
-      "robust_sum_of_products_with_sqrt_triplets",
-      [](std::array<BigInt, 3>& left, std::array<BigInt, 3>& right) {
-        RobustSumExpression expression;
-        return expression.eval3(left.data(), right.data());
-      },
-      py::arg("left"), py::arg("right"));
-
-  m.def(
-      "robust_sum_of_products_with_sqrt_quadruplets",
-      [](std::array<BigInt, 4>& left, std::array<BigInt, 4>& right) {
-        RobustSumExpression expression;
-        return expression.eval4(left.data(), right.data());
-      },
-      py::arg("left"), py::arg("right"));
 
   m.def(
       "horizontal_goes_through_right_arc_first",
@@ -981,6 +936,42 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       py::arg("recompute_center_y") = true,
       py::arg("recompute_lower_x") = true);
 
+  m.def("robust_cross_product", &Predicates::robust_cross_product,
+        py::arg("first_dx"), py::arg("first_dy"), py::arg("second_dx"),
+        py::arg("second_dy"));
+
+  m.def(
+      "robust_product_with_sqrt",
+      [](BigInt& left, BigInt& right) {
+        RobustSumExpression expression;
+        return expression.eval1(&left, &right);
+      },
+      py::arg("left"), py::arg("right"));
+
+  m.def(
+      "robust_sum_of_products_with_sqrt_pairs",
+      [](std::array<BigInt, 2>& left, std::array<BigInt, 2>& right) {
+        RobustSumExpression expression;
+        return expression.eval2(left.data(), right.data());
+      },
+      py::arg("left"), py::arg("right"));
+
+  m.def(
+      "robust_sum_of_products_with_sqrt_triplets",
+      [](std::array<BigInt, 3>& left, std::array<BigInt, 3>& right) {
+        RobustSumExpression expression;
+        return expression.eval3(left.data(), right.data());
+      },
+      py::arg("left"), py::arg("right"));
+
+  m.def(
+      "robust_sum_of_products_with_sqrt_quadruplets",
+      [](std::array<BigInt, 4>& left, std::array<BigInt, 4>& right) {
+        RobustSumExpression expression;
+        return expression.eval4(left.data(), right.data());
+      },
+      py::arg("left"), py::arg("right"));
+
   m.def(
       "segment_segment_horizontal_goes_through_right_arc_first",
       [](const SiteEvent& left_site, const SiteEvent& right_site,
@@ -1007,6 +998,15 @@ PYBIND11_MODULE(MODULE_NAME, m) {
           return functor.sqrt_expr_evaluator_pss3<BigInt, BigFloat>(
               left.data(), right.data());
         });
+
+  m.def(
+      "to_orientation",
+      [](const Point& vertex, const Point& first_ray_point,
+         const Point& second_ray_point) {
+        return Predicates::ot::eval(vertex, first_ray_point, second_ray_point);
+      },
+      py::arg("vertex"), py::arg("first_ray_point"),
+      py::arg("second_ray_point"));
 
   m.def("to_second_point_segment_segment_quadruplets_expression",
         [](std::array<BigInt, 4> left, std::array<BigInt, 4> right) {
