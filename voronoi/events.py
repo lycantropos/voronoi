@@ -1,3 +1,4 @@
+from copy import copy
 from math import sqrt
 from typing import (Any,
                     TypeVar)
@@ -200,7 +201,7 @@ def compute_point_point_point_circle_event(circle_event: CircleEvent,
     center_y += RobustFloat(second_third_dy * second_sy * first_second_dx, 2.)
     center_y -= RobustFloat(first_second_dx * first_sx * second_third_dx, 2.)
     center_y -= RobustFloat(first_second_dy * first_sy * second_third_dx, 2.)
-    lower_x = RobustDifference(center_x.minuend, center_x.subtrahend)
+    lower_x = copy(center_x)
     lower_x -= RobustFloat(sqrt((first_second_dx * first_second_dx
                                  + first_second_dy * first_second_dy)
                                 * (second_third_dx * second_third_dx
@@ -290,7 +291,7 @@ def compute_point_point_segment_circle_event(circle_event: CircleEvent,
     r += center_x * RobustFloat(segment_dy)
     r -= center_y * RobustFloat(segment_dx)
     r = abs(r)
-    lower_x = RobustDifference(center_x.minuend, center_x.subtrahend)
+    lower_x = copy(center_x)
     lower_x += r * inverted_segment_length
     center_x = center_x.evaluate()
     center_y = center_y.evaluate()
