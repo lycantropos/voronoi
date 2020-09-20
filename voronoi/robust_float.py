@@ -1,10 +1,10 @@
 from functools import total_ordering
-from math import sqrt
 from typing import Any
 
 from reprit.base import generate_repr
 
-from .utils import safe_divide_floats
+from .utils import (safe_divide_floats,
+                    safe_sqrt)
 
 ROUNDING_ERROR = 1
 
@@ -81,5 +81,5 @@ class RobustFloat:
                            + ROUNDING_ERROR)
 
     def sqrt(self) -> 'RobustFloat':
-        return RobustFloat(sqrt(self.value),
+        return RobustFloat(safe_sqrt(self.value),
                            self.relative_error * 0.5 + ROUNDING_ERROR)
