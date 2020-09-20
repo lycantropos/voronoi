@@ -478,6 +478,13 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def("init_beach_line", &Builder::init_beach_line<Diagram>,
            py::arg("diagram"))
       .def("init_sites_queue", &Builder::init_sites_queue)
+      .def("insert_new_arc",
+           [](Builder& self, const SiteEvent& arc_first_site,
+              const SiteEvent& arc_second_site, const SiteEvent& site,
+              Diagram* diagram) {
+             self.insert_new_arc(arc_first_site, arc_second_site, site,
+                                 self.beach_line_.end(), diagram);
+           })
       .def("insert_point", &Builder::insert_point, py::arg("x"), py::arg("y"))
       .def("insert_segment", &Builder::insert_segment, py::arg("start_x"),
            py::arg("start_y"), py::arg("end_x"), py::arg("end_y"))
