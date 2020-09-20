@@ -382,7 +382,10 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       });
 
   py::class_<BeachLineValue>(m, BEACH_LINE_VALUE)
-      .def(py::init<Edge*>(), py::arg("edge"))
+      .def(py::init([](Edge* edge, CircleEvent* circle_event) {
+             return BeachLineValue{edge}.circle_event(circle_event);
+           }),
+           py::arg("edge"), py::arg("circle_event") = nullptr)
       .def_property_readonly(
           "edge", [](const BeachLineValue& self) { return self.edge(); })
       .def_property_readonly("circle_event", [](const BeachLineValue& self) {
