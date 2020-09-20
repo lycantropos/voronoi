@@ -79,6 +79,17 @@ class CircleEvent:
     def y(self, value: float) -> None:
         self.center_y = value
 
+    def lies_outside_vertical_segment(self, site: 'SiteEvent') -> bool:
+        if not site.is_segment or not site.is_vertical:
+            return False
+        start_y, end_y = ((site.end.y, site.start.y)
+                          if site.is_inverse
+                          else (site.start.y, site.end.y))
+        return (compare_floats(self.y, float(start_y),
+                               ULPS) is ComparisonResult.LESS
+                or compare_floats(self.y, float(end_y),
+                                  ULPS) is ComparisonResult.MORE)
+
     def deactivate(self) -> 'CircleEvent':
         self.is_active = False
         return self
