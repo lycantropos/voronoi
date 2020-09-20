@@ -166,14 +166,14 @@ def are_vertical_endpoints(start: Point, end: Point) -> bool:
     return start.x == end.x
 
 
-def to_point_point_point_circle_event(first_site: SiteEvent,
-                                      second_site: SiteEvent,
-                                      third_site: SiteEvent,
-                                      recompute_center_x: bool = True,
-                                      recompute_center_y: bool = True,
-                                      recompute_lower_x: bool = True
-                                      ) -> CircleEvent:
-    center_x = center_y = lower_x = 0.
+def recompute_point_point_point_circle_event(circle_event: CircleEvent,
+                                             first_site: SiteEvent,
+                                             second_site: SiteEvent,
+                                             third_site: SiteEvent,
+                                             recompute_center_x: bool = True,
+                                             recompute_center_y: bool = True,
+                                             recompute_lower_x: bool = True
+                                             ) -> None:
     first_dx = BigInt.from_int64(first_site.start.x - second_site.start.x)
     first_dy = BigInt.from_int64(first_site.start.y - second_site.start.y)
     second_dx = BigInt.from_int64(second_site.start.x - third_site.start.x)
@@ -190,7 +190,8 @@ def to_point_point_point_circle_event(first_site: SiteEvent,
     if recompute_center_x or recompute_lower_x:
         center_x_numerator = (first_numerator * second_dy
                               - second_numerator * first_dy)
-        center_x = float(center_x_numerator) * inverted_denominator
+        center_x = circle_event.center_x = (float(center_x_numerator)
+                                            * inverted_denominator)
         if recompute_lower_x:
             third_dx = BigInt.from_int32(first_site.start.x
                                          - third_site.start.x)
@@ -203,7 +204,7 @@ def to_point_point_point_circle_event(first_site: SiteEvent,
             # if ``center_x >= 0`` then ``lower_x = center_x + r``,
             # else ``lower_x = (center_x * center_x - r * r) / (center_x - r)``
             # to guarantee epsilon relative error
-            lower_x = (
+            circle_event.lower_x = (
                 safe_divide_floats(
                         float(center_x_numerator * center_x_numerator
                               - squared_radius) * inverted_denominator,
@@ -213,21 +214,20 @@ def to_point_point_point_circle_event(first_site: SiteEvent,
                       if inverted_denominator < 0
                       else center_x + radius * inverted_denominator))
     if recompute_center_y:
-        center_y = (float(second_numerator * first_dx
-                          - first_numerator * second_dx)
-                    * inverted_denominator)
-    return CircleEvent(center_x, center_y, lower_x)
+        circle_event.center_y = (float(second_numerator * first_dx
+                                       - first_numerator * second_dx)
+                                 * inverted_denominator)
 
 
-def to_point_point_segment_circle_event(first_site: SiteEvent,
-                                        second_site: SiteEvent,
-                                        third_site: SiteEvent,
-                                        segment_index: int,
-                                        recompute_center_x: bool = True,
-                                        recompute_center_y: bool = True,
-                                        recompute_lower_x: bool = True
-                                        ) -> CircleEvent:
-    center_x = center_y = lower_x = 0.
+def recompute_point_point_segment_circle_event(circle_event: CircleEvent,
+                                               first_site: SiteEvent,
+                                               second_site: SiteEvent,
+                                               third_site: SiteEvent,
+                                               segment_index: int,
+                                               recompute_center_x: bool = True,
+                                               recompute_center_y: bool = True,
+                                               recompute_lower_x: bool = True
+                                               ) -> None:
     segment_dx = BigInt.from_int64(third_site.end.x - third_site.start.x)
     segment_dy = BigInt.from_int64(third_site.end.y - third_site.start.y)
     segment_length = segment_dx * segment_dx + segment_dy * segment_dy
@@ -266,14 +266,16 @@ def to_point_point_segment_circle_event(first_site: SiteEvent,
                            + numerator))
         inverted_denominator = safe_divide_floats(1., float(determinant))
         if recompute_center_x:
-            center_x = 0.25 * float(coefficients[0]) * inverted_denominator
+            circle_event.center_x = (0.25 * float(coefficients[0])
+                                     * inverted_denominator)
         if recompute_center_y:
-            center_y = (0.25 * float((determinant * points_sy
-                                      * BigInt.from_int32(2))
-                                     + numerator * perpendicular_y)
-                        * inverted_denominator)
+            circle_event.center_y = (0.25
+                                     * float((determinant * points_sy
+                                              * BigInt.from_int32(2))
+                                             + numerator * perpendicular_y)
+                                     * inverted_denominator)
         if recompute_lower_x:
-            lower_x = safe_divide_floats(
+            circle_event.lower_x = safe_divide_floats(
                     0.25 * float(pairs_sum_expression(coefficients[:2],
                                                       (segment_length,
                                                        BigInt.from_int32(1))))
@@ -299,49 +301,45 @@ def to_point_point_segment_circle_event(first_site: SiteEvent,
                             if segment_index == 2
                             else perpendicular_x)
             if recompute_center_x:
-                center_x = (0.5
-                            * float(pairs_sum_expression(coefficients,
-                                                         (BigInt.from_int32(1),
-                                                          determinant)))
-                            * squared_inverted_denominator)
+                circle_event.center_x = (0.5 * float(
+                        pairs_sum_expression(coefficients,
+                                             (BigInt.from_int32(1),
+                                              determinant)))
+                                         * squared_inverted_denominator)
             if recompute_lower_x:
-                lower_x = (0.5
-                           * float(quadruplets_sum_expression(
-                                coefficients
-                                + (signed_points_area
-                                   * (squared_perpendicular_projection_length
-                                      + squared_perpendicular_area),
-                                   -signed_perpendicular_area
-                                   if segment_index == 2
-                                   else signed_perpendicular_area),
-                                (segment_length, determinant * segment_length,
-                                 BigInt.from_int32(1), determinant)))
-                           * squared_inverted_denominator
-                           / sqrt(float(segment_length)))
+                circle_event.lower_x = (0.5 * float(quadruplets_sum_expression(
+                        coefficients
+                        + (signed_points_area
+                           * (squared_perpendicular_projection_length
+                              + squared_perpendicular_area),
+                           -signed_perpendicular_area
+                           if segment_index == 2
+                           else signed_perpendicular_area),
+                        (segment_length, determinant * segment_length,
+                         BigInt.from_int32(1), determinant)))
+                                        * squared_inverted_denominator
+                                        / sqrt(float(segment_length)))
         if recompute_center_y:
-            center_y = (0.5
-                        * float(pairs_sum_expression(
-                            (points_sy
-                             * squared_perpendicular_projection_length
-                             + (signed_perpendicular_area * signed_points_area
-                                * perpendicular_y),
-                             -perpendicular_y
-                             if segment_index == 2
-                             else perpendicular_y),
-                            (BigInt.from_int32(1), determinant)))
-                        * squared_inverted_denominator)
-    return CircleEvent(center_x, center_y, lower_x)
+            circle_event.center_y = (0.5 * float(pairs_sum_expression(
+                    (points_sy * squared_perpendicular_projection_length
+                     + (signed_perpendicular_area * signed_points_area
+                        * perpendicular_y),
+                     -perpendicular_y
+                     if segment_index == 2
+                     else perpendicular_y),
+                    (BigInt.from_int32(1), determinant)))
+                                     * squared_inverted_denominator)
 
 
-def to_point_segment_segment_circle_event(first_site: SiteEvent,
-                                          second_site: SiteEvent,
-                                          third_site: SiteEvent,
-                                          point_index: int,
-                                          recompute_center_x: bool = True,
-                                          recompute_center_y: bool = True,
-                                          recompute_lower_x: bool = True
-                                          ) -> CircleEvent:
-    center_x = center_y = lower_x = 0.
+def recompute_point_segment_segment_circle_event(
+        circle_event: CircleEvent,
+        first_site: SiteEvent,
+        second_site: SiteEvent,
+        third_site: SiteEvent,
+        point_index: int,
+        recompute_center_x: bool = True,
+        recompute_center_y: bool = True,
+        recompute_lower_x: bool = True) -> None:
     second_start = second_site.start
     second_end = second_site.end
     third_start = third_site.start
@@ -385,14 +383,15 @@ def to_point_segment_segment_circle_event(first_site: SiteEvent,
             denominator = temp * float(third_second_signed_area)
             squared_length = dx * dx + dy * dy
             if recompute_center_y:
-                center_y = float(to_quadruplets_expression(
+                circle_event.center_y = (float(to_quadruplets_expression(
                         (third_dy * squared_length
                          - iy * (dx * third_dx + dy * third_dy),
                          iy * (dx * second_dx + dy * second_dy)
                          - second_dy * squared_length,
                          iy * sign,
                          BigInt.from_int32(0)),
-                        common_right_coefficients)) / denominator
+                        common_right_coefficients))
+                                         / denominator)
             if recompute_center_x or recompute_lower_x:
                 common_left_coefficients = (third_dx * squared_length
                                             - ix * (dx * third_dx
@@ -402,21 +401,22 @@ def to_point_segment_segment_circle_event(first_site: SiteEvent,
                                             - second_dx * squared_length,
                                             ix * sign)
                 if recompute_center_x:
-                    center_x = (float(to_quadruplets_expression(
+                    circle_event.center_x = (float(to_quadruplets_expression(
                             common_left_coefficients + (BigInt.from_int32(0),),
                             common_right_coefficients))
-                                / denominator)
+                                             / denominator)
                 if recompute_lower_x:
-                    lower_x = (float(to_quadruplets_expression(
+                    circle_event.lower_x = (float(to_quadruplets_expression(
                             common_left_coefficients
                             + (third_second_signed_area * squared_length
                                * BigInt.from_int32(-1 if temp < 0 else 1),),
                             common_right_coefficients))
-                               / denominator)
+                                            / denominator)
         else:
             denominator = float(third_second_signed_area)
-            center_x = lower_x = float(ix) / denominator
-            center_y = float(iy) / denominator
+            circle_event.center_x = circle_event.lower_x = (float(ix)
+                                                            / denominator)
+            circle_event.center_y = float(iy) / denominator
     else:
         denominator = 2. * float(squared_second_dx + squared_second_dy)
         dx = (second_dy * BigInt.from_int64(first_site.start.x - second_end.x)
@@ -427,7 +427,7 @@ def to_point_segment_segment_circle_event(first_site: SiteEvent,
                                               - third_start.x))
         common_right_coefficients = (dx * dy, BigInt.from_int32(1))
         if recompute_center_y:
-            center_y = safe_divide_floats(
+            circle_event.center_y = safe_divide_floats(
                     float(pairs_sum_expression(
                             (second_dy * BigInt.from_int32(-2
                                                            if point_index == 2
@@ -456,7 +456,7 @@ def to_point_segment_segment_circle_event(first_site: SiteEvent,
                                         * BigInt.from_int64(
                                                 2 * first_site.start.x))
             if recompute_center_x:
-                center_x = safe_divide_floats(
+                circle_event.center_x = safe_divide_floats(
                         float(pairs_sum_expression(common_left_coefficients,
                                                    common_right_coefficients)),
                         denominator)
@@ -465,24 +465,25 @@ def to_point_segment_segment_circle_event(first_site: SiteEvent,
                                                               - second_end.x)
                 third_start_second_end_dy = BigInt.from_int64(third_start.y
                                                               - second_end.y)
-                lower_x = safe_divide_floats(float(triplets_sum_expression(
-                        common_left_coefficients
-                        + (abs(second_dx * third_start_second_end_dy
-                               - second_dy * third_start_second_end_dx),),
-                        common_right_coefficients
-                        + (squared_second_dx + squared_second_dy,))),
+                circle_event.lower_x = safe_divide_floats(
+                        float(triplets_sum_expression(
+                                common_left_coefficients
+                                + (abs(second_dx * third_start_second_end_dy
+                                       - second_dy
+                                       * third_start_second_end_dx),),
+                                common_right_coefficients
+                                + (squared_second_dx + squared_second_dy,))),
                         denominator)
-    return CircleEvent(center_x, center_y, lower_x)
 
 
-def to_segment_segment_segment_circle_event(first_site: SiteEvent,
-                                            second_site: SiteEvent,
-                                            third_site: SiteEvent,
-                                            recompute_center_x: bool = True,
-                                            recompute_center_y: bool = True,
-                                            recompute_lower_x: bool = True
-                                            ) -> CircleEvent:
-    center_x = center_y = lower_x = 0.
+def recompute_segment_segment_segment_circle_event(
+        circle_event: CircleEvent,
+        first_site: SiteEvent,
+        second_site: SiteEvent,
+        third_site: SiteEvent,
+        recompute_center_x: bool = True,
+        recompute_center_y: bool = True,
+        recompute_lower_x: bool = True) -> None:
     first_dx = BigInt.from_int64(first_site.end.x - first_site.start.x)
     first_dy = BigInt.from_int64(first_site.end.y - first_site.start.y)
     second_dx = BigInt.from_int64(second_site.end.x - second_site.start.x)
@@ -507,7 +508,7 @@ def to_segment_segment_segment_circle_event(first_site: SiteEvent,
             third_site.start.x * third_site.end.y
             - third_site.start.y * third_site.end.x)
     if recompute_center_y:
-        center_y = safe_divide_floats(
+        circle_event.center_y = safe_divide_floats(
                 float(triplets_sum_expression(
                         (second_dy * third_signed_area
                          - third_dy * second_signed_area,
@@ -525,16 +526,16 @@ def to_segment_segment_segment_circle_event(first_site: SiteEvent,
                                     first_dx * second_signed_area
                                     - second_dx * first_signed_area)
         if recompute_center_x:
-            center_x = safe_divide_floats(
+            circle_event.center_x = safe_divide_floats(
                     float(triplets_sum_expression(common_left_coefficients,
                                                   segments_lengths)),
                     denominator)
         if recompute_lower_x:
-            lower_x = safe_divide_floats(float(quadruplets_sum_expression(
-                    common_left_coefficients
-                    + (common_left_coefficients[0] * first_dy
-                       + common_left_coefficients[1] * second_dy
-                       + common_left_coefficients[2] * third_dy,),
-                    segments_lengths + (BigInt.from_int32(1),))),
+            circle_event.lower_x = safe_divide_floats(
+                    float(quadruplets_sum_expression(
+                            common_left_coefficients
+                            + (common_left_coefficients[0] * first_dy
+                               + common_left_coefficients[1] * second_dy
+                               + common_left_coefficients[2] * third_dy,),
+                            segments_lengths + (BigInt.from_int32(1),))),
                     denominator)
-    return CircleEvent(center_x, center_y, lower_x)
