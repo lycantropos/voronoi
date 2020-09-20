@@ -17,7 +17,10 @@ from .enums import (ComparisonResult,
                     Orientation,
                     SourceCategory)
 from .point import Point
+from .robust_difference import RobustDifference
+from .robust_float import RobustFloat
 from .utils import (compare_floats,
+                    robust_cross_product,
                     safe_divide_floats,
                     to_orientation)
 
@@ -164,6 +167,63 @@ Event = TypeVar('Event', CircleEvent, SiteEvent)
 
 def are_vertical_endpoints(start: Point, end: Point) -> bool:
     return start.x == end.x
+
+
+def compute_point_point_point_circle_event(circle_event: CircleEvent,
+                                           first_site: SiteEvent,
+                                           second_site: SiteEvent,
+                                           third_site: SiteEvent) -> None:
+    first_second_dx = float(first_site.start.x) - float(second_site.start.x)
+    second_third_dx = float(second_site.start.x) - float(third_site.start.x)
+    first_second_dy = float(first_site.start.y) - float(second_site.start.y)
+    second_third_dy = float(second_site.start.y) - float(third_site.start.y)
+    signed_area = robust_cross_product(
+            first_site.start.x - second_site.start.x,
+            second_site.start.x - third_site.start.x,
+            first_site.start.y - second_site.start.y,
+            second_site.start.y - third_site.start.y)
+    inverted_signed_area = RobustFloat(safe_divide_floats(0.5, signed_area),
+                                       2.)
+    first_sx = float(first_site.start.x) + float(second_site.start.x)
+    second_sx = float(second_site.start.x) + float(third_site.start.x)
+    first_sy = float(first_site.start.y) + float(second_site.start.y)
+    second_sy = float(second_site.start.y) + float(third_site.start.y)
+    first_third_dx = float(first_site.start.x) - float(third_site.start.x)
+    first_third_dy = float(first_site.start.y) - float(third_site.start.y)
+    center_x = RobustDifference(RobustFloat(), RobustFloat())
+    center_y = RobustDifference(RobustFloat(), RobustFloat())
+    center_x += RobustFloat(first_second_dx * first_sx * second_third_dy, 2.)
+    center_x += RobustFloat(first_second_dy * first_sy * second_third_dy, 2.)
+    center_x -= RobustFloat(second_third_dx * second_sx * first_second_dy, 2.)
+    center_x -= RobustFloat(second_third_dy * second_sy * first_second_dy, 2.)
+    center_y += RobustFloat(second_third_dx * second_sx * first_second_dx, 2.)
+    center_y += RobustFloat(second_third_dy * second_sy * first_second_dx, 2.)
+    center_y -= RobustFloat(first_second_dx * first_sx * second_third_dx, 2.)
+    center_y -= RobustFloat(first_second_dy * first_sy * second_third_dx, 2.)
+    lower_x = RobustDifference(center_x.minuend, center_x.subtrahend)
+    lower_x -= RobustFloat(sqrt((first_second_dx * first_second_dx
+                                 + first_second_dy * first_second_dy)
+                                * (second_third_dx * second_third_dx
+                                   + second_third_dy * second_third_dy)
+                                * (first_third_dx * first_third_dx
+                                   + first_third_dy * first_third_dy)),
+                           5.)
+    center_x = center_x.evaluate()
+    center_y = center_y.evaluate()
+    lower_x = lower_x.evaluate()
+    circle_event.center_x = center_x.value * inverted_signed_area.value
+    circle_event.center_y = center_y.value * inverted_signed_area.value
+    circle_event.lower_x = lower_x.value * inverted_signed_area.value
+    circle_event.is_active = True
+    recompute_center_x = center_x.relative_error > ULPS
+    recompute_center_y = center_y.relative_error > ULPS
+    recompute_lower_x = lower_x.relative_error > ULPS
+    if recompute_center_x or recompute_center_y or recompute_lower_x:
+        recompute_point_point_point_circle_event(circle_event, first_site,
+                                                 second_site, third_site,
+                                                 recompute_center_x,
+                                                 recompute_center_y,
+                                                 recompute_lower_x)
 
 
 def recompute_point_point_point_circle_event(circle_event: CircleEvent,
