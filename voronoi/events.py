@@ -8,7 +8,11 @@ from .big_int import (BigInt,
                       robust_sum_of_products_with_sqrt_pairs
                       as pairs_sum_expression,
                       robust_sum_of_products_with_sqrt_quadruplets
-                      as quadruplets_sum_expression)
+                      as quadruplets_sum_expression,
+                      robust_sum_of_products_with_sqrt_triplets
+                      as triplets_sum_expression,
+                      to_second_point_segment_segment_quadruplets_expression
+                      as to_quadruplets_expression)
 from .enums import (ComparisonResult,
                     Orientation,
                     SourceCategory)
@@ -335,4 +339,146 @@ def to_point_point_segment_circle_event(first_site: SiteEvent,
                              else perpendicular_y),
                             (BigInt.from_int32(1), determinant)))
                         * squared_inverted_denominator)
+    return CircleEvent(center_x, center_y, lower_x)
+
+
+def to_point_segment_segment_circle_event(first_site: SiteEvent,
+                                          second_site: SiteEvent,
+                                          third_site: SiteEvent,
+                                          point_index: int,
+                                          recompute_center_x: bool = True,
+                                          recompute_center_y: bool = True,
+                                          recompute_lower_x: bool = True
+                                          ) -> CircleEvent:
+    center_x = center_y = lower_x = 0.
+    second_start = second_site.start
+    second_end = second_site.end
+    third_start = third_site.start
+    third_end = third_site.end
+    second_dx = BigInt.from_int64(second_end.x - second_start.x)
+    second_dy = BigInt.from_int64(second_end.y - second_start.y)
+    third_dx = BigInt.from_int64(third_end.x - third_start.x)
+    third_dy = BigInt.from_int64(third_end.y - third_start.y)
+    third_second_signed_area = second_dx * third_dy - third_dx * second_dy
+    squared_second_dx = second_dx * second_dx
+    squared_second_dy = second_dy * second_dy
+    if third_second_signed_area:
+        third_signed_area = (third_dx * BigInt.from_int32(third_end.y)
+                             - third_dy * BigInt.from_int32(third_end.x))
+        second_signed_area = (second_dx * BigInt.from_int32(second_start.y)
+                              - second_dy * BigInt.from_int32(second_start.x))
+        ix = third_dx * second_signed_area - second_dx * third_signed_area
+        iy = third_dy * second_signed_area - second_dy * third_signed_area
+        dx = (ix
+              - third_second_signed_area
+              * BigInt.from_int32(first_site.start.x))
+        dy = (iy
+              - third_second_signed_area
+              * BigInt.from_int32(first_site.start.y))
+        if dx or dy:
+            sign = BigInt.from_int32((-1 if point_index == 2 else 1)
+                                     * third_second_signed_area.sign)
+            common_right_coefficients = (
+                squared_second_dx + squared_second_dy,
+                third_dx * third_dx + third_dy * third_dy,
+                -second_dx * third_dx - second_dy * third_dy,
+                (second_dy * dx - second_dx * dy)
+                * (third_dx * dy - third_dy * dx)
+                * BigInt.from_int32(-2))
+            temp = float(to_quadruplets_expression(
+                    (-third_dx * dx - third_dy * dy,
+                     second_dx * dx + second_dy * dy,
+                     sign,
+                     BigInt.from_int32(0)),
+                    common_right_coefficients))
+            denominator = temp * float(third_second_signed_area)
+            squared_length = dx * dx + dy * dy
+            if recompute_center_y:
+                center_y = float(to_quadruplets_expression(
+                        (third_dy * squared_length
+                         - iy * (dx * third_dx + dy * third_dy),
+                         iy * (dx * second_dx + dy * second_dy)
+                         - second_dy * squared_length,
+                         iy * sign,
+                         BigInt.from_int32(0)),
+                        common_right_coefficients)) / denominator
+            if recompute_center_x or recompute_lower_x:
+                common_left_coefficients = (third_dx * squared_length
+                                            - ix * (dx * third_dx
+                                                    + dy * third_dy),
+                                            ix * (dx * second_dx
+                                                  + dy * second_dy)
+                                            - second_dx * squared_length,
+                                            ix * sign)
+                if recompute_center_x:
+                    center_x = (float(to_quadruplets_expression(
+                            common_left_coefficients + (BigInt.from_int32(0),),
+                            common_right_coefficients))
+                                / denominator)
+                if recompute_lower_x:
+                    lower_x = (float(to_quadruplets_expression(
+                            common_left_coefficients
+                            + (third_second_signed_area * squared_length
+                               * BigInt.from_int32(-1 if temp < 0 else 1),),
+                            common_right_coefficients))
+                               / denominator)
+        else:
+            denominator = float(third_second_signed_area)
+            center_x = lower_x = float(ix) / denominator
+            center_y = float(iy) / denominator
+    else:
+        denominator = 2. * float(squared_second_dx + squared_second_dy)
+        dx = (second_dy * BigInt.from_int64(first_site.start.x - second_end.x)
+              - second_dx * BigInt.from_int64(first_site.start.y
+                                              - second_end.y))
+        dy = (second_dx * BigInt.from_int64(first_site.start.y - third_start.y)
+              - second_dy * BigInt.from_int64(first_site.start.x
+                                              - third_start.x))
+        common_right_coefficients = (dx * dy, BigInt.from_int32(1))
+        if recompute_center_y:
+            center_y = safe_divide_floats(
+                    float(pairs_sum_expression(
+                            (second_dy * BigInt.from_int32(-2
+                                                           if point_index == 2
+                                                           else 2),
+                             squared_second_dx
+                             * BigInt.from_int64(second_end.y + third_start.y)
+                             - second_dx * second_dy
+                             * BigInt.from_int64(second_end.x + third_start.x
+                                                 - first_site.start.x * 2)
+                             + squared_second_dy
+                             * BigInt.from_int64(first_site.start.y * 2)),
+                            common_right_coefficients)),
+                    denominator)
+        if recompute_center_x or recompute_lower_x:
+            common_left_coefficients = (BigInt.from_int32(-2
+                                                          if point_index == 2
+                                                          else 2) * second_dx,
+                                        squared_second_dy
+                                        * BigInt.from_int64(second_end.x
+                                                            + third_start.x)
+                                        - second_dx * second_dy
+                                        * BigInt.from_int64(
+                                                second_end.y + third_start.y
+                                                - 2 * first_site.start.y)
+                                        + squared_second_dx
+                                        * BigInt.from_int64(
+                                                2 * first_site.start.x))
+            if recompute_center_x:
+                center_x = safe_divide_floats(
+                        float(pairs_sum_expression(common_left_coefficients,
+                                                   common_right_coefficients)),
+                        denominator)
+            if recompute_lower_x:
+                third_start_second_end_dx = BigInt.from_int64(third_start.x
+                                                              - second_end.x)
+                third_start_second_end_dy = BigInt.from_int64(third_start.y
+                                                              - second_end.y)
+                lower_x = safe_divide_floats(float(triplets_sum_expression(
+                        common_left_coefficients
+                        + (abs(second_dx * third_start_second_end_dy
+                               - second_dy * third_start_second_end_dx),),
+                        common_right_coefficients
+                        + (squared_second_dx + squared_second_dy,))),
+                        denominator)
     return CircleEvent(center_x, center_y, lower_x)
