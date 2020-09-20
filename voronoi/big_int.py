@@ -296,5 +296,21 @@ def to_big_float(value: BigInt) -> BigFloat:
     return BigFloat(mantissa, exponent)
 
 
+def to_first_point_segment_segment_quadruplets_expression(
+        left: Tuple[BigInt, BigInt, BigInt, BigInt],
+        right: Tuple[BigInt, BigInt, BigInt, BigInt]) -> BigFloat:
+    lh = robust_sum_of_products_with_sqrt_pairs(left[:2], right[:2])
+    rh = robust_sum_of_products_with_sqrt_pairs(left[2:], right[2:])
+    if (lh.mantissa >= 0 and rh.mantissa >= 0
+            or lh.mantissa <= 0 and rh.mantissa <= 0):
+        return lh + rh
+    return (robust_sum_of_products_with_sqrt_pairs(
+            (left[0] * left[0] * right[0] + left[1] * left[1] * right[1]
+             - left[2] * left[2] - left[3] * left[3] * right[0] * right[1],
+             (left[0] * left[1] - left[2] * left[3]) * BigInt.from_int32(2)),
+            (BigInt.from_int32(1), right[3]))
+            / (lh - rh))
+
+
 def _to_uint32(value: int) -> int:
     return ctypes.c_uint32(value).value
