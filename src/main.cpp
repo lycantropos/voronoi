@@ -505,6 +505,25 @@ PYBIND11_MODULE(MODULE_NAME, m) {
             }
             return result;
           })
+      .def_property_readonly(
+          "end_points",
+          [](const Builder& self) {
+            auto queue = self.end_points_;
+            std::vector<
+                std::pair<Point, std::pair<BeachLineKey, BeachLineValue>>>
+                result;
+            while (!queue.empty()) {
+              const auto element = queue.top();
+              auto raw_value = element.second->second;
+              result.push_back(
+                  {element.first,
+                   {element.second->first,
+                    BeachLineValue(static_cast<Edge*>(raw_value.edge()))
+                        .circle_event(raw_value.circle_event())}});
+              queue.pop();
+            }
+            return result;
+          })
       .def_readonly("index", &Builder::index_)
       .def_readonly("site_events", &Builder::site_events_);
 
