@@ -127,26 +127,26 @@ namespace boost {
 namespace polygon {
 static std::ostream& operator<<(std::ostream& stream,
                                 const SourceCategory& source_category) {
-  stream << C_STR(MODULE_NAME) "." SOURCE_CATEGORY_NAME;
+  stream << C_STR(MODULE_NAME) "." SOURCE_CATEGORY_NAME ".";
   switch (source_category) {
     case SourceCategory::SOURCE_CATEGORY_SINGLE_POINT:
-      stream << ".SINGLE_POINT";
+      stream << "SINGLE_POINT";
       break;
     case SourceCategory::SOURCE_CATEGORY_SEGMENT_START_POINT:
-      stream << ".SEGMENT_START_POINT";
+      stream << "SEGMENT_START_POINT";
       break;
     case SourceCategory::SOURCE_CATEGORY_SEGMENT_END_POINT:
-      stream << ".SEGMENT_END_POINT";
+      stream << "SEGMENT_END_POINT";
       break;
     case SourceCategory::SOURCE_CATEGORY_INITIAL_SEGMENT:
-      stream << ".INITIAL_SEGMENT";
+      stream << "INITIAL_SEGMENT";
       break;
     case SourceCategory::SOURCE_CATEGORY_REVERSE_SEGMENT:
-      stream << ".REVERSE_SEGMENT";
+      stream << "REVERSE_SEGMENT";
       break;
     default:
-      throw std::runtime_error(std::string("Unknown `SourceCategory`: ") +
-                               std::to_string(source_category) + ".");
+      stream << "???";
+      break;
   }
   return stream;
 }
