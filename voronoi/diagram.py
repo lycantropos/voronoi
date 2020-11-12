@@ -79,9 +79,7 @@ class Diagram:
     def _build(self) -> None:
         last_edge_index = 0
         for index, edge in enumerate(self.edges):
-            if edge is None:
-                break
-            start, end = edge.start, edge._end
+            start, end = edge.start, edge.end
             if start is not None and end is not None and start == end:
                 self.remove_edge(edge)
             else:
