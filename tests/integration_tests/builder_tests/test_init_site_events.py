@@ -10,6 +10,8 @@ from . import strategies
 def test_basic(pair: BoundPortedBuildersPair) -> None:
     bound, ported = pair
 
-    assert equivalence(bound.init_sites_queue(),
-                       ported.init_sites_queue())
+    bound_result = bound.init_sites_queue()
+    ported_result = ported.init_sites_queue()
+
+    assert equivalence(bound_result, ported_result)
     assert are_bound_ported_builders_equal(bound, ported)
