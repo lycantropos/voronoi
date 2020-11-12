@@ -77,22 +77,24 @@ class Diagram:
         builder.construct(self)
 
     def _build(self) -> None:
-        last_edge_index = 0
-        for index, edge in enumerate(self.edges):
+        edge_index = last_edge_index = 0
+        while edge_index < len(self.edges):
+            edge = self.edges[edge_index]
             start, end = edge.start, edge.end
             if start is not None and end is not None and start == end:
                 self.remove_edge(edge)
             else:
-                if index != last_edge_index:
+                if edge_index != last_edge_index:
                     self.edges[last_edge_index] = edge
                     next_edge = self.edges[last_edge_index + 1] = (
-                        self.edges[index + 1])
+                        self.edges[edge_index + 1])
                     edge.twin, next_edge.twin = next_edge, edge
                     if edge.prev is not None:
                         edge.prev.next, next_edge.next.prev = edge, next_edge
                     if next_edge.prev is not None:
                         edge.next.prev, next_edge.prev.next = edge, next_edge
                 last_edge_index += 2
+            edge_index += 2
         del self.edges[last_edge_index:]
         # set up incident edge pointers for cells and vertices
         for edge in self.edges:
