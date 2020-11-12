@@ -4,11 +4,14 @@ from typing import (List,
 
 from reprit.base import generate_repr
 
+from .builder import Builder
 from .events import (CircleEvent,
                      SiteEvent)
 from .faces import (Cell,
                     Edge,
                     Vertex)
+from .point import Point
+from .segment import Segment
 
 
 class Diagram:
@@ -64,6 +67,14 @@ class Diagram:
         self.cells.clear()
         self.edges.clear()
         self.vertices.clear()
+
+    def construct(self, points: List[Point], segments: List[Segment]) -> None:
+        builder = Builder()
+        for point in points:
+            builder.insert_point(point)
+        for segment in segments:
+            builder.insert_segment(segment)
+        builder.construct(self)
 
     def _build(self) -> None:
         last_edge_index = 0
