@@ -2,7 +2,8 @@ from typing import Tuple
 
 from hypothesis import strategies
 from hypothesis_geometry import planar
-from hypothesis_geometry.hints import Contour as RawContour
+from hypothesis_geometry.hints import (Contour as RawContour,
+                                       Segment as RawSegment)
 
 from tests.strategies import (integers_32,
                               sizes)
@@ -13,6 +14,7 @@ from tests.utils import (BoundPoint,
                          BoundPortedPointsListsPair,
                          BoundPortedPointsPair,
                          BoundPortedSegmentsListsPair,
+                         BoundPortedSegmentsPair,
                          BoundSegment,
                          PortedPoint,
                          PortedSegment,
@@ -35,6 +37,17 @@ booleans = strategies.booleans()
 coordinates = integers_32
 points_pairs = strategies.builds(to_bound_with_ported_points_pair,
                                  coordinates, coordinates)
+
+
+def raw_segment_to_segments_pair(raw: RawSegment) -> BoundPortedSegmentsPair:
+    (start_x, start_y), (end_x, end_y) = raw
+    return (BoundSegment(BoundPoint(start_x, start_y),
+                         BoundPoint(end_x, end_y)),
+            PortedSegment(PortedPoint(start_x, start_y),
+                          PortedPoint(end_x, end_y)))
+
+
+segments_pairs = planar.segments(coordinates).map(raw_segment_to_segments_pair)
 
 
 def points_pair_to_coordinates(points_pair: BoundPortedPointsPair

@@ -1,19 +1,19 @@
 from hypothesis import given
 
 from tests.utils import (BoundPortedBuildersPair,
+                         BoundPortedSegmentsPair,
                          are_bound_ported_builders_equal)
 from . import strategies
 
 
-@given(strategies.builders_pairs, strategies.coordinates,
-       strategies.coordinates, strategies.coordinates, strategies.coordinates)
+@given(strategies.builders_pairs, strategies.segments_pairs)
 def test_basic(pair: BoundPortedBuildersPair,
-               start_x: int,
-               start_y: int,
-               end_x: int,
-               end_y: int) -> None:
+               segments_pair: BoundPortedSegmentsPair) -> None:
     bound, ported = pair
+    bound_segment, ported_segment = segments_pair
 
-    assert (bound.insert_segment(start_x, start_y, end_x, end_y)
-            == ported.insert_segment(start_x, start_y, end_x, end_y))
+    bound_result = bound.insert_segment(bound_segment)
+    ported_result = ported.insert_segment(ported_segment)
+
+    assert bound_result == ported_result
     assert are_bound_ported_builders_equal(bound, ported)
