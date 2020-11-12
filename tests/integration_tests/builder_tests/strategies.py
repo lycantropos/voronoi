@@ -167,8 +167,10 @@ diagrams_pairs = strategies.builds(to_bound_with_ported_diagrams_pair,
 def initialize_diagrams(builders_with_diagrams_pair
                         : BoundPortedBuildersWithDiagramsPair
                         ) -> BoundPortedBuildersWithDiagramsPair:
-    (bound_builder, bound_diagram), _ = builders_with_diagrams_pair
+    ((bound_builder, bound_diagram), 
+     (ported_builder, ported_diagram)) = builders_with_diagrams_pair
     bound_diagram._reserve(len(bound_builder.site_events))
+    ported_diagram._reserve(len(ported_builder.site_events))
     return builders_with_diagrams_pair
 
 
