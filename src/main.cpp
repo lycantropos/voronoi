@@ -648,6 +648,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
           py::arg("second_bisector"))
       .def("_process_single_site", &Diagram::_process_single_site<coordinate_t>,
            py::arg("site"))
+      .def("_reserve", &Diagram::_reserve, py::arg("sites_count"))
       .def_property_readonly("cells", &Diagram::cells)
       .def_property_readonly("edges", &Diagram::edges)
       .def_property_readonly("vertices", &Diagram::vertices);
