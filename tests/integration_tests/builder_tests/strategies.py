@@ -89,10 +89,10 @@ empty_builders_pairs = strategies.builds(to_bound_with_ported_builders_pair,
                                          sizes, empty_lists_pairs)
 
 
-def initialize_builders(builders: BoundPortedBuildersPair,
-                        points_lists: BoundPortedPointsListsPair,
-                        segments_lists: BoundPortedSegmentsListsPair
-                        ) -> BoundPortedBuildersPair:
+def to_valid_builders_pair(builders: BoundPortedBuildersPair,
+                           points_lists: BoundPortedPointsListsPair,
+                           segments_lists: BoundPortedSegmentsListsPair
+                           ) -> BoundPortedBuildersPair:
     bound, ported = builders
     for bound_point, ported_point in zip(*points_lists):
         bound.insert_point(bound_point)
@@ -100,22 +100,32 @@ def initialize_builders(builders: BoundPortedBuildersPair,
     for bound_segment, ported_segment in zip(*segments_lists):
         bound.insert_segment(bound_segment)
         ported.insert_segment(ported_segment)
+    return builders
+
+
+valid_builders_pairs = (
+        strategies.builds(to_valid_builders_pair,
+                          empty_builders_pairs,
+                          unique_points_lists_pairs,
+                          empty_lists_pairs)
+        | strategies.builds(to_valid_builders_pair,
+                            empty_builders_pairs,
+                            empty_lists_pairs,
+                            non_crossing_or_overlapping_segments_lists_pairs))
+builders_pairs = (strategies.builds(to_bound_with_ported_builders_pair, sizes,
+                                    site_events_lists_pairs)
+                  | valid_builders_pairs)
+
+
+def init_sites_queue(builders: BoundPortedBuildersPair
+                     ) -> BoundPortedBuildersPair:
+    bound, ported = builders
     bound.init_sites_queue()
     ported.init_sites_queue()
     return builders
 
 
-initialized_builders_pairs = (
-        strategies.builds(initialize_builders,
-                          empty_builders_pairs,
-                          unique_points_lists_pairs,
-                          empty_lists_pairs)
-        | strategies.builds(initialize_builders,
-                            empty_builders_pairs,
-                            empty_lists_pairs,
-                            non_crossing_or_overlapping_segments_lists_pairs))
-builders_pairs = strategies.builds(to_bound_with_ported_builders_pair,
-                                   sizes, site_events_lists_pairs)
+initialized_builders_pairs = builders_pairs.map(init_sites_queue)
 nones_pairs = to_pairs(strategies.none())
 source_categories_pairs = strategies.sampled_from(
         list(zip(bound_source_categories, ported_source_categories)))
