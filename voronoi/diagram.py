@@ -207,4 +207,4 @@ class Diagram:
         self.cells.append(Cell(site.initial_index, site.source_category))
 
     def _reserve(self, sites_count: int) -> None:
-        self.edges = [None] * ((sites_count << 2) + (sites_count << 1))
+        pass
