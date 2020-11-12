@@ -1,5 +1,6 @@
 from operator import itemgetter
-from typing import (List,
+from typing import (TYPE_CHECKING,
+                    List,
                     Optional,
                     Tuple)
 
@@ -9,7 +10,6 @@ from reprit.base import generate_repr
 
 from .beach_line_key import BeachLineKey
 from .beach_line_value import BeachLineValue
-from .diagram import Diagram
 from .enums import SourceCategory
 from .events import (CircleEvent,
                      SiteEvent)
@@ -18,6 +18,9 @@ from .point import (Point,
                     are_vertical_endpoints)
 from .segment import Segment
 from .utils import to_unique_just_seen
+
+if TYPE_CHECKING:
+    from .diagram import Diagram
 
 
 class Builder:
@@ -66,7 +69,7 @@ class Builder:
             self._circle_events.push((event, bisector_node))
             bisector_node.value.circle_event = event
 
-    def construct(self, output: Diagram) -> None:
+    def construct(self, output: 'Diagram') -> None:
         output._reserve(len(self.site_events))
         self.init_sites_queue()
         self.init_beach_line(output)
@@ -93,7 +96,7 @@ class Builder:
             value.circle_event.deactivate()
             value.circle_event = None
 
-    def init_beach_line(self, diagram: Diagram) -> None:
+    def init_beach_line(self, diagram: 'Diagram') -> None:
         if not self.site_events:
             return
         elif len(self.site_events) == 1:
@@ -115,7 +118,7 @@ class Builder:
                 # init beach line with collinear vertical sites
                 self.init_beach_line_collinear_sites(diagram)
 
-    def init_beach_line_collinear_sites(self, diagram: Diagram) -> None:
+    def init_beach_line_collinear_sites(self, diagram: 'Diagram') -> None:
         first_index = 0
         second_index = 1
         while second_index != self.site_event_index:
@@ -130,7 +133,7 @@ class Builder:
             first_index += 1
             second_index += 1
 
-    def init_beach_line_default(self, diagram: Diagram) -> None:
+    def init_beach_line_default(self, diagram: 'Diagram') -> None:
         # get the first and the second site event
         self.insert_new_arc(self.site_events[0], self.site_events[0],
                             self.site_events[1], diagram)
@@ -141,7 +144,7 @@ class Builder:
                        site_arc1: SiteEvent,
                        site_arc2: SiteEvent,
                        site_event: SiteEvent,
-                       output: Diagram) -> red_black.Node:
+                       output: 'Diagram') -> red_black.Node:
         # create two new bisectors with opposite directions
         new_left_node = BeachLineKey(site_arc1, site_event)
         new_right_node = BeachLineKey(site_event, site_arc2)
@@ -202,7 +205,7 @@ class Builder:
         self.index += 1
         return index
 
-    def process_circle_event(self, output: Diagram) -> None:
+    def process_circle_event(self, output: 'Diagram') -> None:
         circle_event, first_node = self._circle_events.pop()
         last_node = first_node
         site3 = first_node.key.right_site
@@ -229,7 +232,7 @@ class Builder:
             site_r1 = last_node.key.right_site
             self.activate_circle_event(site1, site3, site_r1, last_node)
 
-    def process_site_event(self, output: Diagram) -> None:
+    def process_site_event(self, output: 'Diagram') -> None:
         last_index = self._site_event_index + 1
         if not self.site_event.is_segment:
             while (self._end_points
