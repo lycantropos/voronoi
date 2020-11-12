@@ -2,7 +2,7 @@ from typing import Tuple
 
 from hypothesis import strategies
 from hypothesis_geometry import planar
-from hypothesis_geometry.hints import (Contour as RawContour,
+from hypothesis_geometry.hints import (Multisegment as RawMultisegment,
                                        Segment as RawSegment)
 
 from tests.strategies import (integers_32,
@@ -62,21 +62,20 @@ unique_points_lists_pairs = (
      .map(transpose_pairs)))
 
 
-def raw_contour_to_segments_lists_pair(raw: RawContour
-                                       ) -> BoundPortedSegmentsListsPair:
-    raw_start = raw[-1]
-    bound_start, ported_start = BoundPoint(*raw_start), PortedPoint(*raw_start)
+def raw_multisegment_to_segments_lists_pair(raw: RawMultisegment
+                                            ) -> BoundPortedSegmentsListsPair:
     bound, ported = [], []
-    for raw_end in raw:
+    for raw_start, raw_end in raw:
+        bound_start, ported_start = (BoundPoint(*raw_start),
+                                     PortedPoint(*raw_start))
         bound_end, ported_end = BoundPoint(*raw_end), PortedPoint(*raw_end)
         bound.append(BoundSegment(bound_start, bound_end))
         ported.append(PortedSegment(ported_start, ported_end))
-        bound_start, ported_start = bound_end, ported_end
     return bound, ported
 
 
 non_crossing_or_overlapping_segments_lists_pairs = (
-    planar.contours(coordinates).map(raw_contour_to_segments_lists_pair))
+    planar.multisegments(coordinates).map(raw_multisegment_to_segments_lists_pair))
 source_categories_pairs = strategies.sampled_from(
         list(zip(bound_source_categories, ported_source_categories)))
 site_events_pairs = strategies.builds(to_bound_with_ported_site_events_pair,
