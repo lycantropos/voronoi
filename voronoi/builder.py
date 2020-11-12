@@ -67,8 +67,7 @@ class Builder:
             bisector_node.value.circle_event = event
 
     def construct(self, output: Diagram) -> None:
-        sites_count = len(self.site_events)
-        output.edges = [None] * ((sites_count << 2) + (sites_count << 1))
+        output._reserve(len(self.site_events))
         self.init_sites_queue()
         self.init_beach_line(output)
         while (self._circle_events
