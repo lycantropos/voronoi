@@ -40,7 +40,7 @@ def cpp_flag(compiler: CCompiler) -> str:
         if has_flag(compiler, flag):
             return flag
     raise RuntimeError('Unsupported compiler: '
-                       'at least C++11 support is needed!')
+                       'at least C++11 support is needed.')
 
 
 class BuildExt(build_ext):
