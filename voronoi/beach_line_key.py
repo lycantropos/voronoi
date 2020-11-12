@@ -1,3 +1,4 @@
+from copy import copy
 from math import sqrt
 from typing import Tuple
 
@@ -18,8 +19,8 @@ class BeachLineKey:
     __slots__ = 'left_site', 'right_site'
 
     def __init__(self, left_site: SiteEvent, right_site: SiteEvent) -> None:
-        self.left_site = left_site
-        self.right_site = right_site
+        self.left_site = copy(left_site)
+        self.right_site = copy(right_site)
 
     __repr__ = generate_repr(__init__)
 
