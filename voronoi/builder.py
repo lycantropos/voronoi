@@ -36,24 +36,19 @@ class Builder:
             event.sorted_index = index
         self._site_event_index = 0
 
-    def insert_point(self, x: int, y: int) -> int:
+    def insert_point(self, point: Point) -> int:
         index = self.index
         self.site_events.append(SiteEvent.from_point(
-                Point(x, y),
+                point,
                 initial_index=index,
                 source_category=SourceCategory.SINGLE_POINT))
         self.index += 1
         return index
 
-    def insert_segment(self,
-                       start_x: int,
-                       start_y: int,
-                       end_x: int,
-                       end_y: int) -> int:
+    def insert_segment(self, segment: Segment) -> int:
         site_events = self.site_events
         index = self.index
-        start = Point(start_x, start_y)
-        end = Point(end_x, end_y)
+        start, end = segment.start, segment.end
         site_events.append(SiteEvent.from_point(
                 start,
                 initial_index=index,
