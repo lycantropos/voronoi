@@ -485,9 +485,18 @@ PYBIND11_MODULE(MODULE_NAME, m) {
              self.insert_new_arc(arc_first_site, arc_second_site, site,
                                  self.beach_line_.end(), diagram);
            })
-      .def("insert_point", &Builder::insert_point, py::arg("x"), py::arg("y"))
-      .def("insert_segment", &Builder::insert_segment, py::arg("start_x"),
-           py::arg("start_y"), py::arg("end_x"), py::arg("end_y"))
+      .def(
+          "insert_point",
+          [](Builder* builder, const Point& point) {
+            return boost::polygon::insert(point, builder);
+          },
+          py::arg("point"))
+      .def(
+          "insert_segment",
+          [](Builder* builder, const Segment& segment) {
+            return boost::polygon::insert(segment, builder);
+          },
+          py::arg("segment"))
       .def("process_circle_event", &Builder::process_circle_event<Diagram>,
            py::arg("diagram"))
       .def("process_site_event", &Builder::process_site_event<Diagram>,
