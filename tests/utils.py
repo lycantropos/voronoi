@@ -104,6 +104,8 @@ BoundPortedBigIntsTripletsPair = Tuple[Tuple[BoundBigInt, BoundBigInt,
                                        Tuple[PortedBigInt, PortedBigInt,
                                              PortedBigInt]]
 BoundPortedBuildersPair = Tuple[BoundBuilder, PortedBuilder]
+BoundPortedBuildersWithDiagramsPair = Tuple[
+    Tuple[BoundBuilder, BoundDiagram], Tuple[PortedBuilder, PortedDiagram]]
 BoundPortedCellsPair = Tuple[BoundCell, PortedCell]
 BoundPortedCellsListsPair = Tuple[List[BoundCell], List[PortedCell]]
 BoundPortedMaybeCellsPair = Tuple[Optional[BoundCell], Optional[PortedCell]]
@@ -116,12 +118,14 @@ BoundPortedEdgesListsPair = Tuple[List[BoundEdge], List[PortedEdge]]
 BoundPortedMaybeEdgesPair = Tuple[Optional[BoundEdge], Optional[PortedEdge]]
 BoundPortedGeometryCategoriesPair = Tuple[BoundGeometryCategory,
                                           PortedGeometryCategory]
+BoundPortedPointsListsPair = Tuple[List[BoundPoint], List[PortedPoint]]
 BoundPortedPointsPair = Tuple[BoundPoint, PortedPoint]
 BoundPortedRobustDifferencesPair = Tuple[BoundRobustDifference,
                                          PortedRobustDifference]
 BoundPortedRobustFloatsPair = Tuple[BoundRobustFloat, PortedRobustFloat]
 BoundPortedRobustDifferencesOrFloatsPair = Union[
     BoundPortedRobustDifferencesPair, BoundPortedRobustFloatsPair]
+BoundPortedSegmentsListsPair = Tuple[List[BoundSegment], List[PortedSegment]]
 BoundPortedSegmentsPair = Tuple[BoundSegment, PortedSegment]
 BoundPortedSiteEventsPair = Tuple[BoundSiteEvent, PortedSiteEvent]
 BoundPortedSiteEventsListsPair = Tuple[List[BoundSiteEvent],
@@ -245,10 +249,6 @@ def are_bound_ported_diagrams_equal(bound: BoundDiagram, ported: PortedDiagram
 def are_bound_ported_edges_equal(bound: BoundEdge, ported: PortedEdge
                                  ) -> bool:
     return (are_bound_ported_maybe_vertices_equal(bound.start, ported.start)
-            and are_bound_ported_maybe_edges_equal(bound.twin, ported.twin)
-            and are_bound_ported_maybe_edges_equal(bound.prev, ported.prev)
-            and are_bound_ported_maybe_edges_equal(bound.next, ported.next)
-            and are_bound_ported_maybe_cells_equal(bound.cell, ported.cell)
             and bound.is_linear is ported.is_linear
             and bound.is_primary is ported.is_primary)
 
