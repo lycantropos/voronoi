@@ -65,9 +65,7 @@ class BuildExt(build_ext):
             compile_args.append(cpp_flag(self.compiler))
             if has_flag(self.compiler, '-fvisibility=hidden'):
                 compile_args.append('-fvisibility=hidden')
-        define_macros = [('VERSION_INFO',
-                          ('\\"{}\\"' if compiler_type == 'msvc' else '"{}"')
-                          .format(self.distribution.get_version()))]
+        define_macros = [('VERSION_INFO', self.distribution.get_version())]
         for extension in self.extensions:
             extension.extra_compile_args = compile_args
             extension.extra_link_args = link_args
