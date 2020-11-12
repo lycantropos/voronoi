@@ -165,8 +165,8 @@ class voronoi_builder {
 
   void init_sites_queue() {
     // Sort site events.
-    std::sort(site_events_.begin(), site_events_.end(),
-              event_comparison_predicate());
+    std::stable_sort(site_events_.begin(), site_events_.end(),
+                     event_comparison_predicate());
 
     // Remove duplicates.
     site_events_.erase(std::unique(site_events_.begin(), site_events_.end()),
