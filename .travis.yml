@@ -47,8 +47,8 @@ before_deploy:
   - python -m pip install --upgrade twine
 
 deploy:
+  edge: true
   provider: script
   script: twine upload --skip-existing dist/*
-  skip_cleanup: true
   on:
     tags: true
