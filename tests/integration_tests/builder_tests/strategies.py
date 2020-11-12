@@ -126,6 +126,7 @@ def init_sites_queue(builders: BoundPortedBuildersPair
 
 
 initialized_builders_pairs = builders_pairs.map(init_sites_queue)
+initialized_valid_builders_pairs = valid_builders_pairs.map(init_sites_queue)
 nones_pairs = to_pairs(strategies.none())
 source_categories_pairs = strategies.sampled_from(
         list(zip(bound_source_categories, ported_source_categories)))
@@ -171,7 +172,7 @@ def initialize_diagrams(builders_with_diagrams_pair
     return builders_with_diagrams_pair
 
 
-initialized_builders_with_diagrams_pairs = (
-    (strategies.tuples(initialized_builders_pairs, diagrams_pairs)
+initialized_valid_builders_with_diagrams_pairs = (
+    (strategies.tuples(initialized_valid_builders_pairs, diagrams_pairs)
      .map(transpose_pairs)
      .map(initialize_diagrams)))

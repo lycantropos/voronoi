@@ -7,7 +7,7 @@ from tests.utils import (BoundPortedBuildersWithDiagramsPair,
 from . import strategies
 
 
-@given(strategies.initialized_builders_with_diagrams_pairs)
+@given(strategies.initialized_valid_builders_with_diagrams_pairs)
 def test_basic(builders_with_diagrams_pair: BoundPortedBuildersWithDiagramsPair
                ) -> None:
     ((bound, bound_diagram),
