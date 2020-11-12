@@ -1,3 +1,4 @@
+from copy import copy
 from operator import itemgetter
 from typing import (TYPE_CHECKING,
                     List,
@@ -251,6 +252,7 @@ class Builder:
         new_key = BeachLineKey(self.site_event, self.site_event)
         right_node = self._beach_line.tree.supremum(new_key)
         while self._site_event_index < last_index:
+            site_event = copy(self.site_event)
             left_node = right_node
             if right_node is red_black.NIL:
                 # the above arc corresponds to the second arc of the last node,
@@ -260,27 +262,27 @@ class Builder:
                 site_arc = left_node.key.right_site
                 # insert new nodes into the beach line, update the output
                 right_node = self.insert_new_arc(site_arc, site_arc,
-                                                 self.site_event, output)
+                                                 site_event, output)
                 # add a candidate circle to the circle event queue;
                 # there could be only one new circle event
                 # formed by a new bisector and the one on the left
                 self.activate_circle_event(left_node.key.left_site,
                                            left_node.key.right_site,
-                                           self.site_event, right_node)
+                                           site_event, right_node)
             elif right_node is self._beach_line.tree.min():
                 # the above arc corresponds to the first site of the first node
                 site_arc = right_node.key.left_site
                 # Insert new nodes into the beach line. Update the output.
-                left_node = self.insert_new_arc(site_arc, site_arc,
-                                                self.site_event, output)
+                left_node = self.insert_new_arc(site_arc, site_arc, site_event,
+                                                output)
                 # if the site event is a segment, update its direction
-                if self.site_event.is_segment:
-                    self.site_event.inverse()
+                if site_event.is_segment:
+                    site_event.inverse()
 
                 # add a candidate circle to the circle event queue;
                 # there could be only one new circle event
                 # formed by a new bisector and the one on the right
-                self.activate_circle_event(self.site_event,
+                self.activate_circle_event(site_event,
                                            right_node.key.left_site,
                                            right_node.key.right_site,
                                            right_node)
@@ -297,16 +299,16 @@ class Builder:
                 site1 = left_node.key.left_site
                 # insert new nodes into the beach line. Update the output
                 new_node = self.insert_new_arc(site_arc1, site_arc2,
-                                               self.site_event, output)
+                                               site_event, output)
                 # add candidate circles to the circle event queue;
                 # there could be up to two circle events
                 # formed by a new bisector and the one on the left or right
-                self.activate_circle_event(site1, site_arc1, self.site_event,
+                self.activate_circle_event(site1, site_arc1, site_event,
                                            new_node)
                 # if the site event is a segment, update its direction
-                if self.site_event.is_segment:
-                    self.site_event.inverse()
-                self.activate_circle_event(self.site_event, site_arc2, site3,
+                if site_event.is_segment:
+                    site_event.inverse()
+                self.activate_circle_event(site_event, site_arc2, site3,
                                            right_node)
                 right_node = new_node
             self._site_event_index += 1
