@@ -85,7 +85,7 @@ class Builder:
                 else:
                     self.process_circle_event(output)
             while (self._circle_events
-                   and self._circle_events.peek()[0].is_active):
+                   and not self._circle_events.peek()[0].is_active):
                 self._circle_events.pop()
         self._beach_line.clear()
         output._build()
@@ -162,7 +162,8 @@ class Builder:
             new_node.right_site.inverse()
             node = self._beach_line.tree.insert(new_node, BeachLineValue(None))
             # update the data structure that holds temporary bisectors
-            self._end_points.push((site_event.end, node))
+            self._end_points.push((site_event.end, len(self._end_points),
+                                   node))
         return self._beach_line.tree.insert(new_left_node,
                                             BeachLineValue(edges[0]))
 
@@ -237,7 +238,7 @@ class Builder:
         if not self.site_event.is_segment:
             while (self._end_points
                    and self._end_points.peek()[0] == self.site_event.start):
-                _, node = self._end_points.pop()
+                *_, node = self._end_points.pop()
                 self._beach_line.tree.remove(node)
         else:
             while (last_index < len(self.site_events)
@@ -248,7 +249,7 @@ class Builder:
         # find the node in the binary search tree
         # with left arc lying above the new site point
         new_key = BeachLineKey(self.site_event, self.site_event)
-        right_node = self._beach_line.tree.infimum(new_key)
+        right_node = self._beach_line.tree.supremum(new_key)
         while self._site_event_index < last_index:
             left_node = right_node
             if right_node is red_black.NIL:
@@ -266,7 +267,7 @@ class Builder:
                 self.activate_circle_event(left_node.key.left_site,
                                            left_node.key.right_site,
                                            self.site_event, right_node)
-            elif right_node is self._beach_line.min():
+            elif right_node is self._beach_line.tree.min():
                 # the above arc corresponds to the first site of the first node
                 site_arc = right_node.key.left_site
                 # Insert new nodes into the beach line. Update the output.
