@@ -95,13 +95,11 @@ def initialize_builders(builders: BoundPortedBuildersPair,
                         ) -> BoundPortedBuildersPair:
     bound, ported = builders
     for bound_point, ported_point in zip(*points_lists):
-        bound.insert_point(bound_point.x, bound_point.y)
-        ported.insert_point(ported_point.x, ported_point.y)
+        bound.insert_point(bound_point)
+        ported.insert_point(ported_point)
     for bound_segment, ported_segment in zip(*segments_lists):
-        bound.insert_segment(bound_segment.start.x, bound_segment.start.y,
-                             bound_segment.end.x, bound_segment.end.y)
-        ported.insert_segment(ported_segment.start.x, ported_segment.start.y,
-                              ported_segment.end.x, ported_segment.end.y)
+        bound.insert_segment(bound_segment)
+        ported.insert_segment(ported_segment)
     bound.init_sites_queue()
     ported.init_sites_queue()
     return builders
