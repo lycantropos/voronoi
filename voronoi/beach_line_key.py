@@ -16,11 +16,11 @@ from .utils import (compare_floats,
 
 
 class BeachLineKey:
-    __slots__ = 'left_site', 'right_site'
+    __slots__ = '_left_site', '_right_site'
 
     def __init__(self, left_site: SiteEvent, right_site: SiteEvent) -> None:
-        self.left_site = copy(left_site)
-        self.right_site = copy(right_site)
+        self.left_site = left_site
+        self.right_site = right_site
 
     __repr__ = generate_repr(__init__)
 
@@ -57,6 +57,22 @@ class BeachLineKey:
         return (self.left_site
                 if self.left_site.sorted_index > self.right_site.sorted_index
                 else self.right_site)
+
+    @property
+    def left_site(self) -> SiteEvent:
+        return self._left_site
+
+    @left_site.setter
+    def left_site(self, value: SiteEvent) -> None:
+        self._left_site = copy(value)
+
+    @property
+    def right_site(self) -> SiteEvent:
+        return self._right_site
+
+    @right_site.setter
+    def right_site(self, value: SiteEvent) -> None:
+        self._right_site = copy(value)
 
     def to_comparison_y(self, is_new_node: bool = True) -> Tuple[int, int]:
         if self.left_site.sorted_index == self.right_site.sorted_index:
