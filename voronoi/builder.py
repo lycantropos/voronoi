@@ -210,7 +210,7 @@ class Builder:
     def process_circle_event(self, output: 'Diagram') -> None:
         circle_event, first_node = self._circle_events.pop()
         last_node = first_node
-        site3 = first_node.key.right_site
+        site3 = copy(first_node.key.right_site)
         bisector2 = first_node.value.edge
         first_node = self._beach_line.tree.predecessor(first_node)
         bisector1 = first_node.value.edge
