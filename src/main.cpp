@@ -84,7 +84,7 @@ static int to_sign(coordinate_t value) {
 static std::string bool_repr(bool value) { return py::str(py::bool_(value)); }
 
 template <class Object>
-std::string repr(const Object& object) {
+std::string to_repr(const Object& object) {
   std::ostringstream stream;
   stream.precision(std::numeric_limits<double>::digits10 + 2);
   stream << object;
@@ -359,7 +359,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::init<SiteEvent>(), py::arg("site"))
       .def(py::init<SiteEvent, SiteEvent>(), py::arg("left_site"),
            py::arg("right_site"))
-      .def("__repr__", repr<BeachLineKey>)
+      .def("__repr__", to_repr<BeachLineKey>)
       .def(
           "__lt__",
           [](const BeachLineKey& self, const BeachLineKey& other) {
@@ -395,7 +395,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
              return BeachLineValue{edge}.circle_event(circle_event);
            }),
            py::arg("edge"), py::arg("circle_event") = nullptr)
-      .def("__repr__", repr<BeachLineValue>)
+      .def("__repr__", to_repr<BeachLineValue>)
       .def_property_readonly(
           "edge", [](const BeachLineValue& self) { return self.edge(); })
       .def_property_readonly("circle_event", [](const BeachLineValue& self) {
@@ -418,7 +418,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
              return !boost::polygon::detail::is_zero(self);
            })
       .def("__float__", &BigFloat::d)
-      .def("__repr__", repr<BigFloat>)
+      .def("__repr__", to_repr<BigFloat>)
       .def("sqrt", &BigFloat::sqrt)
       .def_readonly("exponent", &BigFloat::exp_)
       .def_readonly("mantissa", &BigFloat::val_);
@@ -445,7 +445,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
              return !boost::polygon::detail::is_zero(self);
            })
       .def("__float__", &BigInt::d)
-      .def("__repr__", repr<BigInt>)
+      .def("__repr__", to_repr<BigInt>)
       .def("frexp", &BigInt::p)
       .def_property_readonly(
           "digits",
@@ -472,7 +472,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            }),
            py::arg("index") = 0,
            py::arg("site_events") = std::vector<SiteEvent>{})
-      .def("__repr__", repr<Builder>)
+      .def("__repr__", to_repr<Builder>)
       .def("clear", &Builder::clear)
       .def("construct", &Builder::construct<Diagram>, py::arg("diagram"))
       .def("init_beach_line", &Builder::init_beach_line<Diagram>,
@@ -545,7 +545,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            }),
            py::arg("source_index"), py::arg("source_category"),
            py::arg("incident_edge") = nullptr)
-      .def("__repr__", repr<Cell>)
+      .def("__repr__", to_repr<Cell>)
       .def_property_readonly("contains_point", &Cell::contains_point)
       .def_property_readonly("contains_segment", &Cell::contains_segment)
       .def_property_readonly(
@@ -579,7 +579,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
             return comparator(self, other);
           },
           py::is_operator())
-      .def("__repr__", repr<CircleEvent>)
+      .def("__repr__", to_repr<CircleEvent>)
       .def("deactivate", &CircleEvent::deactivate)
       .def("lies_outside_vertical_segment",
            [](const CircleEvent& self, const SiteEvent& site) {
@@ -614,7 +614,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            py::arg("cells") = std::vector<Cell>{},
            py::arg("edges") = std::vector<Edge>{},
            py::arg("vertices") = std::vector<Vertex>{})
-      .def("__repr__", repr<Diagram>)
+      .def("__repr__", to_repr<Diagram>)
       .def("clear", &Diagram::clear)
       .def(
           "construct",
@@ -675,7 +675,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            }),
            py::arg("start"), py::arg("twin"), py::arg("prev"), py::arg("next"),
            py::arg("cell"), py::arg("is_linear"), py::arg("is_primary"))
-      .def("__repr__", repr<Edge>)
+      .def("__repr__", to_repr<Edge>)
       .def_property_readonly("cell",
                              [](const Edge& self) { return self.cell(); })
       .def_property_readonly("end",
@@ -719,7 +719,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
             return comparator(self, other);
           },
           py::is_operator())
-      .def("__repr__", repr<Point>)
+      .def("__repr__", to_repr<Point>)
       .def_property_readonly("x", [](const Point& self) { return self.x(); })
       .def_property_readonly("y", [](const Point& self) { return self.y(); });
 
@@ -741,7 +741,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            [](const RobustFloat& self) {
              return !boost::polygon::detail::is_zero(self);
            })
-      .def("__repr__", repr<RobustFloat>)
+      .def("__repr__", to_repr<RobustFloat>)
       .def("sqrt", &RobustFloat::sqrt)
       .def_property_readonly("value", &RobustFloat::fpv)
       .def_property_readonly("relative_error", &RobustFloat::re);
@@ -765,14 +765,14 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def(py::self += RobustDifference())
       .def(py::self -= RobustDifference())
       .def(py::self *= RobustDifference())
-      .def("__repr__", repr<RobustDifference>)
+      .def("__repr__", to_repr<RobustDifference>)
       .def("evaluate", &RobustDifference::dif)
       .def_property_readonly("minuend", &RobustDifference::pos)
       .def_property_readonly("subtrahend", &RobustDifference::neg);
 
   py::class_<Segment>(m, SEGMENT_NAME)
       .def(py::init<Point, Point>(), py::arg("start"), py::arg("end"))
-      .def("__repr__", repr<Segment>)
+      .def("__repr__", to_repr<Segment>)
       .def(py::self == py::self)
       .def_readonly("start", &Segment::start)
       .def_readonly("end", &Segment::end);
@@ -806,7 +806,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
             return comparator(self, other);
           },
           py::is_operator())
-      .def("__repr__", repr<SiteEvent>)
+      .def("__repr__", to_repr<SiteEvent>)
       .def_property_readonly(
           "comparison_point",
           [](const SiteEvent& self) {
@@ -842,7 +842,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
              return result;
            }),
            py::arg("x"), py::arg("y"), py::arg("incident_edge") = nullptr)
-      .def("__repr__", repr<Vertex>)
+      .def("__repr__", to_repr<Vertex>)
       .def(py::self == py::self)
       .def_property_readonly(
           "incident_edge",
