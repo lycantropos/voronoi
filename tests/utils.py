@@ -37,10 +37,12 @@ from voronoi.big_float import BigFloat as PortedBigFloat
 from voronoi.big_int import BigInt as PortedBigInt
 from voronoi.builder import Builder as PortedBuilder
 from voronoi.diagram import Diagram as PortedDiagram
-from voronoi.enums import (GeometryCategory as PortedGeometryCategory,
+from voronoi.enums import (ComparisonResult,
+                           GeometryCategory as PortedGeometryCategory,
                            SourceCategory as PortedSourceCategory)
 from voronoi.events import (CircleEvent as PortedCircleEvent,
                             SiteEvent as PortedSiteEvent)
+from voronoi.events.models import ULPS
 from voronoi.faces import (Cell as PortedCell,
                            Edge as PortedEdge,
                            Vertex as PortedVertex)
@@ -49,6 +51,7 @@ from voronoi.robust_difference import (RobustDifference
                                        as PortedRobustDifference)
 from voronoi.robust_float import RobustFloat as PortedRobustFloat
 from voronoi.segment import Segment as PortedSegment
+from voronoi.utils import compare_floats
 
 Domain = TypeVar('Domain')
 Range = TypeVar('Range')
@@ -301,7 +304,9 @@ are_bound_ported_site_events_lists_equal = to_sequences_equals(
 
 def are_bound_ported_vertices_equal(bound: BoundVertex, ported: PortedVertex
                                     ) -> bool:
-    return bound.x == ported.x and bound.y == ported.y
+    return (compare_floats(bound.x, ported.x, ULPS)
+            is compare_floats(bound.y, ported.y, ULPS)
+            is ComparisonResult.EQUAL)
 
 
 are_bound_ported_vertices_lists_equal = to_sequences_equals(
