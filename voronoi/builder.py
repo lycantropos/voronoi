@@ -33,10 +33,8 @@ class Builder:
                  site_events: Optional[List[SiteEvent]] = None) -> None:
         self.index = index
         self._beach_line = red_black.map_()
-        self._circle_events = PriorityQueue(key=itemgetter(0),
-                                            reverse=True)
-        self._end_points = PriorityQueue(key=itemgetter(0),
-                                         reverse=True)
+        self._circle_events = PriorityQueue(key=itemgetter(0))
+        self._end_points = PriorityQueue(key=itemgetter(0))
         self.site_events = [] if site_events is None else site_events
         self._site_event_index = None
 
@@ -163,8 +161,7 @@ class Builder:
             new_node.right_site.inverse()
             node = self._beach_line.tree.insert(new_node, BeachLineValue(None))
             # update the data structure that holds temporary bisectors
-            self._end_points.push((site_event.end, len(self._end_points),
-                                   node))
+            self._end_points.push((site_event.end, node))
         return self._beach_line.tree.insert(new_left_node,
                                             BeachLineValue(edges[0]))
 
@@ -214,7 +211,7 @@ class Builder:
         bisector2 = first_node.value.edge
         first_node = self._beach_line.tree.predecessor(first_node)
         bisector1 = first_node.value.edge
-        site1 = first_node.key.left_site
+        site1 = copy(first_node.key.left_site)
         if (not site1.is_segment and site3.is_segment
                 and site3.end == site1.start):
             site3.inverse()
@@ -239,7 +236,7 @@ class Builder:
         if not self.site_event.is_segment:
             while (self._end_points
                    and self._end_points.peek()[0] == self.site_event.start):
-                *_, node = self._end_points.pop()
+                _, node = self._end_points.pop()
                 self._beach_line.tree.remove(node)
         else:
             while (last_index < len(self.site_events)
