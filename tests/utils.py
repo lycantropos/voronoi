@@ -318,7 +318,11 @@ are_bound_ported_maybe_vertices_equal = to_maybe_equals(
 
 
 def are_floats_equivalent(left: float, right: float) -> bool:
-    return left == right or isnan(left) and isnan(right)
+    left_is_nan = isnan(left)
+    return (left_is_nan is isnan(right)
+            and (left_is_nan
+                 or (compare_floats(left, right, ULPS)
+                     is ComparisonResult.EQUAL)))
 
 
 def to_bound_with_ported_beach_line_keys_pair(
