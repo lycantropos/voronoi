@@ -1,4 +1,7 @@
+from operator import itemgetter
+
 from hypothesis import strategies
+from hypothesis_geometry import planar
 
 from tests.strategies import (doubles,
                               integers_32,
@@ -15,12 +18,17 @@ from tests.utils import (BoundPortedEdgesPair,
                          to_bound_with_ported_site_events_pair,
                          to_bound_with_ported_vertices_pair,
                          to_maybe_pairs,
+                         to_multipoints_with_multisegments_pairs,
                          to_pairs,
                          transpose_pairs)
 
 booleans = strategies.booleans()
 coordinates = doubles
 nones_pairs = to_pairs(strategies.none())
+empty_lists_pairs = to_pairs(strategies.builds(list))
+empty_diagrams_pairs = strategies.builds(to_bound_with_ported_diagrams_pair,
+                                         empty_lists_pairs, empty_lists_pairs,
+                                         empty_lists_pairs)
 source_categories_pairs = strategies.sampled_from(
         list(zip(bound_source_categories, ported_source_categories)))
 
@@ -60,3 +68,8 @@ points_pairs = strategies.builds(to_bound_with_ported_points_pair,
 site_events_pairs = strategies.builds(to_bound_with_ported_site_events_pair,
                                       points_pairs, points_pairs, sizes, sizes,
                                       booleans, source_categories_pairs)
+multipoints_with_multisegments_pairs = (
+    (planar.mixes(integers_32,
+                  max_multipolygon_size=0)
+     .map(itemgetter(0, 1))
+     .map(to_multipoints_with_multisegments_pairs)))
