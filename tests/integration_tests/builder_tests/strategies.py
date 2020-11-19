@@ -1,9 +1,9 @@
+from operator import itemgetter
 from typing import Tuple
 
 from hypothesis import strategies
 from hypothesis_geometry import planar
-from hypothesis_geometry.hints import (Multisegment as RawMultisegment,
-                                       Segment as RawSegment)
+from hypothesis_geometry.hints import Segment as RawSegment
 
 from tests.strategies import (integers_32,
                               sizes)
@@ -30,6 +30,7 @@ from tests.utils import (BoundPoint,
                          to_bound_with_ported_site_events_pair,
                          to_bound_with_ported_vertices_pair,
                          to_maybe_pairs,
+                         to_multipoints_with_multisegments_pairs,
                          to_pairs,
                          transpose_pairs)
 
@@ -56,26 +57,11 @@ def points_pair_to_coordinates(points_pair: BoundPortedPointsPair
     return bound.x, bound.y
 
 
-unique_points_lists_pairs = (
-    (strategies.lists(points_pairs,
-                      unique_by=points_pair_to_coordinates)
-     .map(transpose_pairs)))
-
-
-def raw_multisegment_to_segments_lists_pair(raw: RawMultisegment
-                                            ) -> BoundPortedSegmentsListsPair:
-    bound, ported = [], []
-    for raw_start, raw_end in raw:
-        bound_start, ported_start = (BoundPoint(*raw_start),
-                                     PortedPoint(*raw_start))
-        bound_end, ported_end = BoundPoint(*raw_end), PortedPoint(*raw_end)
-        bound.append(BoundSegment(bound_start, bound_end))
-        ported.append(PortedSegment(ported_start, ported_end))
-    return bound, ported
-
-
-non_crossing_or_overlapping_segments_lists_pairs = (
-    planar.multisegments(coordinates).map(raw_multisegment_to_segments_lists_pair))
+multipoints_with_multisegments_pairs = (
+    (planar.mixes(coordinates,
+                  max_multipolygon_size=0)
+     .map(itemgetter(0, 1))
+     .map(to_multipoints_with_multisegments_pairs)))
 source_categories_pairs = strategies.sampled_from(
         list(zip(bound_source_categories, ported_source_categories)))
 site_events_pairs = strategies.builds(to_bound_with_ported_site_events_pair,
@@ -89,28 +75,24 @@ empty_builders_pairs = strategies.builds(to_bound_with_ported_builders_pair,
 
 
 def to_valid_builders_pair(builders: BoundPortedBuildersPair,
-                           points_lists: BoundPortedPointsListsPair,
-                           segments_lists: BoundPortedSegmentsListsPair
+                           multipoints_with_multisegments
+                           : Tuple[BoundPortedPointsListsPair,
+                                   BoundPortedSegmentsListsPair]
                            ) -> BoundPortedBuildersPair:
+    multipoints, multisegments = multipoints_with_multisegments
     bound, ported = builders
-    for bound_point, ported_point in zip(*points_lists):
+    for bound_point, ported_point in zip(*multipoints):
         bound.insert_point(bound_point)
         ported.insert_point(ported_point)
-    for bound_segment, ported_segment in zip(*segments_lists):
+    for bound_segment, ported_segment in zip(*multisegments):
         bound.insert_segment(bound_segment)
         ported.insert_segment(ported_segment)
     return builders
 
 
-valid_builders_pairs = (
-        strategies.builds(to_valid_builders_pair,
-                          empty_builders_pairs,
-                          unique_points_lists_pairs,
-                          empty_lists_pairs)
-        | strategies.builds(to_valid_builders_pair,
-                            empty_builders_pairs,
-                            empty_lists_pairs,
-                            non_crossing_or_overlapping_segments_lists_pairs))
+valid_builders_pairs = strategies.builds(
+        to_valid_builders_pair, empty_builders_pairs,
+        multipoints_with_multisegments_pairs)
 builders_pairs = (strategies.builds(to_bound_with_ported_builders_pair, sizes,
                                     site_events_lists_pairs)
                   | valid_builders_pairs)

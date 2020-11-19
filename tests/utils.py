@@ -30,6 +30,8 @@ from _voronoi import (BeachLineKey as BoundBeachLineKey,
                       Vertex as BoundVertex)
 from hypothesis import strategies
 from hypothesis.strategies import SearchStrategy
+from hypothesis_geometry.hints import (Multipoint as RawMultipoint,
+                                       Multisegment as RawMultisegment)
 
 from voronoi.beach_line_key import BeachLineKey as PortedBeachLineKey
 from voronoi.beach_line_value import BeachLineValue as PortedBeachLineValue
@@ -479,3 +481,22 @@ def to_quadruplets(strategy: Strategy[Domain]
 def to_triplets(strategy: Strategy[Domain]
                 ) -> Strategy[Tuple[Domain, Domain, Domain]]:
     return strategies.tuples(strategy, strategy, strategy)
+
+
+def to_multipoints_with_multisegments_pairs(
+        raw_multipoint_with_raw_multisegment
+        : Tuple[RawMultipoint, RawMultisegment]
+) -> Tuple[BoundPortedPointsListsPair, BoundPortedSegmentsListsPair]:
+    raw_multipoint, raw_multisegment = raw_multipoint_with_raw_multisegment
+    bound_multipoint, ported_multipoint = [], []
+    bound_multisegment, ported_multisegment = [], []
+    for x, y in raw_multipoint:
+        bound_multipoint.append(BoundPoint(x, y))
+        ported_multipoint.append(PortedPoint(x, y))
+    for (start_x, start_y), (end_x, end_y) in raw_multisegment:
+        bound_multisegment.append(BoundSegment(BoundPoint(start_x, start_y),
+                                               BoundPoint(end_x, end_y)))
+        ported_multisegment.append(PortedSegment(PortedPoint(start_x, start_y),
+                                                 PortedPoint(end_x, end_y)))
+    return ((bound_multipoint, ported_multipoint),
+            (bound_multisegment, ported_multisegment))
