@@ -1,29 +1,25 @@
 voronoi
 =======
 
-[![](https://travis-ci.com/lycantropos/voronoi.svg?branch=master)](https://travis-ci.com/lycantropos/voronoi "Travis CI")
 [![](https://dev.azure.com/lycantropos/voronoi/_apis/build/status/lycantropos.voronoi?branchName=master)](https://dev.azure.com/lycantropos/voronoi/_build/latest?definitionId=29&branchName=master "Azure Pipelines")
 [![](https://codecov.io/gh/lycantropos/voronoi/branch/master/graph/badge.svg)](https://codecov.io/gh/lycantropos/voronoi "Codecov")
 [![](https://img.shields.io/github/license/lycantropos/voronoi.svg)](https://github.com/lycantropos/voronoi/blob/master/LICENSE "License")
 [![](https://badge.fury.io/py/voronoi.svg)](https://badge.fury.io/py/voronoi "PyPI")
 
-In what follows
-- `python` is an alias for `python3.5` or any later
-version (`python3.6` and so on),
-- `pypy` is an alias for `pypy3.5` or any later
-version (`pypy3.6` and so on).
+In what follows `python` is an alias for `python3.5` or `pypy3.5`
+or any later version (`python3.6`, `pypy3.6` and so on).
 
 Installation
 ------------
 
-Install the latest `pip` & `setuptools` packages versions:
+Install the latest `pip` & `setuptools` packages versions
 ```bash
 python -m pip install --upgrade pip setuptools
 ```
 
 ### User
 
-Download and install the latest stable version from `PyPI` repository:
+Download and install the latest stable version from `PyPI` repository
 ```bash
 python -m pip install --upgrade voronoi
 ```
@@ -36,12 +32,7 @@ git clone https://github.com/lycantropos/voronoi.git
 cd voronoi
 ```
 
-Install setup dependencies:
-```bash
-python -m pip install --force-reinstall -r requirements-setup.txt
-```
-
-Install:
+Install
 ```bash
 python setup.py install
 ```
@@ -92,7 +83,7 @@ This will set version to `major.minor.patch`.
 
 ### Running tests
 
-Install dependencies:
+Install dependencies
 ```bash
 python -m pip install --force-reinstall -r requirements-tests.txt
 ```
@@ -103,16 +94,40 @@ pytest
 ```
 
 Inside `Docker` container:
-```bash
-docker-compose up
-```
+- with `CPython`
+  ```bash
+  docker-compose --file docker-compose.cpython.yml up
+  ```
+- with `PyPy`
+  ```bash
+  docker-compose --file docker-compose.pypy.yml up
+  ```
 
 `Bash` script (e.g. can be used in `Git` hooks):
-```bash
-./run-tests.sh
-```
+- with `CPython`
+  ```bash
+  ./run-tests.sh
+  ```
+  or
+  ```bash
+  ./run-tests.sh cpython
+  ```
+
+- with `PyPy`
+  ```bash
+  ./run-tests.sh pypy
+  ```
 
 `PowerShell` script (e.g. can be used in `Git` hooks):
-```powershell
-.\run-tests.ps1
-```
+- with `CPython`
+  ```powershell
+  .\run-tests.ps1
+  ```
+  or
+  ```powershell
+  .\run-tests.ps1 cpython
+  ```
+- with `PyPy`
+  ```powershell
+  .\run-tests.ps1 pypy
+  ```
