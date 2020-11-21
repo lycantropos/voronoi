@@ -16,6 +16,5 @@ services:
       - ./requirements-tests.txt:/opt/voronoi/requirements-tests.txt
       - ./requirements.txt:/opt/voronoi/requirements.txt
       - ./setup.py:/opt/voronoi/setup.py
-      - ./src/:/opt/voronoi/src/
       - ./tests/:/opt/voronoi/tests/
     entrypoint: pytest

@@ -10,6 +10,7 @@ services:
     image: lycantropos/voronoi-cpython:0.0.0
     volumes:
       - ./voronoi/:/opt/voronoi/voronoi/
+      - ./include/:/opt/voronoi/include/
       - ./pytest.ini:/opt/voronoi/pytest.ini
       - ./README.md:/opt/voronoi/README.md
       - ./requirements-setup.txt:/opt/voronoi/requirements-setup.txt
