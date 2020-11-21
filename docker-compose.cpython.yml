@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  voronoi-cpython:
+    build:
+      context: .
+      args:
+        - IMAGE_NAME=${CPYTHON_IMAGE_NAME}
+        - IMAGE_VERSION=${CPYTHON_IMAGE_VERSION}
+    image: lycantropos/voronoi-cpython:0.0.0
+    volumes:
+      - ./voronoi/:/opt/voronoi/voronoi/
+      - ./pytest.ini:/opt/voronoi/pytest.ini
+      - ./README.md:/opt/voronoi/README.md
+      - ./requirements-setup.txt:/opt/voronoi/requirements-setup.txt
+      - ./requirements-tests.txt:/opt/voronoi/requirements-tests.txt
+      - ./requirements.txt:/opt/voronoi/requirements.txt
+      - ./setup.py:/opt/voronoi/setup.py
+      - ./src/:/opt/voronoi/src/
+      - ./tests/:/opt/voronoi/tests/
+    entrypoint: pytest

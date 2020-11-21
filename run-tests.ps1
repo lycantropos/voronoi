@@ -1,18 +1,20 @@
-$compose_file = "docker-compose.yml"
+param ([String]$implementation = "cpython")
 
-docker-compose up --build --exit-code-from voronoi
+$compose_file = "docker-compose.${implementation}.yml"
+
+docker-compose --file $compose_file up --build --exit-code-from voronoi-${implementation}
 
 $STATUS = $LastExitCode
 
-docker-compose down --remove-orphans
+docker-compose --file $compose_file down --remove-orphans
 
 if ($STATUS -eq 0)
 {
-    echo "tests passed"
+    echo "${implementation} tests passed"
 }
 else
 {
-    echo "tests failed"
+    echo "${implementation} tests failed"
 }
 
 exit $STATUS
