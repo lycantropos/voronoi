@@ -119,7 +119,8 @@ if platform.python_implementation() == 'CPython':
             cmdclass={'build_ext': BuildExt},
             ext_modules=[Extension('_' + voronoi.__name__,
                                    glob('src/*.cpp'),
-                                   include_dirs=[LazyPybindInclude()],
+                                   include_dirs=[LazyPybindInclude(),
+                                                 Path.cwd() / 'include'],
                                    language='c++')],
             zip_safe=False)
 setup(**parameters)
