@@ -120,6 +120,7 @@ steps:
   - bash: python -m doctest README.md
     displayName: 'Run doctests'
   - bash: pytest
+    condition: startsWith(variables['python.version'], '3.')
     displayName: 'Run tests'
   - bash: python -m pip install --upgrade codecov
     condition: succeeded()
