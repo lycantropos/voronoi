@@ -55,13 +55,13 @@ class Builder:
                 else self._site_event_index)
 
     def activate_circle_event(self,
-                              site1: SiteEvent,
-                              site2: SiteEvent,
-                              site3: SiteEvent,
+                              first_site: SiteEvent,
+                              second_site: SiteEvent,
+                              third_site: SiteEvent,
                               bisector_node: red_black.Node):
         event = CircleEvent(0., 0., 0.)
         # check if the three input sites create a circle event
-        if compute_circle_event(event, site1, site2, site3):
+        if compute_circle_event(event, first_site, second_site, third_site):
             # add the new circle event to the circle events queue;
             # update bisector's circle event iterator to point
             # to the new circle event in the circle event queue
