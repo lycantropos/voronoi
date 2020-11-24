@@ -94,7 +94,7 @@ class Edge:
 
     @property
     def is_infinite(self) -> bool:
-        return self.start is None or self._end is None
+        return self.start is None or self.end is None
 
     @property
     def is_secondary(self) -> bool:
