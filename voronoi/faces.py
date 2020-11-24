@@ -68,7 +68,7 @@ class Edge:
                  twin: Optional['Edge'],
                  prev: Optional['Edge'],
                  next_: Optional['Edge'],
-                 cell: Optional['Cell'],
+                 cell: Cell,
                  is_linear: bool,
                  is_primary: bool) -> None:
         self.start = start
