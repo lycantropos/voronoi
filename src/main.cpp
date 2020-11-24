@@ -654,7 +654,11 @@ PYBIND11_MODULE(MODULE_NAME, m) {
                                                              : self.vertex1();
                              })
       .def_property_readonly("is_curved", &Edge::is_curved)
-      .def_property_readonly("is_finite", &Edge::is_finite)
+      .def_property_readonly("is_finite",
+                             [](const Edge& self) {
+                               return self.twin() == nullptr ? false
+                                                             : self.is_finite();
+                             })
       .def_property_readonly("is_infinite", &Edge::is_infinite)
       .def_property_readonly("is_linear", &Edge::is_linear)
       .def_property_readonly("is_primary", &Edge::is_primary)
