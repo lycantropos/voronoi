@@ -76,7 +76,7 @@ class Edge:
 
     @property
     def end(self) -> Optional[Vertex]:
-        return None if self.twin is None else self._end
+        return None if self.twin is None else self.twin.start
 
     @property
     def is_curved(self) -> bool:
@@ -102,23 +102,11 @@ class Edge:
 
     @property
     def rot_next(self) -> Optional['Edge']:
-        return None if self.prev is None else self._rot_next
+        return None if self.prev is None else self.prev.twin
 
     @property
     def rot_prev(self) -> Optional['Edge']:
-        return None if self.twin is None else self._rot_prev
-
-    @property
-    def _end(self) -> Optional[Vertex]:
-        return self.twin.start
-
-    @property
-    def _rot_next(self):
-        return self.prev.twin
-
-    @property
-    def _rot_prev(self):
-        return self.twin.next
+        return None if self.twin is None else self.twin.next
 
     def disconnect(self) -> None:
         vertex = self.start
