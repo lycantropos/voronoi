@@ -526,9 +526,10 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def("__repr__", to_repr<Cell>)
       .def_property_readonly("contains_point", &Cell::contains_point)
       .def_property_readonly("contains_segment", &Cell::contains_segment)
-      .def_property_readonly(
+      .def_property(
           "incident_edge",
-          [](const Cell& self) { return self.incident_edge(); })
+          [](const Cell& self) { return self.incident_edge(); },
+          [](Cell& self, Edge* value) { self.incident_edge(value); })
       .def_property_readonly("is_degenerate", &Cell::is_degenerate)
       .def_property_readonly("source_index", &Cell::source_index)
       .def_property_readonly("source_category", &Cell::source_category);
