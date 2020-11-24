@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from hypothesis import given
 
 from tests.utils import (BoundPortedDiagramsPair,
@@ -10,19 +8,27 @@ from tests.utils import (BoundPortedDiagramsPair,
 from . import strategies
 
 
-@given(strategies.empty_diagrams_pairs,
-       strategies.multipoints_with_multisegments_pairs)
-def test_basic(pair: BoundPortedDiagramsPair,
-               multipoints_with_multisegments_pair
-               : Tuple[BoundPortedPointsListsPair,
-                       BoundPortedSegmentsListsPair]) -> None:
-    multipoints_pair, multisegments_pair = multipoints_with_multisegments_pair
+@given(strategies.empty_diagrams_pairs, strategies.multipoints)
+def test_multipoints(pair: BoundPortedDiagramsPair,
+                     multipoints_pair: BoundPortedPointsListsPair) -> None:
     bound_multipoint, ported_multipoint = multipoints_pair
+    bound, ported = pair
+
+    bound_result = bound.construct(bound_multipoint, [])
+    ported_result = ported.construct(ported_multipoint, [])
+
+    assert equivalence(bound_result, ported_result)
+    assert are_bound_ported_diagrams_equal(bound, ported)
+
+
+@given(strategies.empty_diagrams_pairs, strategies.multisegments)
+def test_multisegments(pair: BoundPortedDiagramsPair,
+                       multisegments_pair: BoundPortedSegmentsListsPair) -> None:
     bound_multisegment, ported_multisegment = multisegments_pair
     bound, ported = pair
 
-    bound_result = bound.construct(bound_multipoint, bound_multisegment)
-    ported_result = ported.construct(ported_multipoint, ported_multisegment)
+    bound_result = bound.construct([], bound_multisegment)
+    ported_result = ported.construct([], ported_multisegment)
 
     assert equivalence(bound_result, ported_result)
     assert are_bound_ported_diagrams_equal(bound, ported)
