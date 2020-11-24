@@ -167,35 +167,13 @@ static std::ostream& operator<<(std::ostream& stream, const Vertex& vertex) {
                 << vertex.y() << ")";
 }
 
-static void write_edge_pointer(std::ostream& stream, const Edge* edge,
-                               std::unordered_set<const Edge*>& cache) {
-  if (edge == nullptr) {
-    stream << py::none();
-    return;
-  }
-  if (cache.find(edge) != cache.end()) {
-    stream << "...";
-    return;
-  }
-  cache.insert(edge);
-  stream << C_STR(MODULE_NAME) "." EDGE_NAME "(";
-  write_pointer(stream, edge->vertex0());
-  stream << ", ";
-  write_edge_pointer(stream, edge->twin(), cache);
-  stream << ", ";
-  write_edge_pointer(stream, edge->next(), cache);
-  stream << ", ";
-  write_edge_pointer(stream, edge->prev(), cache);
-  stream << ", ";
-  write_pointer(stream, edge->cell());
-  stream << ", " << bool_repr(edge->is_linear()) << ", "
-         << bool_repr(edge->is_primary()) << ")";
-}
-
 static std::ostream& operator<<(std::ostream& stream, const Edge& edge) {
-  std::unordered_set<const Edge*> cache;
-  write_edge_pointer(stream, &edge, cache);
-  return stream;
+  stream << C_STR(MODULE_NAME) "." EDGE_NAME "(";
+  write_pointer(stream, edge.vertex0());
+  stream << ", ";
+  write_pointer(stream, edge.cell());
+  return stream << ", " << bool_repr(edge.is_linear()) << ", "
+                << bool_repr(edge.is_primary()) << ")";
 }
 
 static bool operator==(const Vertex& left, const Vertex& right) {
