@@ -66,6 +66,12 @@ class Edge:
         return not self.is_linear
 
     @property
+    def is_degenerate(self) -> bool:
+        return (self.start is not None
+                and self.end is not None
+                and self.start == self.end)
+
+    @property
     def is_finite(self) -> bool:
         return not self.is_infinite
 
