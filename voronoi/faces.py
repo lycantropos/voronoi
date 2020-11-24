@@ -106,13 +106,12 @@ class Cell:
 
     def __init__(self,
                  source_index: int,
-                 source_category: SourceCategory,
-                 incident_edge: Optional[Edge] = None) -> None:
+                 source_category: SourceCategory) -> None:
         self.source_index = source_index
         self.source_category = source_category
-        self.incident_edge = incident_edge
+        self.incident_edge = None  # type: Optional[Edge]
 
-    __repr__ = recursive_repr()(generate_repr(__init__))
+    __repr__ = generate_repr(__init__)
 
     @property
     def contains_point(self) -> bool:
