@@ -844,9 +844,10 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            py::arg("x"), py::arg("y"), py::arg("incident_edge") = nullptr)
       .def("__repr__", to_repr<Vertex>)
       .def(py::self == py::self)
-      .def_property_readonly(
+      .def_property(
           "incident_edge",
-          [](const Vertex& self) { return self.incident_edge(); })
+          [](const Vertex& self) { return self.incident_edge(); },
+          [](Vertex& self, Edge* value) { self.incident_edge(value); })
       .def_property_readonly("is_degenerate", &Vertex::is_degenerate)
       .def_property_readonly("x", &Vertex::x)
       .def_property_readonly("y", &Vertex::y);
