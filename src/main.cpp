@@ -707,8 +707,9 @@ PYBIND11_MODULE(MODULE_NAME, m) {
                              })
       .def_property_readonly("start",
                              [](const Edge& self) { return self.vertex0(); })
-      .def_property_readonly("twin",
-                             [](const Edge& self) { return self.twin(); });
+      .def_property(
+          "twin", [](const Edge& self) { return self.twin(); },
+          [](Edge& self, Edge* value) { return self.twin(value); });
 
   py::class_<Point>(m, POINT_NAME)
       .def(py::init<coordinate_t, coordinate_t>(), py::arg("x"), py::arg("y"))
