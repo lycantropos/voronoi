@@ -77,11 +77,10 @@ class Builder:
                 self.process_site_event(output)
             elif self._site_event_index >= len(self.site_events):
                 self.process_circle_event(output)
+            elif self.site_event < self._circle_events.peek()[0]:
+                self.process_site_event(output)
             else:
-                if self.site_event < self._circle_events.peek()[0]:
-                    self.process_site_event(output)
-                else:
-                    self.process_circle_event(output)
+                self.process_circle_event(output)
             while (self._circle_events
                    and not self._circle_events.peek()[0].is_active):
                 self._circle_events.pop()
