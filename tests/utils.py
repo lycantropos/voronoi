@@ -1,5 +1,4 @@
 from enum import Enum
-from functools import partial
 from math import isnan
 from operator import is_
 from typing import (Callable,
@@ -113,7 +112,6 @@ BoundPortedBuildersWithDiagramsPair = Tuple[
     Tuple[BoundBuilder, BoundDiagram], Tuple[PortedBuilder, PortedDiagram]]
 BoundPortedCellsPair = Tuple[BoundCell, PortedCell]
 BoundPortedCellsListsPair = Tuple[List[BoundCell], List[PortedCell]]
-BoundPortedMaybeCellsPair = Tuple[Optional[BoundCell], Optional[PortedCell]]
 BoundPortedCircleEventsPair = Tuple[BoundCircleEvent, PortedCircleEvent]
 BoundPortedMaybeCircleEventsPair = Tuple[Optional[BoundCircleEvent],
                                          Optional[PortedCircleEvent]]
@@ -356,16 +354,11 @@ def to_bound_with_ported_builders_pair(index: int,
 
 def to_bound_with_ported_cells_pair(source_index: int,
                                     source_categories_pair
-                                    : BoundPortedSourceCategoriesPair,
-                                    incident_edges_pair
-                                    : BoundPortedMaybeEdgesPair
+                                    : BoundPortedSourceCategoriesPair
                                     ) -> BoundPortedCellsPair:
     bound_source_category, ported_source_category = source_categories_pair
-    bound_incident_edge, ported_incident_edge = incident_edges_pair
-    return (BoundCell(source_index, bound_source_category,
-                      bound_incident_edge),
-            PortedCell(source_index, ported_source_category,
-                       ported_incident_edge))
+    return (BoundCell(source_index, bound_source_category),
+            PortedCell(source_index, ported_source_category))
 
 
 def to_bound_with_ported_circle_events_pair(center_x: float,
@@ -390,21 +383,13 @@ def to_bound_with_ported_diagrams_pair(cells_pair: BoundPortedCellsListsPair,
 
 
 def to_bound_with_ported_edges_pair(starts_pair: BoundPortedMaybeVerticesPair,
-                                    twins_pair: BoundPortedMaybeEdgesPair,
-                                    prev_edges_pair: BoundPortedMaybeEdgesPair,
-                                    next_edges_pair: BoundPortedMaybeEdgesPair,
-                                    cells_pair: BoundPortedMaybeCellsPair,
+                                    cells_pair: BoundPortedCellsPair,
                                     is_linear: bool,
                                     is_primary: bool) -> BoundPortedEdgesPair:
     bound_start, ported_start = starts_pair
-    bound_twin, ported_twin = twins_pair
-    bound_prev, ported_prev = prev_edges_pair
-    bound_next, ported_next = next_edges_pair
     bound_cell, ported_cell = cells_pair
-    return (BoundEdge(bound_start, bound_twin, bound_prev, bound_next,
-                      bound_cell, is_linear, is_primary),
-            PortedEdge(ported_start, ported_twin, ported_prev, ported_next,
-                       ported_cell, is_linear, is_primary))
+    return (BoundEdge(bound_start, bound_cell, is_linear, is_primary),
+            PortedEdge(ported_start, ported_cell, is_linear, is_primary))
 
 
 def to_bound_with_ported_points_pair(x: int, y: int) -> BoundPortedPointsPair:
@@ -459,13 +444,7 @@ def to_bound_with_ported_vertices_pair(x: int,
                                        incident_edges_pair
                                        : BoundPortedMaybeEdgesPair
                                        ) -> BoundPortedVerticesPair:
-    bound_incident_edge, ported_incident_edge = incident_edges_pair
-    return (BoundVertex(x, y, bound_incident_edge),
-            PortedVertex(x, y, ported_incident_edge))
-
-
-recursive = partial(strategies.recursive,
-                    max_leaves=2)
+    return BoundVertex(x, y), PortedVertex(x, y)
 
 
 def to_maybe_pairs(strategy: Strategy[Tuple[Domain, Range]]
