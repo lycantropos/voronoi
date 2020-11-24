@@ -659,7 +659,11 @@ PYBIND11_MODULE(MODULE_NAME, m) {
                                return self.twin() == nullptr ? false
                                                              : self.is_finite();
                              })
-      .def_property_readonly("is_infinite", &Edge::is_infinite)
+      .def_property_readonly(
+          "is_infinite",
+          [](const Edge& self) {
+            return self.twin() == nullptr ? true : self.is_infinite();
+          })
       .def_property_readonly("is_linear", &Edge::is_linear)
       .def_property_readonly("is_primary", &Edge::is_primary)
       .def_property_readonly("is_secondary", &Edge::is_secondary)
