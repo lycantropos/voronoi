@@ -689,8 +689,9 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_property_readonly("is_linear", &Edge::is_linear)
       .def_property_readonly("is_primary", &Edge::is_primary)
       .def_property_readonly("is_secondary", &Edge::is_secondary)
-      .def_property_readonly("next",
-                             [](const Edge& self) { return self.next(); })
+      .def_property(
+          "next", [](const Edge& self) { return self.next(); },
+          [](Edge& self, Edge* value) { return self.next(value); })
       .def_property_readonly("prev",
                              [](const Edge& self) { return self.prev(); })
       .def_property_readonly("rot_next",
