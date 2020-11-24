@@ -643,7 +643,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
                  result.cell(cell);
                  return result;
                }),
-           py::arg("start"), py::arg("cell"), py::arg("is_linear"),
+           py::arg("start"), py::arg("cell").none(false), py::arg("is_linear"),
            py::arg("is_primary"))
       .def("__repr__", to_repr<Edge>)
       .def_property_readonly("cell",
