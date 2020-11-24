@@ -439,10 +439,7 @@ def to_bound_with_ported_site_events_pair(starts_pair: BoundPortedPointsPair,
                             initial_index, is_inverse, ported_source_category))
 
 
-def to_bound_with_ported_vertices_pair(x: int,
-                                       y: int,
-                                       incident_edges_pair
-                                       : BoundPortedMaybeEdgesPair
+def to_bound_with_ported_vertices_pair(x: int, y: int
                                        ) -> BoundPortedVerticesPair:
     return BoundVertex(x, y), PortedVertex(x, y)
 
