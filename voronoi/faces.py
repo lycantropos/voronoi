@@ -13,15 +13,12 @@ from .utils import compare_floats
 class Vertex:
     __slots__ = 'x', 'y', 'incident_edge'
 
-    def __init__(self,
-                 x: float,
-                 y: float,
-                 incident_edge: Optional['Edge'] = None) -> None:
+    def __init__(self, x: float, y: float) -> None:
         self.x = x
         self.y = y
-        self.incident_edge = incident_edge
+        self.incident_edge = None  # type: Optional[Edge]
 
-    __repr__ = recursive_repr()(generate_repr(__init__))
+    __repr__ = generate_repr(__init__)
 
     def __eq__(self, other: 'Vertex',
                *,
