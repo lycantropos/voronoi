@@ -150,16 +150,17 @@ class Diagram:
     def _remove_degenerate_vertices(self) -> None:
         first_degenerate_vertex_index = 0
         for index, vertex in enumerate(self.vertices):
-            if vertex.incident_edge is not None:
-                if index != first_degenerate_vertex_index:
-                    self.vertices[first_degenerate_vertex_index] = vertex
-                    cursor = vertex.incident_edge
-                    while True:
-                        cursor.start = vertex
-                        cursor = cursor.rot_next
-                        if cursor is vertex.incident_edge:
-                            break
-                first_degenerate_vertex_index += 1
+            if vertex.is_degenerate:
+                continue
+            if index != first_degenerate_vertex_index:
+                self.vertices[first_degenerate_vertex_index] = vertex
+                cursor = vertex.incident_edge
+                while True:
+                    cursor.start = vertex
+                    cursor = cursor.rot_next
+                    if cursor is vertex.incident_edge:
+                        break
+            first_degenerate_vertex_index += 1
         del self.vertices[first_degenerate_vertex_index:]
 
     def _update_line_edges(self) -> None:
