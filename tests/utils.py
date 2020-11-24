@@ -472,15 +472,6 @@ def to_multipoints_pair(raw_multipoint: RawMultipoint
     return bound_multipoint, ported_multipoint
 
 
-def to_multipoints_with_multisegments_pairs(
-        raw_multipoint_with_raw_multisegment
-        : Tuple[RawMultipoint, RawMultisegment]
-) -> Tuple[BoundPortedPointsListsPair, BoundPortedSegmentsListsPair]:
-    raw_multipoint, raw_multisegment = raw_multipoint_with_raw_multisegment
-    return (to_multipoints_pair(raw_multipoint),
-            to_multisegments_pair(raw_multisegment))
-
-
 def to_multisegments_pair(raw_multisegment: RawMultisegment
                           ) -> BoundPortedSegmentsListsPair:
     bound_multisegment, ported_multisegment = [], []

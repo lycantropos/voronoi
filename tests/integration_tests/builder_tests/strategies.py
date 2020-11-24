@@ -1,4 +1,3 @@
-from operator import itemgetter
 from typing import Tuple
 
 from hypothesis import strategies
@@ -27,7 +26,8 @@ from tests.utils import (BoundPoint,
                          to_bound_with_ported_site_events_pair,
                          to_bound_with_ported_vertices_pair,
                          to_maybe_pairs,
-                         to_multipoints_with_multisegments_pairs,
+                         to_multipoints_pair,
+                         to_multisegments_pair,
                          to_pairs,
                          transpose_pairs)
 
@@ -54,11 +54,9 @@ def points_pair_to_coordinates(points_pair: BoundPortedPointsPair
     return bound.x, bound.y
 
 
-multipoints_with_multisegments_pairs = (
-    (planar.mixes(coordinates,
-                  max_multipolygon_size=0)
-     .map(itemgetter(0, 1))
-     .map(to_multipoints_with_multisegments_pairs)))
+multipoints_pairs = planar.multipoints(coordinates).map(to_multipoints_pair)
+multisegments_pairs = (planar.multisegments(coordinates)
+                       .map(to_multisegments_pair))
 source_categories_pairs = strategies.sampled_from(
         list(zip(bound_source_categories, ported_source_categories)))
 site_events_pairs = strategies.builds(to_bound_with_ported_site_events_pair,
@@ -71,25 +69,32 @@ empty_builders_pairs = strategies.builds(to_bound_with_ported_builders_pair,
                                          sizes, empty_lists_pairs)
 
 
-def to_valid_builders_pair(builders: BoundPortedBuildersPair,
-                           multipoints_with_multisegments
-                           : Tuple[BoundPortedPointsListsPair,
-                                   BoundPortedSegmentsListsPair]
-                           ) -> BoundPortedBuildersPair:
-    multipoints, multisegments = multipoints_with_multisegments
+def to_valid_multipoints_builders_pair(builders: BoundPortedBuildersPair,
+                                       multipoints: BoundPortedPointsListsPair
+                                       ) -> BoundPortedBuildersPair:
     bound, ported = builders
     for bound_point, ported_point in zip(*multipoints):
         bound.insert_point(bound_point)
         ported.insert_point(ported_point)
+    return bound, ported
+
+
+def to_valid_multisegments_builders_pair(builders: BoundPortedBuildersPair,
+                                         multisegments
+                                         : BoundPortedSegmentsListsPair
+                                         ) -> BoundPortedBuildersPair:
+    bound, ported = builders
     for bound_segment, ported_segment in zip(*multisegments):
         bound.insert_segment(bound_segment)
         ported.insert_segment(ported_segment)
-    return builders
+    return bound, ported
 
 
-valid_builders_pairs = strategies.builds(
-        to_valid_builders_pair, empty_builders_pairs,
-        multipoints_with_multisegments_pairs)
+valid_builders_pairs = (
+        strategies.builds(to_valid_multipoints_builders_pair,
+                          empty_builders_pairs, multipoints_pairs)
+        | strategies.builds(to_valid_multisegments_builders_pair,
+                            empty_builders_pairs, multisegments_pairs))
 builders_pairs = (strategies.builds(to_bound_with_ported_builders_pair, sizes,
                                     site_events_lists_pairs)
                   | valid_builders_pairs)
