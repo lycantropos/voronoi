@@ -85,13 +85,11 @@ class Diagram:
                                second_site.source_category))
         is_linear = self.is_linear_edge(first_site, second_site)
         is_primary = self.is_primary_edge(first_site, second_site)
-        first_edge = Edge(None, None, None, None,
-                          self.cells[first_site.sorted_index], is_linear,
+        first_edge = Edge(None, self.cells[first_site.sorted_index], is_linear,
                           is_primary)
-        second_edge = Edge(None, first_edge, None, None,
-                           self.cells[second_site.sorted_index], is_linear,
-                           is_primary)
-        first_edge.twin = second_edge
+        second_edge = Edge(None, self.cells[second_site.sorted_index],
+                           is_linear, is_primary)
+        first_edge.twin, second_edge.twin = second_edge, first_edge
         self.edges.append(first_edge)
         self.edges.append(second_edge)
         return first_edge, second_edge
@@ -110,13 +108,14 @@ class Diagram:
         first_bisector.start = second_bisector.start = new_vertex
         is_linear = self.is_linear_edge(first_site_event, second_site_event)
         is_primary = self.is_primary_edge(first_site_event, second_site_event)
-        first_edge = Edge(None, None, None, first_bisector,
-                          self.cells[first_site_event.sorted_index],
+        first_edge = Edge(None, self.cells[first_site_event.sorted_index],
                           is_linear, is_primary)
-        second_edge = Edge(new_vertex, first_edge, second_bisector.twin, None,
+        second_edge = Edge(new_vertex,
                            self.cells[second_site_event.sorted_index],
                            is_linear, is_primary)
-        first_edge.twin = second_edge
+        first_edge.next, second_edge.prev = (first_bisector,
+                                             second_bisector.twin)
+        first_edge.twin, second_edge.twin = second_edge, first_edge
         self.edges.append(first_edge)
         self.edges.append(second_edge)
         # update Voronoi prev/next pointers

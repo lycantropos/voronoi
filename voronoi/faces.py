@@ -1,7 +1,5 @@
-from reprlib import recursive_repr
 from typing import Optional
 
-from reprit import seekers
 from reprit.base import generate_repr
 
 from .enums import (ComparisonResult,
@@ -60,27 +58,21 @@ class Vertex:
 
 
 class Edge:
-    __slots__ = ('start', 'twin', 'prev', 'next', 'cell', 'is_linear',
-                 'is_primary')
+    __slots__ = ('start', 'cell', 'is_linear', 'is_primary', 'twin', 'prev',
+                 'next')
 
     def __init__(self,
                  start: Optional[Vertex],
-                 twin: Optional['Edge'],
-                 prev: Optional['Edge'],
-                 next_: Optional['Edge'],
                  cell: Cell,
                  is_linear: bool,
                  is_primary: bool) -> None:
         self.start = start
-        self.twin = twin
-        self.prev = prev
-        self.next = next_
         self.cell = cell
         self.is_linear = is_linear
         self.is_primary = is_primary
+        self.twin = self.prev = self.next = None
 
-    __repr__ = recursive_repr()(generate_repr(__init__,
-                                              field_seeker=seekers.complex_))
+    __repr__ = generate_repr(__init__)
 
     @property
     def end(self) -> Optional[Vertex]:
