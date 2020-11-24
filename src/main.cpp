@@ -692,8 +692,9 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_property(
           "next", [](const Edge& self) { return self.next(); },
           [](Edge& self, Edge* value) { return self.next(value); })
-      .def_property_readonly("prev",
-                             [](const Edge& self) { return self.prev(); })
+      .def_property(
+          "prev", [](const Edge& self) { return self.prev(); },
+          [](Edge& self, Edge* value) { return self.prev(value); })
       .def_property_readonly("rot_next",
                              [](const Edge& self) {
                                return self.prev() == nullptr ? nullptr
