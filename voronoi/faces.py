@@ -103,6 +103,11 @@ class Edge:
     def _rot_prev(self):
         return self.twin.next
 
+    def set_as_incident(self) -> None:
+        self.cell.incident_edge = self
+        if self.start is not None:
+            self.start.incident_edge = self
+
 
 class Cell:
     __slots__ = 'source_index', 'source_category', 'incident_edge'
