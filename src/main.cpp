@@ -515,14 +515,8 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_readonly("site_events", &Builder::site_events_);
 
   py::class_<Cell, std::unique_ptr<Cell, py::nodelete>>(m, CELL_NAME)
-      .def(py::init([](std::size_t source_index, SourceCategory source_category,
-                       Edge* incident_edge) {
-             Cell result{source_index, source_category};
-             result.incident_edge(incident_edge);
-             return result;
-           }),
-           py::arg("source_index"), py::arg("source_category"),
-           py::arg("incident_edge") = nullptr)
+      .def(py::init<std::size_t, SourceCategory>(), py::arg("source_index"),
+           py::arg("source_category"))
       .def("__repr__", to_repr<Cell>)
       .def_property_readonly("contains_point", &Cell::contains_point)
       .def_property_readonly("contains_segment", &Cell::contains_segment)
