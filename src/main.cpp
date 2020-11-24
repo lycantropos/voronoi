@@ -688,10 +688,10 @@ PYBIND11_MODULE(MODULE_NAME, m) {
       .def_property_readonly("is_secondary", &Edge::is_secondary)
       .def_property(
           "next", [](const Edge& self) { return self.next(); },
-          [](Edge& self, Edge* value) { return self.next(value); })
+          [](Edge& self, Edge* value) { self.next(value); })
       .def_property(
           "prev", [](const Edge& self) { return self.prev(); },
-          [](Edge& self, Edge* value) { return self.prev(value); })
+          [](Edge& self, Edge* value) { self.prev(value); })
       .def_property_readonly("rot_next",
                              [](const Edge& self) {
                                return self.prev() == nullptr ? nullptr
@@ -706,7 +706,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
                              [](const Edge& self) { return self.vertex0(); })
       .def_property(
           "twin", [](const Edge& self) { return self.twin(); },
-          [](Edge& self, Edge* value) { return self.twin(value); });
+          [](Edge& self, Edge* value) { self.twin(value); });
 
   py::class_<Point>(m, POINT_NAME)
       .def(py::init<coordinate_t, coordinate_t>(), py::arg("x"), py::arg("y"))
