@@ -37,6 +37,29 @@ Install
 python setup.py install
 ```
 
+Usage
+-----
+```python
+>>> from voronoi.diagram import Diagram
+>>> diagram = Diagram()
+>>> diagram.construct([], [])
+>>> diagram.cells == diagram.edges == diagram.vertices == []
+True
+>>> from voronoi.point import Point
+>>> diagram = Diagram()
+>>> diagram.construct([Point(0, 0), Point(4, 0), Point(4, 4), Point(0, 4)], [])
+>>> from voronoi.faces import Vertex
+>>> diagram.vertices == [Vertex(2, 2)]
+True
+>>> from voronoi.segment import Segment
+>>> diagram.construct([], [Segment(Point(0, 0), Point(4, 0)),
+...                        Segment(Point(4, 4), Point(0, 4))])
+>>> diagram.vertices == [Vertex(2, 2), Vertex(0, 2), Vertex(4, 2)]
+True
+
+```
+for `CPython` original C++ implementation can be invoked by importing from `_voronoi` module instead.
+
 Development
 -----------
 
