@@ -17,7 +17,7 @@ class BigFloat:
 
     def __init__(self, mantissa: float, exponent: int) -> None:
         self.mantissa, self.exponent = frexp(mantissa)
-        self.exponent += exponent
+        self.exponent = _to_int32(self.exponent + exponent)
 
     __repr__ = generate_repr(__init__)
 
