@@ -20,4 +20,4 @@ COPY README.md .
 COPY pytest.ini .
 COPY setup.py .
 
-RUN python setup.py develop
+RUN pip install -e .
