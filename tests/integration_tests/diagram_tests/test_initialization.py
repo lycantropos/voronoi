@@ -17,6 +17,7 @@ def test_basic(cells_pair: BoundPortedCellsListsPair,
     bound_cells, ported_cells = cells_pair
     bound_edges, ported_edges = edges_pair
     bound_vertices, ported_vertices = vertices_pair
+
     bound, ported = (BoundDiagram(bound_cells, bound_edges, bound_vertices),
                      PortedDiagram(ported_cells, ported_edges,
                                    ported_vertices))
