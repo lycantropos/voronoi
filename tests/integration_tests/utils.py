@@ -17,7 +17,8 @@ from tests.bind_tests.hints import (BoundBeachLineKey,
                                     BoundRobustDifference,
                                     BoundRobustFloat,
                                     BoundSegment,
-                                    BoundSiteEvent, BoundVertex)
+                                    BoundSiteEvent,
+                                    BoundVertex)
 from tests.integration_tests.hints import (BoundPortedBeachLineKeysPair,
                                            BoundPortedBuildersPair,
                                            BoundPortedCellsListsPair,
