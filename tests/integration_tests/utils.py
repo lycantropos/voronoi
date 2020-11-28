@@ -19,6 +19,8 @@ from tests.bind_tests.hints import (BoundBeachLineKey,
                                     BoundSegment,
                                     BoundSiteEvent,
                                     BoundVertex)
+from tests.bind_tests.utils import (to_bound_multipoint,
+                                    to_bound_multisegment)
 from tests.integration_tests.hints import (BoundPortedBeachLineKeysPair,
                                            BoundPortedBuildersPair,
                                            BoundPortedCellsListsPair,
@@ -53,6 +55,8 @@ from tests.port_tests.hints import (PortedBeachLineKey,
                                     PortedSegment,
                                     PortedSiteEvent,
                                     PortedVertex)
+from tests.port_tests.utils import (to_ported_multipoint,
+                                    to_ported_multisegment)
 from tests.utils import (to_maybe_equals,
                          to_sequences_equals)
 from voronoi.enums import ComparisonResult
@@ -327,19 +331,11 @@ def to_bound_with_ported_vertices_pair(x: int, y: int
 
 def to_bound_ported_multipoints_pair(raw_multipoint: RawMultipoint
                                      ) -> BoundPortedPointsListsPair:
-    bound_multipoint, ported_multipoint = [], []
-    for x, y in raw_multipoint:
-        bound_multipoint.append(BoundPoint(x, y))
-        ported_multipoint.append(PortedPoint(x, y))
-    return bound_multipoint, ported_multipoint
+    return (to_bound_multipoint(raw_multipoint),
+            to_ported_multipoint(raw_multipoint))
 
 
 def to_bound_ported_multisegments_pair(raw_multisegment: RawMultisegment
                                        ) -> BoundPortedSegmentsListsPair:
-    bound_multisegment, ported_multisegment = [], []
-    for (start_x, start_y), (end_x, end_y) in raw_multisegment:
-        bound_multisegment.append(BoundSegment(BoundPoint(start_x, start_y),
-                                               BoundPoint(end_x, end_y)))
-        ported_multisegment.append(PortedSegment(PortedPoint(start_x, start_y),
-                                                 PortedPoint(end_x, end_y)))
-    return bound_multisegment, ported_multisegment
+    return (to_bound_multisegment(raw_multisegment),
+            to_ported_multisegment(raw_multisegment))

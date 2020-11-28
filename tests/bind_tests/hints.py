@@ -1,3 +1,5 @@
+from typing import List
+
 from _voronoi import (BeachLineKey as BoundBeachLineKey,
                       BeachLineValue as BoundBeachLineValue,
                       BigFloat as BoundBigFloat,
@@ -27,9 +29,11 @@ BoundDiagram = BoundDiagram
 BoundEdge = BoundEdge
 BoundGeometryCategory = BoundGeometryCategory
 BoundPoint = BoundPoint
+BoundPointsList = List[BoundPoint]
 BoundRobustDifference = BoundRobustDifference
 BoundRobustFloat = BoundRobustFloat
 BoundSegment = BoundSegment
+BoundSegmentsList = List[BoundSegment]
 BoundSiteEvent = BoundSiteEvent
 BoundSourceCategory = BoundSourceCategory
 BoundVertex = BoundVertex

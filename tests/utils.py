@@ -10,10 +10,14 @@ from typing import (Callable,
 
 from hypothesis import strategies
 from hypothesis.strategies import SearchStrategy
+from hypothesis_geometry.hints import (Multipoint as RawMultipoint,
+                                       Multisegment as RawMultisegment)
 
 Domain = TypeVar('Domain')
 Range = TypeVar('Range')
 Strategy = SearchStrategy
+RawMultipoint = RawMultipoint
+RawMultisegment = RawMultisegment
 
 
 def enum_to_values(cls: Type[Enum]) -> List[Enum]:
@@ -45,6 +49,10 @@ def to_sequences_equals(equals: Callable[[Domain, Range], bool]
         return len(left) == len(right) and all(map(equals, left, right))
 
     return sequences_equals
+
+
+def to_maybe(strategy: Strategy[Domain]) -> Strategy[Optional[Domain]]:
+    return strategies.none() | strategy
 
 
 def to_maybe_pairs(strategy: Strategy[Tuple[Domain, Range]]

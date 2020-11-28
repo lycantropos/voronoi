@@ -1,3 +1,5 @@
+from typing import List
+
 from voronoi.beach_line_key import BeachLineKey as PortedBeachLineKey
 from voronoi.beach_line_value import BeachLineValue as PortedBeachLineValue
 from voronoi.big_float import BigFloat as PortedBigFloat
@@ -28,9 +30,11 @@ PortedDiagram = PortedDiagram
 PortedEdge = PortedEdge
 PortedGeometryCategory = PortedGeometryCategory
 PortedPoint = PortedPoint
+PortedPointsList = List[PortedPoint]
 PortedRobustDifference = PortedRobustDifference
 PortedRobustFloat = PortedRobustFloat
 PortedSegment = PortedSegment
+PortedSegmentsList = List[PortedSegment]
 PortedSiteEvent = PortedSiteEvent
 PortedSourceCategory = PortedSourceCategory
 PortedVertex = PortedVertex

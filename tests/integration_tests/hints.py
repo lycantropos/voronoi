@@ -13,6 +13,7 @@ from tests.bind_tests.hints import (BoundBeachLineKey,
                                     BoundEdge,
                                     BoundGeometryCategory,
                                     BoundPoint,
+                                    BoundPointsList,
                                     BoundRobustDifference,
                                     BoundRobustFloat,
                                     BoundSegment,
@@ -29,6 +30,7 @@ from tests.port_tests.hints import (PortedBeachLineKey,
                                     PortedEdge,
                                     PortedGeometryCategory,
                                     PortedPoint,
+                                    PortedPointsList,
                                     PortedRobustDifference,
                                     PortedRobustFloat,
                                     PortedSegment,
@@ -63,7 +65,7 @@ BoundPortedEdgesListsPair = Tuple[List[BoundEdge], List[PortedEdge]]
 BoundPortedMaybeEdgesPair = Tuple[Optional[BoundEdge], Optional[PortedEdge]]
 BoundPortedGeometryCategoriesPair = Tuple[BoundGeometryCategory,
                                           PortedGeometryCategory]
-BoundPortedPointsListsPair = Tuple[List[BoundPoint], List[PortedPoint]]
+BoundPortedPointsListsPair = Tuple[BoundPointsList, PortedPointsList]
 BoundPortedPointsPair = Tuple[BoundPoint, PortedPoint]
 BoundPortedRobustDifferencesPair = Tuple[BoundRobustDifference,
                                          PortedRobustDifference]
