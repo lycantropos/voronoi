@@ -2,9 +2,9 @@ from typing import List
 
 from hypothesis import given
 
-from tests.utils import (BoundBigInt,
-                         PortedBigInt,
-                         are_bound_ported_big_ints_equal)
+from tests.bind_tests.hints import BoundBigInt
+from tests.integration_tests.utils import are_bound_ported_big_ints_equal
+from tests.port_tests.hints import PortedBigInt
 from . import strategies
 
 

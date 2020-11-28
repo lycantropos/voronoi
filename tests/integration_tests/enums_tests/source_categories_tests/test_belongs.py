@@ -1,8 +1,8 @@
 from hypothesis import given
 
-from tests.utils import (BoundPortedGeometryCategoriesPair,
-                         BoundPortedSourceCategoriesPair,
-                         equivalence)
+from tests.integration_tests.hints import (BoundPortedGeometryCategoriesPair,
+                                           BoundPortedSourceCategoriesPair)
+from tests.utils import equivalence
 from . import strategies
 
 

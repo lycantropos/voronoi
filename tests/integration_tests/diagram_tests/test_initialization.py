@@ -1,11 +1,11 @@
 from hypothesis import given
 
-from tests.utils import (BoundDiagram,
-                         BoundPortedCellsListsPair,
-                         BoundPortedEdgesListsPair,
-                         BoundPortedVerticesListsPair,
-                         PortedDiagram,
-                         are_bound_ported_diagrams_equal)
+from tests.bind_tests.hints import BoundDiagram
+from tests.integration_tests.hints import (BoundPortedCellsListsPair,
+                                           BoundPortedEdgesListsPair,
+                                           BoundPortedVerticesListsPair)
+from tests.integration_tests.utils import are_bound_ported_diagrams_equal
+from tests.port_tests.hints import PortedDiagram
 from . import strategies
 
 

@@ -1,9 +1,9 @@
 from hypothesis import given
 
-from tests.utils import (BoundCell,
-                         BoundPortedSourceCategoriesPair,
-                         PortedCell,
-                         are_bound_ported_cells_equal)
+from tests.bind_tests.hints import BoundCell
+from tests.integration_tests.hints import BoundPortedSourceCategoriesPair
+from tests.integration_tests.utils import are_bound_ported_cells_equal
+from tests.port_tests.hints import PortedCell
 from . import strategies
 
 

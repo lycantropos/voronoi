@@ -1,6 +1,6 @@
 from hypothesis import given
 
-from tests.utils import BoundPortedBigFloatsPair
+from tests.integration_tests.hints import BoundPortedBigFloatsPair
 from . import strategies
 
 

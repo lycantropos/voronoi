@@ -1,8 +1,8 @@
 from _voronoi import segment_segment_segment_circle_exists as bound
 from hypothesis import given
 
-from tests.utils import (BoundPortedSiteEventsPair,
-                         equivalence)
+from tests.integration_tests.hints import BoundPortedSiteEventsPair
+from tests.utils import equivalence
 from voronoi.events.predicates import (segment_segment_segment_circle_exists
                                        as ported)
 from . import strategies

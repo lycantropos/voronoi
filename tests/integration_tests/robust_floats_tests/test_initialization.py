@@ -1,8 +1,8 @@
 from hypothesis import given
 
-from tests.utils import (BoundRobustFloat,
-                         PortedRobustFloat,
-                         are_bound_ported_robust_floats_equal)
+from tests.bind_tests.hints import BoundRobustFloat
+from tests.integration_tests.utils import are_bound_ported_robust_floats_equal
+from tests.port_tests.hints import PortedRobustFloat
 from . import strategies
 
 

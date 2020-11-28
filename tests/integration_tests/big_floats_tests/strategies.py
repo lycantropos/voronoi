@@ -1,8 +1,8 @@
 from hypothesis import strategies
 
+from tests.integration_tests.utils import to_bound_with_ported_big_floats_pair
 from tests.strategies import (doubles,
                               integers_32)
-from tests.utils import to_bound_with_ported_big_floats_pair
 
 doubles = doubles
 integers_32 = integers_32

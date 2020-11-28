@@ -2,8 +2,8 @@ from _voronoi import (to_second_point_segment_segment_quadruplets_expression
                       as bound)
 from hypothesis import given
 
-from tests.utils import (BoundPortedBigIntsQuadrupletsPair,
-                         are_bound_ported_big_floats_equal)
+from tests.integration_tests.hints import BoundPortedBigIntsQuadrupletsPair
+from tests.integration_tests.utils import are_bound_ported_big_floats_equal
 from voronoi.big_int import (
     to_second_point_segment_segment_quadruplets_expression as ported)
 from . import strategies

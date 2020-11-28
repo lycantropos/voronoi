@@ -1,10 +1,11 @@
 from hypothesis import given
 
-from tests.utils import (BoundBeachLineValue,
-                         BoundPortedMaybeCircleEventsPair,
-                         BoundPortedMaybeEdgesPair,
-                         PortedBeachLineValue,
-                         are_bound_ported_beach_line_values_equal)
+from tests.bind_tests.hints import BoundBeachLineValue
+from tests.integration_tests.hints import (BoundPortedMaybeCircleEventsPair,
+                                           BoundPortedMaybeEdgesPair)
+from tests.integration_tests.utils import (
+    are_bound_ported_beach_line_values_equal)
+from tests.port_tests.hints import PortedBeachLineValue
 from . import strategies
 
 

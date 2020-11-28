@@ -1,7 +1,7 @@
 from hypothesis import given
 
-from tests.utils import (BoundPortedVerticesPair,
-                         are_bound_ported_maybe_edges_equal)
+from tests.integration_tests.hints import BoundPortedVerticesPair
+from tests.integration_tests.utils import are_bound_ported_maybe_edges_equal
 from . import strategies
 
 

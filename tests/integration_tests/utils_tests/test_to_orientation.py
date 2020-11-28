@@ -1,7 +1,7 @@
 from _voronoi import to_orientation as bound
 from hypothesis import given
 
-from tests.utils import BoundPortedPointsPair
+from tests.integration_tests.hints import BoundPortedPointsPair
 from voronoi.utils import to_orientation as ported
 from . import strategies
 

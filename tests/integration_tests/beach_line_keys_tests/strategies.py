@@ -1,12 +1,13 @@
 from hypothesis import strategies
 
+from tests.bind_tests.utils import bound_source_categories
+from tests.integration_tests.utils import (
+    to_bound_with_ported_beach_line_keys_pair,
+    to_bound_with_ported_points_pair,
+    to_bound_with_ported_site_events_pair)
+from tests.port_tests.utils import ported_source_categories
 from tests.strategies import (integers_32,
                               sizes)
-from tests.utils import (bound_source_categories,
-                         ported_source_categories,
-                         to_bound_with_ported_beach_line_keys_pair,
-                         to_bound_with_ported_points_pair,
-                         to_bound_with_ported_site_events_pair)
 
 booleans = strategies.booleans()
 coordinates = integers_32

@@ -1,6 +1,6 @@
 from hypothesis import given
 
-from tests.utils import BoundPortedBigIntsPair
+from tests.integration_tests.hints import BoundPortedBigIntsPair
 from . import strategies
 
 

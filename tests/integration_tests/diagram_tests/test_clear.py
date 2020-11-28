@@ -1,7 +1,7 @@
 from hypothesis import given
 
-from tests.utils import (BoundPortedDiagramsPair,
-                         are_bound_ported_diagrams_equal)
+from tests.integration_tests.hints import BoundPortedDiagramsPair
+from tests.integration_tests.utils import are_bound_ported_diagrams_equal
 from . import strategies
 
 

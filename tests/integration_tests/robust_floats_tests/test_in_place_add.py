@@ -1,7 +1,7 @@
 from hypothesis import given
 
-from tests.utils import (BoundPortedRobustFloatsPair,
-                         are_bound_ported_robust_floats_equal)
+from tests.integration_tests.hints import BoundPortedRobustFloatsPair
+from tests.integration_tests.utils import are_bound_ported_robust_floats_equal
 from . import strategies
 
 

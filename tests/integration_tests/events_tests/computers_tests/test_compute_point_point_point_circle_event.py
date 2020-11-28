@@ -1,9 +1,9 @@
 from _voronoi import compute_point_point_point_circle_event as bound
 from hypothesis import given
 
-from tests.utils import (BoundPortedCircleEventsPair,
-                         BoundPortedSiteEventsPair,
-                         are_bound_ported_circle_events_equal)
+from tests.integration_tests.hints import (BoundPortedCircleEventsPair,
+                                           BoundPortedSiteEventsPair)
+from tests.integration_tests.utils import are_bound_ported_circle_events_equal
 from voronoi.events.computers import (compute_point_point_point_circle_event
                                       as ported)
 from . import strategies

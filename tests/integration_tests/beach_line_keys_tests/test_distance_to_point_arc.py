@@ -3,8 +3,8 @@ from math import isnan
 from _voronoi import distance_to_point_arc as bound
 from hypothesis import given
 
-from tests.utils import (BoundPortedPointsPair,
-                         BoundPortedSiteEventsPair)
+from tests.integration_tests.hints import (BoundPortedPointsPair,
+                                           BoundPortedSiteEventsPair)
 from voronoi.beach_line_key import distance_to_point_arc as ported
 from . import strategies
 

@@ -1,6 +1,6 @@
 from hypothesis import given
 
-from tests.utils import BoundPortedBeachLineKeysPair
+from tests.integration_tests.hints import BoundPortedBeachLineKeysPair
 from . import strategies
 
 

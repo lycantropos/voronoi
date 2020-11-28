@@ -1,9 +1,9 @@
 from hypothesis import given
 
-from tests.utils import (BoundBuilder,
-                         BoundPortedSiteEventsListsPair,
-                         PortedBuilder,
-                         are_bound_ported_builders_equal)
+from tests.bind_tests.hints import BoundBuilder
+from tests.integration_tests.hints import BoundPortedSiteEventsListsPair
+from tests.integration_tests.utils import are_bound_ported_builders_equal
+from tests.port_tests.hints import PortedBuilder
 from . import strategies
 
 

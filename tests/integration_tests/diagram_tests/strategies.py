@@ -1,20 +1,21 @@
 from hypothesis import strategies
 from hypothesis_geometry import planar
 
+from tests.bind_tests.utils import bound_source_categories
+from tests.integration_tests.utils import (
+    to_bound_ported_multipoints_pair,
+    to_bound_ported_multisegments_pair,
+    to_bound_with_ported_cells_pair,
+    to_bound_with_ported_diagrams_pair,
+    to_bound_with_ported_edges_pair,
+    to_bound_with_ported_points_pair,
+    to_bound_with_ported_site_events_pair,
+    to_bound_with_ported_vertices_pair)
+from tests.port_tests.utils import ported_source_categories
 from tests.strategies import (doubles,
                               integers_32,
                               sizes)
-from tests.utils import (bound_source_categories,
-                         ported_source_categories,
-                         to_bound_with_ported_cells_pair,
-                         to_bound_with_ported_diagrams_pair,
-                         to_bound_with_ported_edges_pair,
-                         to_bound_with_ported_points_pair,
-                         to_bound_with_ported_site_events_pair,
-                         to_bound_with_ported_vertices_pair,
-                         to_maybe_pairs,
-                         to_multipoints_pair,
-                         to_multisegments_pair,
+from tests.utils import (to_maybe_pairs,
                          to_pairs,
                          transpose_pairs)
 
@@ -45,5 +46,7 @@ points_pairs = strategies.builds(to_bound_with_ported_points_pair,
 site_events_pairs = strategies.builds(to_bound_with_ported_site_events_pair,
                                       points_pairs, points_pairs, sizes, sizes,
                                       booleans, source_categories_pairs)
-multipoints = planar.multipoints(integers_32).map(to_multipoints_pair)
-multisegments = planar.multisegments(integers_32).map(to_multisegments_pair)
+multipoints = (planar.multipoints(integers_32)
+               .map(to_bound_ported_multipoints_pair))
+multisegments = (planar.multisegments(integers_32)
+                 .map(to_bound_ported_multisegments_pair))

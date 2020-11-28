@@ -1,8 +1,8 @@
 from hypothesis import given
 
-from tests.utils import (BoundCircleEvent,
-                         PortedCircleEvent,
-                         are_bound_ported_circle_events_equal)
+from tests.bind_tests.hints import BoundCircleEvent
+from tests.integration_tests.utils import are_bound_ported_circle_events_equal
+from tests.port_tests.hints import PortedCircleEvent
 from . import strategies
 
 

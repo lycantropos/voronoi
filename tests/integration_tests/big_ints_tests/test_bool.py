@@ -1,7 +1,7 @@
 from hypothesis import given
 
-from tests.utils import (BoundPortedBigIntsPair,
-                         equivalence)
+from tests.integration_tests.hints import BoundPortedBigIntsPair
+from tests.utils import equivalence
 from . import strategies
 
 

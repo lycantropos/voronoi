@@ -1,7 +1,7 @@
 from hypothesis import given
 
-from tests.utils import (BoundPortedCellsPair,
-                         are_bound_ported_maybe_edges_equal)
+from tests.integration_tests.hints import BoundPortedCellsPair
+from tests.integration_tests.utils import are_bound_ported_maybe_edges_equal
 from . import strategies
 
 

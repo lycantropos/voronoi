@@ -1,8 +1,8 @@
 from hypothesis import given
 
-from tests.utils import (BoundPortedBuildersPair,
-                         BoundPortedPointsPair,
-                         are_bound_ported_builders_equal)
+from tests.integration_tests.hints import (BoundPortedBuildersPair,
+                                           BoundPortedPointsPair)
+from tests.integration_tests.utils import are_bound_ported_builders_equal
 from . import strategies
 
 

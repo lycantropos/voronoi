@@ -1,7 +1,7 @@
 from hypothesis import given
 
-from tests.utils import (BoundPortedBigFloatsPair,
-                         are_bound_ported_big_floats_equal)
+from tests.integration_tests.hints import BoundPortedBigFloatsPair
+from tests.integration_tests.utils import are_bound_ported_big_floats_equal
 from . import strategies
 
 

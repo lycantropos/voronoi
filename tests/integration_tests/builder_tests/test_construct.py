@@ -1,10 +1,10 @@
 from hypothesis import given
 
-from tests.utils import (BoundPortedBuildersPair,
-                         BoundPortedDiagramsPair,
-                         are_bound_ported_builders_equal,
-                         are_bound_ported_diagrams_equal,
-                         equivalence)
+from tests.integration_tests.hints import (BoundPortedBuildersPair,
+                                           BoundPortedDiagramsPair)
+from tests.integration_tests.utils import (are_bound_ported_builders_equal,
+                                           are_bound_ported_diagrams_equal)
+from tests.utils import equivalence
 from . import strategies
 
 

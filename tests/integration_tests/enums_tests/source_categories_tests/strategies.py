@@ -1,9 +1,9 @@
 from hypothesis import strategies
 
-from tests.utils import (bound_geometry_categories,
-                         bound_source_categories,
-                         ported_geometry_categories,
-                         ported_source_categories)
+from tests.bind_tests.utils import (bound_geometry_categories,
+                                    bound_source_categories)
+from tests.port_tests.utils import (ported_geometry_categories,
+                                    ported_source_categories)
 
 geometry_categories_pairs = strategies.sampled_from(
         list(zip(bound_geometry_categories, ported_geometry_categories)))

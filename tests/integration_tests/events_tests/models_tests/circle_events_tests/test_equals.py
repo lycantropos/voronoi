@@ -1,7 +1,7 @@
 from hypothesis import given
 
-from tests.utils import (BoundPortedCircleEventsPair,
-                         equivalence)
+from tests.integration_tests.hints import BoundPortedCircleEventsPair
+from tests.utils import equivalence
 from . import strategies
 
 

@@ -1,9 +1,9 @@
 from hypothesis import given
 
-from tests.utils import (BoundPortedPointsPair,
-                         BoundSegment,
-                         PortedSegment,
-                         are_bound_ported_segments_equal)
+from tests.bind_tests.hints import BoundSegment
+from tests.integration_tests.hints import BoundPortedPointsPair
+from tests.integration_tests.utils import are_bound_ported_segments_equal
+from tests.port_tests.hints import PortedSegment
 from . import strategies
 
 

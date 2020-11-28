@@ -1,9 +1,9 @@
 from _voronoi import horizontal_goes_through_right_arc_first as bound
 from hypothesis import given
 
-from tests.utils import (BoundPortedPointsPair,
-                         BoundPortedSiteEventsPair,
-                         equivalence)
+from tests.integration_tests.hints import (BoundPortedPointsPair,
+                                           BoundPortedSiteEventsPair)
+from tests.utils import equivalence
 from voronoi.beach_line_key import (horizontal_goes_through_right_arc_first
                                     as ported)
 from . import strategies

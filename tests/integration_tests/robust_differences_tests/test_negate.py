@@ -1,7 +1,8 @@
 from hypothesis import given
 
-from tests.utils import (BoundPortedRobustDifferencesPair,
-                         are_bound_ported_robust_differences_equal)
+from tests.integration_tests.hints import BoundPortedRobustDifferencesPair
+from tests.integration_tests.utils import (
+    are_bound_ported_robust_differences_equal)
 from . import strategies
 
 

@@ -1,7 +1,7 @@
 from hypothesis import given
 
-from tests.utils import (BoundPortedSegmentsPair,
-                         equivalence)
+from tests.integration_tests.hints import BoundPortedSegmentsPair
+from tests.utils import equivalence
 from . import strategies
 
 

@@ -1,9 +1,10 @@
 from hypothesis import given
 
-from tests.utils import (BoundBeachLineKey,
-                         BoundPortedSiteEventsPair,
-                         PortedBeachLineKey,
-                         are_bound_ported_beach_line_keys_equal)
+from tests.bind_tests.hints import BoundBeachLineKey
+from tests.integration_tests.hints import BoundPortedSiteEventsPair
+from tests.integration_tests.utils import (
+    are_bound_ported_beach_line_keys_equal)
+from tests.port_tests.hints import PortedBeachLineKey
 from . import strategies
 
 

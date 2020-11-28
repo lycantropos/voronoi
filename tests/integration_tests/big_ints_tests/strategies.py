@@ -1,10 +1,10 @@
 from hypothesis import strategies
 
+from tests.integration_tests.utils import to_bound_with_ported_big_ints_pair
 from tests.strategies import (integers_32,
                               integers_64,
                               unsigned_integers_32)
-from tests.utils import (to_bound_with_ported_big_ints_pair,
-                         to_pairs,
+from tests.utils import (to_pairs,
                          to_quadruplets,
                          to_triplets,
                          transpose_pairs)

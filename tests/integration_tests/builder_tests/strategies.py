@@ -4,30 +4,31 @@ from hypothesis import strategies
 from hypothesis_geometry import planar
 from hypothesis_geometry.hints import Segment as RawSegment
 
+from tests.bind_tests.hints import (BoundPoint,
+                                    BoundSegment)
+from tests.bind_tests.utils import bound_source_categories
+from tests.integration_tests.hints import (BoundPortedBuildersPair,
+                                           BoundPortedBuildersWithDiagramsPair,
+                                           BoundPortedPointsListsPair,
+                                           BoundPortedPointsPair,
+                                           BoundPortedSegmentsListsPair,
+                                           BoundPortedSegmentsPair)
+from tests.integration_tests.utils import (
+    to_bound_ported_multipoints_pair,
+    to_bound_ported_multisegments_pair,
+    to_bound_with_ported_builders_pair,
+    to_bound_with_ported_cells_pair,
+    to_bound_with_ported_diagrams_pair,
+    to_bound_with_ported_edges_pair,
+    to_bound_with_ported_points_pair,
+    to_bound_with_ported_site_events_pair,
+    to_bound_with_ported_vertices_pair)
+from tests.port_tests.hints import (PortedPoint,
+                                    PortedSegment)
+from tests.port_tests.utils import ported_source_categories
 from tests.strategies import (integers_32,
                               sizes)
-from tests.utils import (BoundPoint,
-                         BoundPortedBuildersPair,
-                         BoundPortedBuildersWithDiagramsPair,
-                         BoundPortedPointsListsPair,
-                         BoundPortedPointsPair,
-                         BoundPortedSegmentsListsPair,
-                         BoundPortedSegmentsPair,
-                         BoundSegment,
-                         PortedPoint,
-                         PortedSegment,
-                         bound_source_categories,
-                         ported_source_categories,
-                         to_bound_with_ported_builders_pair,
-                         to_bound_with_ported_cells_pair,
-                         to_bound_with_ported_diagrams_pair,
-                         to_bound_with_ported_edges_pair,
-                         to_bound_with_ported_points_pair,
-                         to_bound_with_ported_site_events_pair,
-                         to_bound_with_ported_vertices_pair,
-                         to_maybe_pairs,
-                         to_multipoints_pair,
-                         to_multisegments_pair,
+from tests.utils import (to_maybe_pairs,
                          to_pairs,
                          transpose_pairs)
 
@@ -54,9 +55,10 @@ def points_pair_to_coordinates(points_pair: BoundPortedPointsPair
     return bound.x, bound.y
 
 
-multipoints_pairs = planar.multipoints(coordinates).map(to_multipoints_pair)
+multipoints_pairs = planar.multipoints(coordinates).map(
+        to_bound_ported_multipoints_pair)
 multisegments_pairs = (planar.multisegments(coordinates)
-                       .map(to_multisegments_pair))
+                       .map(to_bound_ported_multisegments_pair))
 source_categories_pairs = strategies.sampled_from(
         list(zip(bound_source_categories, ported_source_categories)))
 site_events_pairs = strategies.builds(to_bound_with_ported_site_events_pair,

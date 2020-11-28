@@ -1,7 +1,7 @@
 from hypothesis import given
 
-from tests.utils import (BoundPortedBigFloatsPair,
-                         equivalence)
+from tests.integration_tests.hints import BoundPortedBigFloatsPair
+from tests.utils import equivalence
 from . import strategies
 
 

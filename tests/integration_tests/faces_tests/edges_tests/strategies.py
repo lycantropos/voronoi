@@ -1,13 +1,13 @@
 from hypothesis import strategies
 
+from tests.bind_tests.utils import bound_source_categories
+from tests.integration_tests.utils import (to_bound_with_ported_cells_pair,
+                                           to_bound_with_ported_edges_pair,
+                                           to_bound_with_ported_vertices_pair)
+from tests.port_tests.utils import ported_source_categories
 from tests.strategies import (doubles,
                               sizes)
-from tests.utils import (bound_source_categories,
-                         ported_source_categories,
-                         to_bound_with_ported_cells_pair,
-                         to_bound_with_ported_edges_pair,
-                         to_bound_with_ported_vertices_pair,
-                         to_maybe_pairs)
+from tests.utils import to_maybe_pairs
 
 booleans = strategies.booleans()
 coordinates = doubles

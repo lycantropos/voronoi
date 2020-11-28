@@ -1,7 +1,7 @@
 from hypothesis import given
 
-from tests.utils import (BoundPortedSiteEventsPair,
-                         are_bound_ported_points_equal)
+from tests.integration_tests.hints import BoundPortedSiteEventsPair
+from tests.integration_tests.utils import are_bound_ported_points_equal
 from . import strategies
 
 
