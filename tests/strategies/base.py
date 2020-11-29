@@ -38,4 +38,4 @@ def to_digits_count(number: float,
 doubles = (strategies.floats(allow_infinity=False,
                              allow_nan=False)
            .map(to_digits_count))
-sizes = strategies.integers(0, 2 ** 32 - 1)
+sizes = unsigned_integers_32
