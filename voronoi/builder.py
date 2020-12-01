@@ -73,11 +73,9 @@ class Builder:
         self.init_beach_line(output)
         while (self._circle_events
                or self._site_event_index < len(self.site_events)):
-            if not self._circle_events:
-                self.process_site_event(output)
-            elif self._site_event_index >= len(self.site_events):
-                self.process_circle_event(output)
-            elif self.site_event < self._circle_events.peek()[0]:
+            if (not self._circle_events
+                    or (self._site_event_index < len(self.site_events)
+                        and self.site_event < self._circle_events.peek()[0])):
                 self.process_site_event(output)
             else:
                 self.process_circle_event(output)
