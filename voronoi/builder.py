@@ -115,7 +115,7 @@ class Builder:
 
     def init_beach_line_collinear_sites(self, diagram: 'Diagram') -> None:
         first_index, second_index = 0, 1
-        while second_index != self.site_event_index:
+        while second_index != self._site_event_index:
             # create a new beach line node
             first_site, second_site = (self.site_events[first_index],
                                        self.site_events[second_index])
