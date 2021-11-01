@@ -9,27 +9,27 @@ trigger:
 strategy:
   matrix:
     MacOs CPython3.5:
-      image: 'macos-latest'
+      image: 'macos-10.14'
       python.version: '3.5'
       python.architecture: 'x64'
     MacOs CPython3.6:
-      image: 'macos-latest'
+      image: 'macos-10.14'
       python.version: '3.6'
       python.architecture: 'x64'
     MacOs CPython3.7:
-      image: 'macos-latest'
+      image: 'macos-10.14'
       python.version: '3.7'
       python.architecture: 'x64'
     MacOs CPython3.8:
-      image: 'macos-latest'
+      image: 'macos-10.14'
       python.version: '3.8'
       python.architecture: 'x64'
     MacOs CPython3.9:
-      image: 'macos-latest'
+      image: 'macos-10.14'
       python.version: '3.9'
       python.architecture: 'x64'
     MacOs PyPy3:
-      image: 'macos-latest'
+      image: 'macos-10.14'
       python.version: 'pypy3'
       python.architecture: 'x64'
     Ubuntu CPython3.5:
