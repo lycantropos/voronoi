@@ -111,19 +111,20 @@ steps:
       architecture: '$(python.architecture)'
   - bash: python -m pip install --upgrade pip setuptools
     displayName: 'Install packaging tools'
-  - bash: python -m pip install --force-reinstall -r requirements-tests.txt
-    displayName: 'Install tests dependencies'
   - bash: python setup.py develop
     displayName: 'Install in editable mode'
     env:
       CPPFLAGS: --coverage -O0
-  - bash: python -m doctest README.md
-    displayName: 'Run doctests'
-  - bash: pytest
-    displayName: 'Run tests'
-  - bash: python -m pip install --upgrade codecov
-    condition: succeeded()
+  - bash: python -m pip install --upgrade coverage codecov
     displayName: 'Install coverage dependencies'
+  - bash: coverage run -m doctest README.md
+    displayName: 'Run doctests'
+  - bash: python -m pip install -r requirements-tests.txt
+    displayName: 'Install tests dependencies'
+  - bash: coverage run --append -m pytest
+    displayName: 'Run tests'
+  - bash: coverage xml
+    displayName: 'Collect coverage'
   - bash: python -m codecov -f coverage.xml -X gcov --build "$AGENT_JOBNAME"
     condition: succeeded()
     displayName: 'Upload coverage'
