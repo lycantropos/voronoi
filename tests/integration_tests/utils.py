@@ -22,6 +22,8 @@ from tests.bind_tests.hints import (BoundBeachLineKey,
 from tests.bind_tests.utils import (to_bound_multipoint,
                                     to_bound_multisegment)
 from tests.integration_tests.hints import (BoundPortedBeachLineKeysPair,
+                                           BoundPortedBigFloatsPair,
+                                           BoundPortedBigIntsPair,
                                            BoundPortedBuildersPair,
                                            BoundPortedCellsListsPair,
                                            BoundPortedCellsPair,
@@ -219,12 +221,14 @@ def to_bound_with_ported_beach_line_keys_pair(
 
 
 def to_bound_with_ported_big_floats_pair(mantissa: float,
-                                         exponent: int) -> None:
+                                         exponent: int
+                                         ) -> BoundPortedBigFloatsPair:
     return (BoundBigFloat(mantissa, exponent),
             PortedBigFloat(mantissa, exponent))
 
 
-def to_bound_with_ported_big_ints_pair(sign: int, digits: List[int]) -> None:
+def to_bound_with_ported_big_ints_pair(sign: int, digits: List[int]
+                                       ) -> BoundPortedBigIntsPair:
     return BoundBigInt(sign, digits), PortedBigInt(sign, digits)
 
 
