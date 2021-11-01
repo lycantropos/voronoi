@@ -2,7 +2,6 @@ from typing import Tuple
 
 from hypothesis import strategies
 from hypothesis_geometry import planar
-from hypothesis_geometry.hints import Segment as RawSegment
 
 from tests.bind_tests.hints import (BoundPoint,
                                     BoundSegment)
@@ -28,7 +27,8 @@ from tests.port_tests.hints import (PortedPoint,
 from tests.port_tests.utils import ported_source_categories
 from tests.strategies import (integers_32,
                               sizes)
-from tests.utils import (to_maybe_pairs,
+from tests.utils import (RawSegment,
+                         to_maybe_pairs,
                          to_pairs,
                          transpose_pairs)
 
@@ -39,11 +39,10 @@ points_pairs = strategies.builds(to_bound_with_ported_points_pair,
 
 
 def raw_segment_to_segments_pair(raw: RawSegment) -> BoundPortedSegmentsPair:
-    (start_x, start_y), (end_x, end_y) = raw
-    return (BoundSegment(BoundPoint(start_x, start_y),
-                         BoundPoint(end_x, end_y)),
-            PortedSegment(PortedPoint(start_x, start_y),
-                          PortedPoint(end_x, end_y)))
+    return (BoundSegment(BoundPoint(raw.start.x, raw.start.y),
+                         BoundPoint(raw.end.x, raw.end.y)),
+            PortedSegment(PortedPoint(raw.start.x, raw.start.y),
+                          PortedPoint(raw.end.x, raw.end.y)))
 
 
 segments_pairs = planar.segments(coordinates).map(raw_segment_to_segments_pair)

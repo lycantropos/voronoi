@@ -12,17 +12,17 @@ bound_geometry_categories = enum_to_values(BoundGeometryCategory)
 bound_source_categories = enum_to_values(BoundSourceCategory)
 
 
-def to_bound_multipoint(raw_multipoint: RawMultipoint) -> BoundPointsList:
-    bound_multipoint = []
-    for x, y in raw_multipoint:
-        bound_multipoint.append(BoundPoint(x, y))
-    return bound_multipoint
+def to_bound_multipoint(raw: RawMultipoint) -> BoundPointsList:
+    result = []
+    for point in raw.points:
+        result.append(BoundPoint(point.x, point.y))
+    return result
 
 
-def to_bound_multisegment(raw_multisegment: RawMultisegment
-                          ) -> BoundSegmentsList:
-    bound_multisegment = []
-    for (start_x, start_y), (end_x, end_y) in raw_multisegment:
-        bound_multisegment.append(BoundSegment(BoundPoint(start_x, start_y),
-                                               BoundPoint(end_x, end_y)))
-    return bound_multisegment
+def to_bound_multisegment(raw: RawMultisegment) -> BoundSegmentsList:
+    result = []
+    for segment in raw.segments:
+        result.append(BoundSegment(
+                BoundPoint(segment.start.x, segment.start.y),
+                BoundPoint(segment.end.x, segment.end.y)))
+    return result

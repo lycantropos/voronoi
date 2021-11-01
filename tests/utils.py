@@ -8,16 +8,18 @@ from typing import (Callable,
                     Type,
                     TypeVar)
 
+from ground.hints import (Multipoint as RawMultipoint,
+                          Multisegment as RawMultisegment,
+                          Segment as RawSegment)
 from hypothesis import strategies
 from hypothesis.strategies import SearchStrategy
-from hypothesis_geometry.hints import (Multipoint as RawMultipoint,
-                                       Multisegment as RawMultisegment)
 
 Domain = TypeVar('Domain')
 Range = TypeVar('Range')
 Strategy = SearchStrategy
 RawMultipoint = RawMultipoint
 RawMultisegment = RawMultisegment
+RawSegment = RawSegment
 
 
 def enum_to_values(cls: Type[Enum]) -> List[Enum]:

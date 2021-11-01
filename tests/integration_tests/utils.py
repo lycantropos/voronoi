@@ -1,9 +1,6 @@
 from math import isnan
 from typing import List
 
-from hypothesis_geometry.hints import (Multipoint as RawMultipoint,
-                                       Multisegment as RawMultisegment)
-
 from tests.bind_tests.hints import (BoundBeachLineKey,
                                     BoundBeachLineValue,
                                     BoundBigFloat,
@@ -59,7 +56,9 @@ from tests.port_tests.hints import (PortedBeachLineKey,
                                     PortedVertex)
 from tests.port_tests.utils import (to_ported_multipoint,
                                     to_ported_multisegment)
-from tests.utils import (to_maybe_equals,
+from tests.utils import (RawMultipoint,
+                         RawMultisegment,
+                         to_maybe_equals,
                          to_sequences_equals)
 from voronoi.enums import ComparisonResult
 from voronoi.events.models import ULPS
