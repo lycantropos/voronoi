@@ -197,19 +197,19 @@ class circle_event {
 
   circle_event(coordinate_type c_x, coordinate_type c_y,
                coordinate_type lower_x)
-      : center_x_(c_x), center_y_(c_y), lower_x_(lower_x), is_active_(true) {
-    if (!(std::isfinite(c_x) && std::isfinite(c_y) && std::isfinite(lower_x)))
-      throw std::invalid_argument(
-          "Circle event components "
-          "should be finite numbers, "
-          "but found " +
-          std::to_string(c_x) + ", " + std::to_string(c_y) + ", " +
-          std::to_string(lower_x) + ".");
-  }
+      : is_active_(true) {
+        x(c_x).y(c_y).lower_x(lower_x);
+      }
 
   coordinate_type x() const { return center_x_; }
 
   circle_event& x(coordinate_type center_x) {
+    if (!(std::isfinite(center_x)))
+      throw std::invalid_argument(
+          "Circle event components "
+          "should be finite numbers, "
+          "but found " +
+          std::to_string(center_x) + ".");
     center_x_ = center_x;
     return *this;
   }
@@ -217,6 +217,12 @@ class circle_event {
   coordinate_type y() const { return center_y_; }
 
   circle_event& y(coordinate_type center_y) {
+    if (!(std::isfinite(center_y)))
+      throw std::invalid_argument(
+          "Circle event components "
+          "should be finite numbers, "
+          "but found " +
+          std::to_string(center_y) + ".");
     center_y_ = center_y;
     return *this;
   }
@@ -224,6 +230,12 @@ class circle_event {
   coordinate_type lower_x() const { return lower_x_; }
 
   circle_event& lower_x(coordinate_type lower_x) {
+    if (!(std::isfinite(lower_x)))
+      throw std::invalid_argument(
+          "Circle event components "
+          "should be finite numbers, "
+          "but found " +
+          std::to_string(lower_x) + ".");
     lower_x_ = lower_x;
     return *this;
   }
