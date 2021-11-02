@@ -1,3 +1,4 @@
+import pytest
 from _voronoi import compute_segment_segment_segment_circle_event as bound
 from hypothesis import given
 
@@ -20,10 +21,16 @@ def test_basic(circle_events_pair: BoundPortedCircleEventsPair,
     bound_second_site, ported_second_site = second_sites_pair
     bound_third_site, ported_third_site = third_sites_pair
 
-    bound(bound_circle_event, bound_first_site, bound_second_site,
-          bound_third_site)
-    ported(ported_circle_event, ported_first_site, ported_second_site,
-           ported_third_site)
+    try:
+        bound(bound_circle_event, bound_first_site, bound_second_site,
+              bound_third_site)
+    except ValueError:
+        with pytest.raises(ValueError):
+            ported(ported_circle_event, ported_first_site, ported_second_site,
+                   ported_third_site)
+    else:
+        ported(ported_circle_event, ported_first_site, ported_second_site,
+               ported_third_site)
 
-    assert are_bound_ported_circle_events_equal(bound_circle_event,
-                                                ported_circle_event)
+        assert are_bound_ported_circle_events_equal(bound_circle_event,
+                                                    ported_circle_event)
