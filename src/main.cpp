@@ -446,6 +446,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
              auto result = std::make_unique<Builder>();
              result->index_ = index;
              result->site_events_ = site_events;
+             result->site_event_iterator_ = result->site_events_.end();
              return result;
            }),
            py::arg("index") = 0,
