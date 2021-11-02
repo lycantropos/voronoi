@@ -1,3 +1,4 @@
+import pytest
 from hypothesis import given
 
 from tests.integration_tests.hints import (BoundPortedDiagramsPair,
@@ -14,11 +15,16 @@ def test_multipoints(pair: BoundPortedDiagramsPair,
     bound_multipoint, ported_multipoint = multipoints_pair
     bound, ported = pair
 
-    bound_result = bound.construct(bound_multipoint, [])
-    ported_result = ported.construct(ported_multipoint, [])
+    try:
+        bound_result = bound.construct(bound_multipoint, [])
+    except ValueError:
+        with pytest.raises(ValueError):
+            ported.construct(ported_multipoint, [])
+    else:
+        ported_result = ported.construct(ported_multipoint, [])
 
-    assert equivalence(bound_result, ported_result)
-    assert are_bound_ported_diagrams_equal(bound, ported)
+        assert equivalence(bound_result, ported_result)
+        assert are_bound_ported_diagrams_equal(bound, ported)
 
 
 @given(strategies.empty_diagrams_pairs, strategies.multisegments)
@@ -27,8 +33,13 @@ def test_multisegments(pair: BoundPortedDiagramsPair,
     bound_multisegment, ported_multisegment = multisegments_pair
     bound, ported = pair
 
-    bound_result = bound.construct([], bound_multisegment)
-    ported_result = ported.construct([], ported_multisegment)
+    try:
+        bound_result = bound.construct([], bound_multisegment)
+    except ValueError:
+        with pytest.raises(ValueError):
+            ported.construct([], ported_multisegment)
+    else:
+        ported_result = ported.construct([], ported_multisegment)
 
-    assert equivalence(bound_result, ported_result)
-    assert are_bound_ported_diagrams_equal(bound, ported)
+        assert equivalence(bound_result, ported_result)
+        assert are_bound_ported_diagrams_equal(bound, ported)
