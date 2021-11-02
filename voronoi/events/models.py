@@ -1,3 +1,4 @@
+import math
 from typing import (Any,
                     TypeVar)
 
@@ -96,15 +97,22 @@ class SiteEvent:
 class CircleEvent:
     __slots__ = 'center_x', 'center_y', 'lower_x', 'is_active'
 
-    def __init__(self,
-                 center_x: float,
-                 center_y: float,
-                 lower_x: float,
-                 is_active: bool = True) -> None:
+    def __new__(cls,
+                center_x: float,
+                center_y: float,
+                lower_x: float,
+                is_active: bool = True) -> None:
+        if not (math.isfinite(center_x) and math.isfinite(center_y)
+                and math.isfinite(lower_x)):
+            raise ValueError('Circle event components '
+                             'should be finite numbers, '
+                             f'but found {center_x}, {center_y}, {lower_x}.')
+        self = super().__new__(cls)
         self.center_x = center_x
         self.center_y = center_y
         self.lower_x = lower_x
         self.is_active = is_active
+        return self
 
     __repr__ = generate_repr(__init__)
 
