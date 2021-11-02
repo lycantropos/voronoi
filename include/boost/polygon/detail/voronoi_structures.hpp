@@ -10,8 +10,11 @@
 #ifndef BOOST_POLYGON_DETAIL_VORONOI_STRUCTURES
 #define BOOST_POLYGON_DETAIL_VORONOI_STRUCTURES
 
+#include <cmath>
 #include <list>
 #include <queue>
+#include <stdexcept>
+#include <string>
 #include <vector>
 
 #include "boost/polygon/voronoi_geometry_type.hpp"
@@ -194,7 +197,15 @@ class circle_event {
 
   circle_event(coordinate_type c_x, coordinate_type c_y,
                coordinate_type lower_x)
-      : center_x_(c_x), center_y_(c_y), lower_x_(lower_x), is_active_(true) {}
+      : center_x_(c_x), center_y_(c_y), lower_x_(lower_x), is_active_(true) {
+    if (!(std::isfinite(c_x) && std::isfinite(c_y) && std::isfinite(lower_x)))
+      throw std::invalid_argument(
+          "Circle event components "
+          "should be finite numbers, "
+          "but found " +
+          std::to_string(c_x) + ", " + std::to_string(c_y) + ", " +
+          std::to_string(lower_x) + ".");
+  }
 
   coordinate_type x() const { return center_x_; }
 
