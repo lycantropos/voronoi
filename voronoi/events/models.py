@@ -95,26 +95,55 @@ class SiteEvent:
 
 
 class CircleEvent:
-    __slots__ = 'center_x', 'center_y', 'lower_x', 'is_active'
+    __slots__ = '_center_x', '_center_y', '_lower_x', 'is_active'
 
-    def __new__(cls,
-                center_x: float,
-                center_y: float,
-                lower_x: float,
-                is_active: bool = True) -> None:
-        if not (math.isfinite(center_x) and math.isfinite(center_y)
-                and math.isfinite(lower_x)):
-            raise ValueError('Circle event components '
-                             'should be finite numbers, '
-                             f'but found {center_x}, {center_y}, {lower_x}.')
-        self = super().__new__(cls)
+    def __init__(self,
+                 center_x: float,
+                 center_y: float,
+                 lower_x: float,
+                 is_active: bool = True) -> None:
         self.center_x = center_x
         self.center_y = center_y
         self.lower_x = lower_x
         self.is_active = is_active
-        return self
 
     __repr__ = generate_repr(__init__)
+
+    @property
+    def center_x(self) -> float:
+        return self._center_x
+
+    @center_x.setter
+    def center_x(self, value: float) -> None:
+        if not math.isfinite(value):
+            raise ValueError('Circle event components '
+                             'should be finite numbers, '
+                             f'but found {value}.')
+        self._center_x = value
+
+    @property
+    def center_y(self) -> float:
+        return self._center_y
+
+    @center_y.setter
+    def center_y(self, value: float) -> None:
+        if not math.isfinite(value):
+            raise ValueError('Circle event components '
+                             'should be finite numbers, '
+                             f'but found {value}.')
+        self._center_y = value
+
+    @property
+    def lower_x(self) -> float:
+        return self._lower_x
+
+    @lower_x.setter
+    def lower_x(self, value: float) -> None:
+        if not math.isfinite(value):
+            raise ValueError('Circle event components '
+                             'should be finite numbers, '
+                             f'but found {value}.')
+        self._lower_x = value
 
     def __eq__(self, other: 'CircleEvent') -> bool:
         return (self.center_x == other.center_x
