@@ -118,7 +118,8 @@ class CircleEvent:
         if not math.isfinite(value):
             raise ValueError('Circle event components '
                              'should be finite numbers, '
-                             f'but found {value}.')
+                             'but found {value}.'
+                             .format(value=value))
         self._center_x = value
 
     @property
@@ -130,7 +131,8 @@ class CircleEvent:
         if not math.isfinite(value):
             raise ValueError('Circle event components '
                              'should be finite numbers, '
-                             f'but found {value}.')
+                             'but found {value}.'
+                             .format(value=value))
         self._center_y = value
 
     @property
@@ -142,7 +144,8 @@ class CircleEvent:
         if not math.isfinite(value):
             raise ValueError('Circle event components '
                              'should be finite numbers, '
-                             f'but found {value}.')
+                             'but found {value}.'
+                             .format(value=value))
         self._lower_x = value
 
     def __eq__(self, other: 'CircleEvent') -> bool:
