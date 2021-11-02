@@ -11,8 +11,7 @@ from tests.integration_tests.hints import (BoundPortedBuildersPair,
                                            BoundPortedPointsListsPair,
                                            BoundPortedPointsPair,
                                            BoundPortedSegmentsListsPair,
-                                           BoundPortedSegmentsPair,
-                                           BoundPortedSiteEventsListsPair)
+                                           BoundPortedSegmentsPair)
 from tests.integration_tests.utils import (
     to_bound_ported_multipoints_pair,
     to_bound_ported_multisegments_pair,
@@ -64,22 +63,8 @@ source_categories_pairs = strategies.sampled_from(
 site_events_pairs = strategies.builds(to_bound_with_ported_site_events_pair,
                                       points_pairs, points_pairs, sizes, sizes,
                                       booleans, source_categories_pairs)
-non_empty_site_events_lists_pairs = (strategies.lists(site_events_pairs,
-                                                      min_size=1)
-                                     .map(transpose_pairs))
-
-
-def to_indices_with_site_events_lists_pairs(
-        site_events_pair: BoundPortedSiteEventsListsPair
-) -> Tuple[int, BoundPortedSiteEventsListsPair]:
-    bound_events, ported_events = site_events_pair
-    return strategies.tuples(strategies.integers(0, len(bound_events)),
-                             strategies.just(site_events_pair))
-
-
-indices_with_non_empty_site_events_lists_pairs = (
-    (non_empty_site_events_lists_pairs
-     .flatmap(to_indices_with_site_events_lists_pairs)))
+site_events_lists_pairs = (strategies.lists(site_events_pairs)
+                           .map(transpose_pairs))
 empty_lists_pairs = to_pairs(strategies.builds(list))
 empty_builders_pairs = strategies.builds(to_bound_with_ported_builders_pair,
                                          sizes, empty_lists_pairs)
@@ -112,7 +97,7 @@ valid_builders_pairs = (
         | strategies.builds(to_valid_multisegments_builders_pair,
                             empty_builders_pairs, multisegments_pairs))
 builders_pairs = (strategies.builds(to_bound_with_ported_builders_pair, sizes,
-                                    non_empty_site_events_lists_pairs)
+                                    site_events_lists_pairs)
                   | valid_builders_pairs)
 
 
