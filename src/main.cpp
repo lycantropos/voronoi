@@ -440,7 +440,8 @@ PYBIND11_MODULE(MODULE_NAME, m) {
              auto result = std::make_unique<Builder>();
              result->index_ = index;
              result->site_events_ = site_events;
-             result->site_event_index_ = result->site_events_.size();
+             result->site_event_index_ =
+                 std::numeric_limits<std::size_t>::max();
              return result;
            }),
            py::arg("index") = 0,
@@ -505,8 +506,15 @@ PYBIND11_MODULE(MODULE_NAME, m) {
             }
             return result;
           })
+      .def_property_readonly(
+          "site_event_index",
+          [](const Builder& self) {
+            return self.site_event_index_ ==
+                           std::numeric_limits<std::size_t>::max()
+                       ? self.site_events_.size()
+                       : self.site_event_index_;
+          })
       .def_readonly("index", &Builder::index_)
-      .def_readonly("site_event_index", &Builder::site_event_index_)
       .def_readonly("site_events", &Builder::site_events_);
 
   py::class_<Cell, std::unique_ptr<Cell, py::nodelete>>(m, CELL_NAME)
