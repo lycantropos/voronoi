@@ -23,10 +23,10 @@ class BigFloat:
 
     def __add__(self, other: 'BigFloat') -> 'BigFloat':
         if (not self.mantissa
-                or other.exponent - self.exponent > MAX_EXPONENTS_DIFFERENCE):
+                or other.exponent > self.exponent + MAX_EXPONENTS_DIFFERENCE):
             return other
         elif (not other.mantissa
-              or self.exponent - other.exponent > MAX_EXPONENTS_DIFFERENCE):
+              or self.exponent > other.exponent + MAX_EXPONENTS_DIFFERENCE):
             return self
         elif self.exponent >= other.exponent:
             with_min_exponent, with_max_exponent = other, self
@@ -56,10 +56,10 @@ class BigFloat:
 
     def __sub__(self, other: 'BigFloat') -> 'BigFloat':
         if (not self.mantissa
-                or other.exponent - self.exponent > MAX_EXPONENTS_DIFFERENCE):
+                or other.exponent > self.exponent + MAX_EXPONENTS_DIFFERENCE):
             return -other
         elif (not other.mantissa
-              or self.exponent - other.exponent > MAX_EXPONENTS_DIFFERENCE):
+              or self.exponent > other.exponent + MAX_EXPONENTS_DIFFERENCE):
             return self
         elif self.exponent >= other.exponent:
             return BigFloat(ldexp(self.mantissa,
