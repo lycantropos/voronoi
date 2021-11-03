@@ -112,12 +112,6 @@ static void write_sequence(std::ostream& stream, const Sequence& sequence) {
   stream << "]";
 };
 
-static std::size_t get_builder_site_event_index(const Builder& builder) {
-  return std::min(static_cast<std::size_t>(builder.site_event_iterator_ -
-                                           builder.site_events_.begin()),
-                  builder.site_events_.size());
-}
-
 struct Segment {
   Point start, end;
   Segment(const Point& start_, const Point& end_) : start(start_), end(end_) {}
@@ -446,7 +440,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
              auto result = std::make_unique<Builder>();
              result->index_ = index;
              result->site_events_ = site_events;
-             result->site_event_iterator_ = result->site_events_.end();
+             result->site_event_index_ = result->site_events_.size();
              return result;
            }),
            py::arg("index") = 0,
@@ -480,7 +474,6 @@ PYBIND11_MODULE(MODULE_NAME, m) {
            py::arg("diagram"))
       .def("process_site_event", &Builder::process_site_event<Diagram>,
            py::arg("diagram"))
-      .def_property_readonly("site_event_index", get_builder_site_event_index)
       .def_property_readonly(
           "beach_line",
           [](Builder& self) {
@@ -513,6 +506,7 @@ PYBIND11_MODULE(MODULE_NAME, m) {
             return result;
           })
       .def_readonly("index", &Builder::index_)
+      .def_readonly("site_event_index", &Builder::site_event_index_)
       .def_readonly("site_events", &Builder::site_events_);
 
   py::class_<Cell, std::unique_ptr<Cell, py::nodelete>>(m, CELL_NAME)

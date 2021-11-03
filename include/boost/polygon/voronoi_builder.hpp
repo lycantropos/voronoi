@@ -102,13 +102,13 @@ class voronoi_builder {
     // The algorithm stops when there are no events to process.
     event_comparison_predicate event_comparison;
     while (!circle_events_.empty() ||
-           !(site_event_iterator_ == site_events_.end())) {
+           !(site_event_iterator() == site_events_.end())) {
       if (circle_events_.empty()) {
         process_site_event(output);
-      } else if (site_event_iterator_ == site_events_.end()) {
+      } else if (site_event_iterator() == site_events_.end()) {
         process_circle_event(output);
       } else {
-        if (event_comparison(*site_event_iterator_,
+        if (event_comparison(*site_event_iterator(),
                              circle_events_.top().first)) {
           process_site_event(output);
         } else {
@@ -178,7 +178,7 @@ class voronoi_builder {
     }
 
     // Init site iterator.
-    site_event_iterator_ = site_events_.begin();
+    site_event_index_ = 0;
   }
 
   template <typename OUTPUT>
@@ -187,15 +187,15 @@ class voronoi_builder {
     if (site_events_.size() == 1) {
       // Handle single site event case.
       output->_process_single_site(site_events_[0]);
-      ++site_event_iterator_;
+      ++site_event_index_;
     } else {
       int skip = 0;
 
-      while (site_event_iterator_ != site_events_.end() &&
-             VP::is_vertical(site_event_iterator_->point0(),
+      while (site_event_iterator() != site_events_.end() &&
+             VP::is_vertical(site_event_iterator()->point0(),
                              site_events_.begin()->point0()) &&
-             VP::is_vertical(*site_event_iterator_)) {
-        ++site_event_iterator_;
+             VP::is_vertical(*site_event_iterator())) {
+        ++site_event_index_;
         ++skip;
       }
 
@@ -219,7 +219,7 @@ class voronoi_builder {
     ++it_second;
     insert_new_arc(*it_first, *it_first, *it_second, beach_line_.end(), output);
     // The second site was already processed. Move the iterator.
-    ++site_event_iterator_;
+    ++site_event_index_;
   }
 
   // Init beach line with collinear sites.
@@ -228,7 +228,7 @@ class voronoi_builder {
     site_event_iterator_type it_first = site_events_.begin();
     site_event_iterator_type it_second = site_events_.begin();
     ++it_second;
-    while (it_second != site_event_iterator_) {
+    while (it_second != site_event_iterator()) {
       // Create a new beach line node.
       key_type new_node(*it_first, *it_second);
 
@@ -255,10 +255,10 @@ class voronoi_builder {
   template <typename OUTPUT>
   void process_site_event(OUTPUT* output) {
     // Get next site event to process.
-    site_event_type site_event = *site_event_iterator_;
+    site_event_type site_event = *site_event_iterator();
 
     // Move site iterator.
-    site_event_iterator_type last = site_event_iterator_ + 1;
+    site_event_iterator_type last = site_event_iterator() + 1;
 
     // If a new site is an end point of some segment,
     // remove temporary nodes from the beach line data structure.
@@ -277,11 +277,11 @@ class voronoi_builder {
 
     // Find the node in the binary search tree with left arc
     // lying above the new site point.
-    key_type new_key(*site_event_iterator_);
+    key_type new_key(*site_event_iterator());
     beach_line_iterator right_it = beach_line_.lower_bound(new_key);
 
-    for (; site_event_iterator_ != last; ++site_event_iterator_) {
-      site_event = *site_event_iterator_;
+    for (; site_event_iterator() != last; ++site_event_index_) {
+      site_event = *site_event_iterator();
       beach_line_iterator left_it = right_it;
 
       // Do further processing depending on the above node position.
@@ -499,7 +499,7 @@ class voronoi_builder {
   };
 
   std::vector<site_event_type> site_events_;
-  site_event_iterator_type site_event_iterator_;
+  std::size_t site_event_index_;
   std::priority_queue<end_point_type, std::vector<end_point_type>,
                       end_point_comparison>
       end_points_;
@@ -511,6 +511,10 @@ class voronoi_builder {
   // Disallow copy constructor and operator=
   voronoi_builder(const voronoi_builder&);
   void operator=(const voronoi_builder&);
+
+  site_event_iterator_type site_event_iterator() const {
+    return site_events_.begin() + site_event_index_;
+  }
 };
 
 typedef voronoi_builder<detail::int32> default_voronoi_builder;
