@@ -7,7 +7,7 @@ services:
       args:
         - IMAGE_NAME=${PYPY_IMAGE_NAME}
         - IMAGE_VERSION=${PYPY_IMAGE_VERSION}
-    image: lycantropos/voronoi-pypy:0.2.0
+    image: lycantropos/voronoi-pypy:0.3.0-alpha
     volumes:
       - ./voronoi/:/opt/voronoi/voronoi/
       - ./pytest.ini:/opt/voronoi/pytest.ini
