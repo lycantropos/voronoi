@@ -725,15 +725,16 @@ def recompute_point_segment_segment_circle_event(
             denominator = temp * float(third_second_signed_area)
             squared_length = dx * dx + dy * dy
             if recompute_center_y:
-                circle_event.center_y = (float(to_quadruplets_expression(
-                        (third_dy * squared_length
-                         - iy * (dx * third_dx + dy * third_dy),
-                         iy * (dx * second_dx + dy * second_dy)
-                         - second_dy * squared_length,
-                         iy * sign,
-                         BigInt.from_int32(0)),
-                        common_right_coefficients))
-                                         / denominator)
+                circle_event.center_y = safe_divide_floats(
+                        float(to_quadruplets_expression(
+                                (third_dy * squared_length
+                                 - iy * (dx * third_dx + dy * third_dy),
+                                 iy * (dx * second_dx + dy * second_dy)
+                                 - second_dy * squared_length,
+                                 iy * sign,
+                                 BigInt.from_int32(0)),
+                                common_right_coefficients)),
+                        denominator)
             if recompute_center_x or recompute_lower_x:
                 common_left_coefficients = (third_dx * squared_length
                                             - ix * (dx * third_dx
@@ -743,17 +744,23 @@ def recompute_point_segment_segment_circle_event(
                                             - second_dx * squared_length,
                                             ix * sign)
                 if recompute_center_x:
-                    circle_event.center_x = (float(to_quadruplets_expression(
-                            common_left_coefficients + (BigInt.from_int32(0),),
-                            common_right_coefficients))
-                                             / denominator)
+                    circle_event.center_x = safe_divide_floats(
+                            float(to_quadruplets_expression(
+                                    common_left_coefficients
+                                    + (BigInt.from_int32(0),),
+                                    common_right_coefficients)),
+                            denominator)
                 if recompute_lower_x:
-                    circle_event.lower_x = (float(to_quadruplets_expression(
-                            common_left_coefficients
-                            + (third_second_signed_area * squared_length
-                               * BigInt.from_int32(-1 if temp < 0 else 1),),
-                            common_right_coefficients))
-                                            / denominator)
+                    circle_event.lower_x = safe_divide_floats(
+                            float(to_quadruplets_expression(
+                                    common_left_coefficients
+                                    + (third_second_signed_area
+                                       * squared_length
+                                       * BigInt.from_int32(-1
+                                                           if temp < 0
+                                                           else 1),),
+                                    common_right_coefficients)),
+                            denominator)
         else:
             circle_event.center_x = circle_event.lower_x = float(first_start.x)
             circle_event.center_y = float(first_start.y)
