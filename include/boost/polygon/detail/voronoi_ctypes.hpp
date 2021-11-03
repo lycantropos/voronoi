@@ -12,6 +12,7 @@
 
 #include <cmath>
 #include <cstring>
+#include <limits>
 #include <utility>
 #include <vector>
 
@@ -96,11 +97,15 @@ class extended_exponent_fpt {
 
   extended_exponent_fpt operator+(const extended_exponent_fpt& that) const {
     if (this->val_ == 0.0 ||
-        that.exp_ - this->exp_ > _traits::MAX_SIGNIFICANT_EXP_DIF) {
+        ((this->exp_ < std::numeric_limits<exp_type>::max() -
+                           _traits::MAX_SIGNIFICANT_EXP_DIF) &&
+         (that.exp_ > this->exp_ + _traits::MAX_SIGNIFICANT_EXP_DIF))) {
       return that;
     }
     if (that.val_ == 0.0 ||
-        this->exp_ - that.exp_ > _traits::MAX_SIGNIFICANT_EXP_DIF) {
+        ((that.exp_ < std::numeric_limits<exp_type>::max() -
+                          _traits::MAX_SIGNIFICANT_EXP_DIF) &&
+         (this->exp_ > that.exp_ + _traits::MAX_SIGNIFICANT_EXP_DIF))) {
       return *this;
     }
     if (this->exp_ >= that.exp_) {
