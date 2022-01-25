@@ -8,10 +8,6 @@ trigger:
 
 strategy:
   matrix:
-    MacOs CPython3.6:
-      image: 'macos-latest'
-      python.version: '3.6'
-      python.architecture: 'x64'
     MacOs CPython3.7:
       image: 'macos-latest'
       python.version: '3.7'
@@ -130,37 +126,39 @@ steps:
     displayName: 'Upload coverage'
     env:
       CODECOV_TOKEN: $(CODECOV_TOKEN)
-  - bash: python -m pip install --upgrade gcovr
-    condition: and(succeeded(), startsWith(variables['python.version'], '3.'))
-    displayName: 'Install С++ coverage dependencies'
-  - bash: gcovr --filter src/ --filter include/ --xml -o coverage_cpp.xml
-    condition: and(succeeded(), startsWith(variables['python.version'], '3.'))
-    displayName: 'Collect C++ coverage'
-  - bash: python -m codecov -f coverage_cpp.xml -X gcov --build "$AGENT_JOBNAME"
-    condition: and(succeeded(), startsWith(variables['python.version'], '3.'))
-    displayName: 'Upload C++ coverage'
-    env:
-      CODECOV_TOKEN: $(CODECOV_TOKEN)
-  - bash: python -m pip install --upgrade cibuildwheel
-    condition: and(succeeded(), startsWith(variables['python.version'], '3.'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
-    displayName: 'Install build dependencies'
-  - bash: rm -rf build && rm -f $(python -c 'from importlib.machinery import EXTENSION_SUFFIXES; print(" ".join("*" + suffix for suffix in EXTENSION_SUFFIXES))')
-    condition: and(succeeded(), startsWith(variables['python.version'], '3.'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
-    displayName: 'Pre-build'
-  - bash: python setup.py sdist
-    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
-    displayName: 'Build source distribution'
-  - bash:
-      CIBW_BUILD=$(python -c 'import sys; print("cp" + "".join(map(str, sys.version_info[:2])) + "-*")')
-      cibuildwheel --output-dir dist
-    condition: and(succeeded(), startsWith(variables['python.version'], '3.'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
-    displayName: 'Build wheels'
-  - bash: python -m pip install --upgrade twine
-    condition: and(succeeded(), startsWith(variables['python.version'], '3.'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
-    displayName: 'Install deploy dependencies'
-  - bash: twine upload --skip-existing dist/*
-    condition: and(succeeded(), startsWith(variables['python.version'], '3.'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
-    displayName: 'Deploy'
-    env:
-      TWINE_USERNAME: __token__
-      TWINE_PASSWORD: $(TWINE_PASSWORD)
+  - ${{ if startsWith(variables['python.version'], '3.') }}:
+    - bash: python -m pip install --upgrade gcovr
+      condition: succeeded()
+      displayName: 'Install С++ coverage dependencies'
+    - bash: gcovr --filter src/ --filter include/ --xml -o coverage_cpp.xml
+      condition: succeeded()
+      displayName: 'Collect C++ coverage'
+    - bash: python -m codecov -f coverage_cpp.xml -X gcov --build "$AGENT_JOBNAME"
+      condition: succeeded()
+      displayName: 'Upload C++ coverage'
+      env:
+        CODECOV_TOKEN: $(CODECOV_TOKEN)
+  - ${{ if and(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), startsWith(variables['python.version'], '3.')) }}:
+    - bash: python -m pip install --upgrade cibuildwheel
+      condition: succeeded()
+      displayName: 'Install build dependencies'
+    - bash: rm -rf build && rm -f $(python -c 'from importlib.machinery import EXTENSION_SUFFIXES; print(" ".join("*" + suffix for suffix in EXTENSION_SUFFIXES))')
+      condition: succeeded()
+      displayName: 'Pre-build'
+    - bash: python setup.py sdist
+      condition: succeeded()
+      displayName: 'Build source distribution'
+    - bash:
+        CIBW_BUILD=$(python -c 'import sys; print("cp" + "".join(map(str, sys.version_info[:2])) + "-*")')
+        cibuildwheel --output-dir dist
+      condition: succeeded()
+      displayName: 'Build wheels'
+    - bash: python -m pip install --upgrade twine
+      condition: succeeded()
+      displayName: 'Install deploy dependencies'
+    - bash: twine upload --skip-existing dist/*
+      condition: succeeded()
+      displayName: 'Deploy'
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: $(TWINE_PASSWORD)
