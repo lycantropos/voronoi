@@ -24,10 +24,6 @@ strategy:
       image: 'macos-latest'
       python.version: '3.10'
       python.architecture: 'x64'
-    MacOs PyPy3:
-      image: 'macos-latest'
-      python.version: 'pypy3'
-      python.architecture: 'x64'
     Ubuntu CPython3.6:
       image: 'ubuntu-latest'
       python.version: '3.6'
