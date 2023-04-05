@@ -3,21 +3,13 @@ ARG IMAGE_VERSION
 
 FROM ${IMAGE_NAME}:${IMAGE_VERSION}
 
-RUN pip install --upgrade pip setuptools
-
 WORKDIR /opt/voronoi
 
-COPY requirements-setup.txt .
-COPY requirements-tests.txt .
-RUN pip install --force-reinstall -r requirements-tests.txt
-COPY requirements.txt .
-
-COPY include/ include/
+COPY pyproject.toml .
+COPY README.md .
+COPY setup.py .
+COPY voronoi voronoi/
 COPY src/ src/
 COPY tests/ tests/
-COPY voronoi voronoi/
-COPY README.md .
-COPY pytest.ini .
-COPY setup.py .
 
-RUN pip install -e .
+RUN pip install -e .[tests]
