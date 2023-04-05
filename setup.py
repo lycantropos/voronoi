@@ -1,44 +1,12 @@
 import platform
-from pathlib import Path
 
 from setuptools import (find_packages,
                         setup)
 
-import voronoi
-
 project_base_url = 'https://github.com/lycantropos/voronoi/'
-
-
-def read_file(path_string: str) -> str:
-    return Path(path_string).read_text(encoding='utf-8')
-
-
-parameters = dict(
-        name=voronoi.__name__,
-        packages=find_packages(exclude=('tests', 'tests.*')),
-        version=voronoi.__version__,
-        description=voronoi.__doc__,
-        long_description=read_file('README.md'),
-        long_description_content_type='text/markdown',
-        author='Azat Ibrakov',
-        author_email='azatibrakov@gmail.com',
-        license='MIT License',
-        classifiers=[
-            'License :: OSI Approved :: MIT License',
-            'Programming Language :: Python :: 3.5',
-            'Programming Language :: Python :: 3.6',
-            'Programming Language :: Python :: 3.7',
-            'Programming Language :: Python :: 3.8',
-            'Programming Language :: Python :: 3.9',
-            'Programming Language :: Python :: 3.10',
-            'Programming Language :: Python :: Implementation :: CPython',
-            'Programming Language :: Python :: Implementation :: PyPy',
-        ],
-        url=project_base_url,
-        download_url=project_base_url + 'archive/master.zip',
-        python_requires='>=3.5',
-        setup_requires=read_file('requirements-setup.txt'),
-        install_requires=read_file('requirements.txt'))
+parameters = dict(packages=find_packages(exclude=('tests', 'tests.*')),
+                  url=project_base_url,
+                  download_url=project_base_url + 'archive/master.zip')
 if platform.python_implementation() == 'CPython':
     import sys
     import tempfile
@@ -47,6 +15,7 @@ if platform.python_implementation() == 'CPython':
     from distutils.ccompiler import CCompiler
     from distutils.errors import CompileError
     from glob import glob
+    from pathlib import Path
     from typing import (Any,
                         Iterable)
 
@@ -156,10 +125,11 @@ if platform.python_implementation() == 'CPython':
     parameters.update(
             cmdclass={build_ext.__name__: BuildExt,
                       develop.__name__: Develop},
-            ext_modules=[Extension('_' + voronoi.__name__,
+            ext_modules=[Extension('_voronoi',
                                    glob('src/*.cpp'),
                                    include_dirs=[LazyPybindInclude(),
                                                  project_root / 'include'],
                                    language='c++')],
-            zip_safe=False)
+            zip_safe=False
+    )
 setup(**parameters)
