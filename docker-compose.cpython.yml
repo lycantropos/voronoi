@@ -7,7 +7,7 @@ services:
       args:
         - IMAGE_NAME=${CPYTHON_IMAGE_NAME}
         - IMAGE_VERSION=${CPYTHON_IMAGE_VERSION}
-    image: lycantropos/voronoi-cpython:0.3.1
+    image: lycantropos/voronoi-cpython:0.4.0-alpha
     volumes:
       - ./pyproject.toml:/opt/voronoi/pyproject.toml
       - ./README.md:/opt/voronoi/README.md
