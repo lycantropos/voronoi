@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import ctypes
 from math import (copysign,
                   frexp,
@@ -21,12 +23,14 @@ class BigFloat:
 
     __repr__ = generate_repr(__init__)
 
-    def __add__(self, other: 'BigFloat') -> 'BigFloat':
+    def __add__(self, other: BigFloat) -> BigFloat:
         if (not self.mantissa
-                or other.exponent > self.exponent + MAX_EXPONENTS_DIFFERENCE):
+                or other.exponent > _to_int32(self.exponent
+                                              + MAX_EXPONENTS_DIFFERENCE)):
             return other
         elif (not other.mantissa
-              or self.exponent > other.exponent + MAX_EXPONENTS_DIFFERENCE):
+              or self.exponent > _to_int32(other.exponent
+                                           + MAX_EXPONENTS_DIFFERENCE)):
             return self
         elif self.exponent >= other.exponent:
             with_min_exponent, with_max_exponent = other, self
@@ -47,19 +51,21 @@ class BigFloat:
         except OverflowError:
             return copysign(inf, self.mantissa)
 
-    def __mul__(self, other: 'BigFloat') -> 'BigFloat':
+    def __mul__(self, other: BigFloat) -> BigFloat:
         return BigFloat(self.mantissa * other.mantissa,
                         _to_int32(self.exponent + other.exponent))
 
-    def __neg__(self) -> 'BigFloat':
+    def __neg__(self) -> BigFloat:
         return BigFloat(-self.mantissa, self.exponent)
 
-    def __sub__(self, other: 'BigFloat') -> 'BigFloat':
+    def __sub__(self, other: BigFloat) -> BigFloat:
         if (not self.mantissa
-                or other.exponent > self.exponent + MAX_EXPONENTS_DIFFERENCE):
+                or other.exponent > _to_int32(self.exponent
+                                              + MAX_EXPONENTS_DIFFERENCE)):
             return -other
         elif (not other.mantissa
-              or self.exponent > other.exponent + MAX_EXPONENTS_DIFFERENCE):
+              or self.exponent > _to_int32(other.exponent
+                                           + MAX_EXPONENTS_DIFFERENCE)):
             return self
         elif self.exponent >= other.exponent:
             return BigFloat(ldexp(self.mantissa,
@@ -70,15 +76,15 @@ class BigFloat:
                                   other.exponent - self.exponent)
                             + self.mantissa, self.exponent)
 
-    def __truediv__(self, other: 'BigFloat') -> 'BigFloat':
+    def __truediv__(self, other: BigFloat) -> BigFloat:
         return BigFloat(safe_divide_floats(self.mantissa, other.mantissa),
                         _to_int32(self.exponent - other.exponent))
 
-    def sqrt(self) -> 'BigFloat':
+    def sqrt(self) -> BigFloat:
         mantissa, exponent = self.mantissa, self.exponent
         if exponent % 2:
-            mantissa *= 2.
-            exponent -= 1
+            mantissa *= 2.0
+            exponent = _to_int32(exponent - 1)
         return BigFloat(safe_sqrt(mantissa), exponent // 2)
 
 
