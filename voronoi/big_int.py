@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import ctypes
 from math import (copysign,
                   inf,
@@ -24,10 +26,10 @@ class BigInt:
 
     __repr__ = generate_repr(__init__)
 
-    def __abs__(self) -> 'BigInt':
+    def __abs__(self) -> BigInt:
         return BigInt(abs(self.sign), self.digits)
 
-    def __add__(self, other: 'BigInt') -> 'BigInt':
+    def __add__(self, other: BigInt) -> BigInt:
         result = BigInt(0, [])
         result._add(self, other)
         return result
@@ -50,21 +52,21 @@ class BigInt:
         except OverflowError:
             return copysign(inf, mantissa)
 
-    def __mul__(self, other: 'BigInt') -> 'BigInt':
+    def __mul__(self, other: BigInt) -> BigInt:
         result = BigInt(0, [])
         result._multiply(self, other)
         return result
 
-    def __neg__(self) -> 'BigInt':
+    def __neg__(self) -> BigInt:
         return BigInt(-self.sign, self.digits[:])
 
-    def __sub__(self, other: 'BigInt') -> 'BigInt':
+    def __sub__(self, other: BigInt) -> BigInt:
         result = BigInt(0, [])
         result._subtract(self, other)
         return result
 
     @classmethod
-    def from_int32(cls, value: int) -> 'BigInt':
+    def from_int32(cls, value: int) -> BigInt:
         if value > 0:
             sign, digits = 1, [_to_uint32(value)]
         elif value < 0:
@@ -74,7 +76,7 @@ class BigInt:
         return cls(sign, digits)
 
     @classmethod
-    def from_int64(cls, value: int) -> 'BigInt':
+    def from_int64(cls, value: int) -> BigInt:
         if value > 0:
             sign, digits = 1, [_to_uint32(value)]
             value >>= 32
@@ -110,7 +112,7 @@ class BigInt:
             mantissa = -mantissa
         return mantissa, exponent
 
-    def _add(self, left: 'BigInt', right: 'BigInt') -> None:
+    def _add(self, left: BigInt, right: BigInt) -> None:
         if not left.sign:
             self.sign, self.digits = right.sign, right.digits[:]
             return
@@ -145,7 +147,7 @@ class BigInt:
         if cursor and len(self.digits) < MAX_DIGITS_COUNT:
             self.digits.append(cursor)
 
-    def _multiply(self, left: 'BigInt', right: 'BigInt') -> None:
+    def _multiply(self, left: BigInt, right: BigInt) -> None:
         if not left.sign or not right.sign:
             return
         self._multiply_digits(left.digits, right.digits)
@@ -174,7 +176,7 @@ class BigInt:
         if current_digit and len(self.digits) < MAX_DIGITS_COUNT:
             self.digits.append(_to_uint32(current_digit))
 
-    def _subtract(self, left: 'BigInt', right: 'BigInt') -> None:
+    def _subtract(self, left: BigInt, right: BigInt) -> None:
         if not left.sign:
             self.sign, self.digits = -right.sign, right.digits[:]
             return
