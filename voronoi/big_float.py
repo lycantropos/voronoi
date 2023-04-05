@@ -11,6 +11,7 @@ from reprit.base import generate_repr
 from .utils import (safe_divide_floats,
                     safe_sqrt)
 
+MAX_EXPONENT = (1 << 31) - 1
 MAX_EXPONENTS_DIFFERENCE = 54
 
 
@@ -25,20 +26,23 @@ class BigFloat:
 
     def __add__(self, other: BigFloat) -> BigFloat:
         if (not self.mantissa
-                or other.exponent > _to_int32(self.exponent
-                                              + MAX_EXPONENTS_DIFFERENCE)):
+                or
+                (self.exponent < MAX_EXPONENT - MAX_EXPONENTS_DIFFERENCE
+                 and other.exponent > _to_int32(self.exponent
+                                                + MAX_EXPONENTS_DIFFERENCE))):
             return other
         elif (not other.mantissa
-              or self.exponent > _to_int32(other.exponent
-                                           + MAX_EXPONENTS_DIFFERENCE)):
+              or (other.exponent < MAX_EXPONENT - MAX_EXPONENTS_DIFFERENCE
+                  and self.exponent > _to_int32(other.exponent
+                                                + MAX_EXPONENTS_DIFFERENCE))):
             return self
         elif self.exponent >= other.exponent:
             with_min_exponent, with_max_exponent = other, self
         else:
             with_min_exponent, with_max_exponent = self, other
         return BigFloat(ldexp(with_max_exponent.mantissa,
-                              with_max_exponent.exponent
-                              - with_min_exponent.exponent)
+                              _to_int32(with_max_exponent.exponent
+                                        - with_min_exponent.exponent))
                         + with_min_exponent.mantissa,
                         with_min_exponent.exponent)
 
