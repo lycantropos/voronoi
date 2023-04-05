@@ -140,7 +140,7 @@ class BigInt:
             cursor >>= 32
         for index in range(right_size, left_size):
             cursor += left_digits[index]
-            self.digits.append(cursor)
+            self.digits.append(_to_uint32(cursor))
             cursor >>= 32
         if cursor and len(self.digits) < MAX_DIGITS_COUNT:
             self.digits.append(cursor)
