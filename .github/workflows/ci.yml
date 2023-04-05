@@ -1,0 +1,358 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - 'master'
+    tags: [ 'v*' ]
+  pull_request:
+    branches:
+      - 'master'
+
+jobs:
+  test:
+    name: 'Test'
+    runs-on: ${{ matrix.platform.os }}
+    strategy:
+      matrix:
+        python_version: [ '3.7', '3.8', '3.9', '3.10', '3.11' ]
+        platform: [
+          {
+            os: 'macos-latest',
+            python_architecture: 'x64'
+          },
+          {
+            os: 'ubuntu-latest',
+            python_architecture: 'x64'
+          },
+          {
+            os: 'windows-latest',
+            python_architecture: 'x64'
+          },
+          {
+            os: 'windows-latest',
+            python_architecture: 'x86'
+          },
+        ]
+        include:
+          - python_version: 'pypy-3.7'
+            platform: { os: 'macos-latest', python_architecture: 'x64' }
+          - python_version: 'pypy-3.7'
+            platform: { os: 'ubuntu-latest', python_architecture: 'x64' }
+          - python_version: 'pypy-3.7'
+            platform: { os: 'windows-latest', python_architecture: 'x64' }
+          - python_version: 'pypy-3.8'
+            platform: { os: 'macos-latest', python_architecture: 'x64' }
+          - python_version: 'pypy-3.8'
+            platform: { os: 'ubuntu-latest', python_architecture: 'x64' }
+          - python_version: 'pypy-3.8'
+            platform: { os: 'windows-latest', python_architecture: 'x64' }
+          - python_version: 'pypy-3.9'
+            platform: { os: 'macos-latest', python_architecture: 'x64' }
+          - python_version: 'pypy-3.9'
+            platform: { os: 'ubuntu-latest', python_architecture: 'x64' }
+          - python_version: 'pypy-3.9'
+            platform: { os: 'windows-latest', python_architecture: 'x64' }
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: 'Setup Python'
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python_version }}
+          architecture: ${{ matrix.platform.python_architecture }}
+      - name: 'Install packaging tools'
+        run: python -m pip install -U pip setuptools
+      - name: 'Install coverage dependencies'
+        run: python -m pip install -U coverage[toml]
+      - name: 'Install С++ coverage dependencies'
+        run: python -m pip install -U gcovr
+        if: ${{ !startsWith(matrix.python_version, 'pypy') }}
+      - name: 'Install in editable mode'
+        run: python -m pip -v install -e .[tests]
+        env:
+          CPPFLAGS: --coverage -O0
+      - name: 'Run doctests'
+        run: >
+          coverage run -m doctest README.md
+          && coverage run --append -m pytest --doctest-modules --ignore=tests
+      - name: 'Run tests'
+        run: coverage run --append -m pytest
+      - name: 'Collect coverage'
+        run: coverage xml
+      - name: 'Collect C coverage'
+        run: gcovr --filter src/ --filter include/ --xml -o coverage_c.xml
+        if: ${{ !startsWith(matrix.python_version, 'pypy') }}
+      - name: 'Upload PyPy coverage'
+        uses: codecov/codecov-action@v3.1.1
+        with:
+          fail_ci_if_error: false
+          files: ./coverage.xml
+        if: ${{ startsWith(matrix.python_version, 'pypy') }}
+        continue-on-error: true
+      - name: 'Upload СPython coverage'
+        uses: codecov/codecov-action@v3.1.1
+        with:
+          fail_ci_if_error: false
+          files: ./coverage.xml,./coverage_c.xml
+        if: ${{ !startsWith(matrix.python_version, 'pypy') }}
+        continue-on-error: true
+
+  pre-deploy:
+    name: 'Pre-deploy'
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && github.ref_type == 'tag'
+    steps:
+      - name: '_'
+        run: echo "Pre-deploy step"
+
+  build-sdist:
+    name: 'Build sdist'
+    runs-on: ubuntu-latest
+    needs: pre-deploy
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: 'Setup Python'
+        uses: actions/setup-python@v4
+      - name: 'Install packaging tools'
+        run: python -m pip install -U build pip setuptools
+      - name: 'Build sdist'
+        run: python -m build --sdist
+      - name: 'Upload sdist'
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist
+
+  build-wheels:
+    name: 'Build wheels'
+    runs-on: ${{ matrix.platform.os }}
+    needs: pre-deploy
+    strategy:
+      matrix:
+        python_tag: [ 'cp37', 'cp38', 'cp39', 'cp310', 'cp311' ]
+        platform: [
+          {
+            architecture: 'x86_64',
+            os: 'macos-latest',
+            python_architecture: 'x64',
+            tag: 'macosx_x86_64'
+          },
+          {
+            architecture: 'aarch64',
+            os: 'ubuntu-latest',
+            python_architecture: 'x64',
+            tag: 'manylinux_aarch64'
+          },
+          {
+            architecture: 'aarch64',
+            os: 'ubuntu-latest',
+            python_architecture: 'x64',
+            tag: 'musllinux_aarch64'
+          },
+          {
+            architecture: 'i686',
+            os: 'ubuntu-latest',
+            python_architecture: 'x64',
+            tag: 'manylinux_i686'
+          },
+          {
+            architecture: 'ppc64le',
+            os: 'ubuntu-latest',
+            python_architecture: 'x64',
+            tag: 'manylinux_ppc64le'
+          },
+          {
+            architecture: 's390x',
+            os: 'ubuntu-latest',
+            python_architecture: 'x64',
+            tag: 'manylinux_s390x'
+          },
+          {
+            architecture: 'x86_64',
+            os: 'ubuntu-latest',
+            python_architecture: 'x64',
+            tag: 'manylinux_x86_64'
+          },
+          {
+            architecture: 'x86_64',
+            os: 'ubuntu-latest',
+            python_architecture: 'x64',
+            tag: 'musllinux_x86_64'
+          },
+          {
+            architecture: 'AMD64',
+            os: 'windows-latest',
+            python_architecture: 'x64',
+            tag: 'win_amd64'
+          },
+          {
+            architecture: 'x86',
+            os: 'windows-latest',
+            python_architecture: 'x86',
+            tag: 'win32'
+          },
+        ]
+        include:
+          - python_tag: 'cp38'
+            platform: {
+              architecture: 'arm64',
+              os: 'macos-latest',
+              python_architecture: 'x64',
+              tag: 'macosx_arm64'
+            }
+          - python_tag: 'cp38'
+            platform: {
+              architecture: 'universal2',
+              os: 'macos-latest',
+              python_architecture: 'x64',
+              tag: 'macosx_universal2'
+            }
+          - python_tag: 'cp39'
+            platform: {
+              architecture: 'arm64',
+              os: 'macos-latest',
+              python_architecture: 'x64',
+              tag: 'macosx_arm64'
+            }
+          - python_tag: 'cp39'
+            platform: {
+              architecture: 'universal2',
+              os: 'macos-latest',
+              python_architecture: 'x64',
+              tag: 'macosx_universal2'
+            }
+          - python_tag: 'cp310'
+            platform: {
+              architecture: 'arm64',
+              os: 'macos-latest',
+              python_architecture: 'x64',
+              tag: 'macosx_arm64'
+            }
+          - python_tag: 'cp310'
+            platform: {
+              architecture: 'universal2',
+              os: 'macos-latest',
+              python_architecture: 'x64',
+              tag: 'macosx_universal2'
+            }
+          - python_tag: 'cp311'
+            platform: {
+              architecture: 'arm64',
+              os: 'macos-latest',
+              python_architecture: 'x64',
+              tag: 'macosx_arm64'
+            }
+          - python_tag: 'cp311'
+            platform: {
+              architecture: 'universal2',
+              os: 'macos-latest',
+              python_architecture: 'x64',
+              tag: 'macosx_universal2'
+            }
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: 'Setup Python'
+        uses: actions/setup-python@v4
+        with:
+          architecture: ${{ matrix.platform.python_architecture }}
+      - name: 'Setup QEMU'
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: all
+        if: ${{ runner.os == 'Linux' }}
+      - name: 'Build wheels'
+        uses: pypa/cibuildwheel@v2.12.1
+        env:
+          CIBW_ARCHS: ${{ matrix.platform.architecture }}
+          CIBW_BUILD: ${{ matrix.python_tag }}-${{ matrix.platform.tag }}
+          CIBW_BUILD_VERBOSITY: 1
+      - name: 'Upload wheels'
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: wheelhouse/*.whl
+
+  test-distributions:
+    name: Test distributions
+    runs-on: ${{ matrix.platform.os }}
+    needs: [ 'build-sdist', 'build-wheels' ]
+    strategy:
+      matrix:
+        python_version: [ '3.7', '3.8', '3.9', '3.10', '3.11' ]
+        platform: [
+          {
+            os: 'macos-latest',
+            python_architecture: 'x64'
+          },
+          {
+            os: 'ubuntu-latest',
+            python_architecture: 'x64'
+          },
+          {
+            os: 'windows-latest',
+            python_architecture: 'x64'
+          },
+          {
+            os: 'windows-latest',
+            python_architecture: 'x86'
+          },
+        ]
+        include:
+          - python_version: 'pypy-3.7'
+            platform: { os: 'macos-latest', python_architecture: 'x64' }
+          - python_version: 'pypy-3.7'
+            platform: { os: 'ubuntu-latest', python_architecture: 'x64' }
+          - python_version: 'pypy-3.7'
+            platform: { os: 'windows-latest', python_architecture: 'x64' }
+          - python_version: 'pypy-3.8'
+            platform: { os: 'macos-latest', python_architecture: 'x64' }
+          - python_version: 'pypy-3.8'
+            platform: { os: 'ubuntu-latest', python_architecture: 'x64' }
+          - python_version: 'pypy-3.8'
+            platform: { os: 'windows-latest', python_architecture: 'x64' }
+          - python_version: 'pypy-3.9'
+            platform: { os: 'macos-latest', python_architecture: 'x64' }
+          - python_version: 'pypy-3.9'
+            platform: { os: 'ubuntu-latest', python_architecture: 'x64' }
+          - python_version: 'pypy-3.9'
+            platform: { os: 'windows-latest', python_architecture: 'x64' }
+    steps:
+      - name: 'Setup Python'
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python_version }}
+          architecture: ${{ matrix.platform.python_architecture }}
+      - name: 'Download distributions'
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: dist
+      - name: 'Install from distributions'
+        run: python -m pip install --find-links=dist --no-deps ${{ github.event.repository.name }}
+
+  deploy:
+    name: 'Deploy'
+    environment: release
+    needs: test-distributions
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Download distributions'
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: dist
+      - name: 'PyPI upload'
+        uses: pypa/gh-action-pypi-publish@v1.6.4
+        with:
+          packages_dir: dist
+          password: ${{ secrets.PYPI_API_TOKEN }}
