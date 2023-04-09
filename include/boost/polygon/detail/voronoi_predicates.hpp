@@ -1235,7 +1235,7 @@ class voronoi_predicates {
                                      static_cast<int_x2_type>(segm_start2.x()),
                                  static_cast<int_x2_type>(segm_end2.y()) -
                                      static_cast<int_x2_type>(segm_start2.y()),
-                                 static_cast<int_x2_type>(-site1.y()),
+                                 -static_cast<int_x2_type>(site1.y()),
                                  static_cast<int_x2_type>(site1.x())),
                              to_fpt(1.0));
         b -= sqr_sum2 *
@@ -1244,7 +1244,7 @@ class voronoi_predicates {
                                      static_cast<int_x2_type>(segm_start1.x()),
                                  static_cast<int_x2_type>(segm_end1.y()) -
                                      static_cast<int_x2_type>(segm_start1.y()),
-                                 static_cast<int_x2_type>(-site1.y()),
+                                 -static_cast<int_x2_type>(site1.y()),
                                  static_cast<int_x2_type>(site1.x())),
                              to_fpt(1.0));
         t -= b;
