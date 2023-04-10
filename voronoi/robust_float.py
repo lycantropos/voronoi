@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from functools import total_ordering
 from typing import Any
 
@@ -19,10 +21,10 @@ class RobustFloat:
 
     __repr__ = generate_repr(__init__)
 
-    def __abs__(self) -> 'RobustFloat':
+    def __abs__(self) -> RobustFloat:
         return RobustFloat(abs(self.value), self.relative_error)
 
-    def __add__(self, other: 'RobustFloat') -> 'RobustFloat':
+    def __add__(self, other: RobustFloat) -> RobustFloat:
         value = self.value + other.value
         relative_error = (max(self.relative_error, other.relative_error)
                           + ROUNDING_ERROR
@@ -44,12 +46,12 @@ class RobustFloat:
     def __gt__(self, other: Any) -> bool:
         return self.value > other
 
-    def __imul__(self, other: 'RobustFloat') -> 'RobustFloat':
+    def __imul__(self, other: RobustFloat) -> RobustFloat:
         self.value *= other.value
         self.relative_error += other.relative_error + ROUNDING_ERROR
         return self
 
-    def __itruediv__(self, other: 'RobustFloat') -> 'RobustFloat':
+    def __itruediv__(self, other: RobustFloat) -> RobustFloat:
         self.value = safe_divide_floats(self.value, other.value)
         self.relative_error += other.relative_error + ROUNDING_ERROR
         return self
@@ -57,15 +59,15 @@ class RobustFloat:
     def __lt__(self, other: Any) -> bool:
         return self.value < other
 
-    def __mul__(self, other: 'RobustFloat') -> 'RobustFloat':
+    def __mul__(self, other: RobustFloat) -> RobustFloat:
         return RobustFloat(self.value * other.value,
                            self.relative_error + other.relative_error
                            + ROUNDING_ERROR)
 
-    def __neg__(self) -> 'RobustFloat':
+    def __neg__(self) -> RobustFloat:
         return RobustFloat(-self.value, self.relative_error)
 
-    def __sub__(self, other: 'RobustFloat') -> 'RobustFloat':
+    def __sub__(self, other: RobustFloat) -> RobustFloat:
         value = self.value - other.value
         relative_error = (max(self.relative_error, other.relative_error)
                           + ROUNDING_ERROR
@@ -78,11 +80,11 @@ class RobustFloat:
                           + ROUNDING_ERROR)
         return RobustFloat(value, relative_error)
 
-    def __truediv__(self, other: 'RobustFloat') -> 'RobustFloat':
+    def __truediv__(self, other: RobustFloat) -> RobustFloat:
         return RobustFloat(safe_divide_floats(self.value, other.value),
                            self.relative_error + other.relative_error
                            + ROUNDING_ERROR)
 
-    def sqrt(self) -> 'RobustFloat':
+    def sqrt(self) -> RobustFloat:
         return RobustFloat(safe_sqrt(self.value),
                            self.relative_error * 0.5 + ROUNDING_ERROR)
