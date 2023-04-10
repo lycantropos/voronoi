@@ -81,7 +81,7 @@ static int to_sign(coordinate_t value) {
   return value > 0 ? 1 : (value < 0 ? -1 : 0);
 }
 
-static std::string bool_repr(bool value) { return py::str(py::bool_(value)); }
+static std::string bool_repr(bool value) { return value ? "True" : "False"; }
 
 template <class Object>
 std::string to_repr(const Object& object) {
