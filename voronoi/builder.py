@@ -1,3 +1,4 @@
+import ctypes
 from copy import copy
 from operator import itemgetter
 from typing import (TYPE_CHECKING,
@@ -25,7 +26,15 @@ if TYPE_CHECKING:
 
 
 class Builder:
-    __slots__ = ('index', '_beach_line', '_circle_events', '_end_points',
+    @property
+    def index(self) -> int:
+        return self._index
+
+    @index.setter
+    def index(self, value: int) -> None:
+        self._index = ctypes.c_size_t(value).value
+
+    __slots__ = ('_index', '_beach_line', '_circle_events', '_end_points',
                  'site_events', '_site_event_index')
 
     def __init__(self,
